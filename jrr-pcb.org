@@ -1,0 +1,347 @@
+#+PROPERTY: header-args+ :var  DATA_SHEET_DIR="/home/jj/work/data-sheets/omat"
+#+latex_compiler: pdflatex
+#+LATEX_HEADER_EXTRA: \usepackage{rotfloat}
+#+LATEX_HEADER_EXTRA: \usepackage{lmodern}
+#+LATEX_HEADER: \hypersetup{colorlinks=true, linkcolor=blue}
+#+LATEX_HEADER_EXTRA: \usepackage{tabularx}
+#+LATEX_HEADER_EXTRA: \usepackage{tabu,longtable}
+#+LATEX_HEADER_EXTRA: \usepackage{booktabs}
+#+OPTIONS: ^:nil
+
+* Design
+** Requirements
+
+- [-] Components
+  - [-] Circuit board
+    - [X] Connectors
+      - [X] Power Input 5V-IN
+	- [X] USB-C
+	  - [X] usb-c power delivery resistor
+	- [X] JST -header
+      - [X] Fuse e-fuse (1.5A)
+    - [X] RPI power delivery 5V
+	- [X] Jumper for power deliver GPIO
+	- [-] Wafer connectors  (e.g. for uUSB connector)
+      - [X] 3.5 display connector 2x13
+      - [ ] speaker output 
+      - [X] Amplifier connectors
+	- [X] power
+	- [X] input signal
+    - [X] button 1
+    - [X] button 2
+  - [-] VMA 408 amplifier breakout
+    - [ ] pcb seat
+      - [ ] screw hole for potentiometer
+      - [ ] 4 corner holes 
+    - [ ] shaft extension
+    - [X] Amplifier pinhdeader
+      - [X] Power input
+      - [X] INput signal
+      - [X] speaker output
+  - [X] USB/3.5mm jack DAC
+  - [X] power in
+    - [X] Connectors
+      - [X] USB-C power in
+	- [X] Keystone inlet
+      - [X] current controller resistors 5.1k x 2
+      - [X] Pinheader power in
+  - [ ] keyboard USB connector
+    - [ ] Keystone inlet      
+  - [X] power button
+  - [-] Volume + on/off switch
+    - [X] Pot set (pcb w. screw holes)
+    - [ ] volume knob
+  - [X] PLS-830986 speaker
+  - [X] RCA input
+    - [X] Keystone inlet
+  - [-] 1P2T slide switch (RCA input/radio output)
+    - [X] Keystone inlet
+    - [ ] 3D printed seat
+  - [ ] Cables (choose 1)
+    - [ ] USB-C/JST
+    - [ ] USB-C/USB-C cable (power cable)
+  - [ ] polyester fibre 20g/l
+
+** USB-C power
+
+https://medium.com/@leung.benson/how-to-design-a-proper-usb-c-power-sink-hint-not-the-way-raspberry-pi-4-did-it-f470d7a5910
+
+https://hackaday.com/2023/01/04/all-about-usb-c-resistors-and-emarkers/
+
+** TRS audio connector
+
+https://www.ranecommercial.com/legacy/note110.html
+
+[[file:pics-keep/audio-cables.png]]
+
+| TSR-plug | Color  | Function      | Color | RCA-socket |
+|----------+--------+---------------+-------+------------|
+| T        | red    | signal        | red   | T          |
+| R        | black  | signal ground | black | S          |
+| S        | shield | shield        | NC    |            |
+
+
+* Järviradio-radion PCB suunnitetelu
+:PROPERTIES:
+:header-args+: :var  RELEASE="E"
+:header-args+: :var  SCHEMA_NAME="jrr5"
+:header-args+: :var  DOC=(file-name-base (buffer-file-name))
+:END:
+
+** Schema design
+
+    #+BEGIN_SRC bash :eval no-export :results output :exports results
+    echo RELEASE=$RELEASE
+    echo SCHEMA_NAME=$SCHEMA_NAME
+    #+END_SRC
+
+    #+RESULTS:
+    : RELEASE=D
+    : SCHEMA_NAME=jrr5
+
+    #+BEGIN_SRC elisp :eval no-export :noweb yes :results output :eval no-export :exports none
+    (start-process "server" "buf-server" "kicad" (concat "schema/"  SCHEMA_NAME "/" SCHEMA_NAME ".kicad_pro"))
+    #+END_SRC
+
+    #+RESULTS:
+    
+    #+BEGIN_SRC elisp :eval no-export :noweb yes :results output :eval no-export :exports none
+   (start-process "server" "buf-server" "eeschema" (concat "schema/" SCHEMA_NAME "/" SCHEMA_NAME ".kicad_sch"))
+    #+END_SRC
+
+    #+RESULTS:
+
+    #+call: kicad-schema-pic()
+
+    #+RESULTS:
+    [[file:pics/jrr5.pdf]]
+
+
+** PCB Layout
+
+*** Front
+[[file:pics-keep/jrr5-F.png]]
+
+
+*** Back
+
+[[file:pics-keep/jrr5-B.png]]
+
+** BOM
+
+#+call: kicad-bom()
+
+#+NAME: BOM
+#+CAPTION: Järviradio PCB BOM
+#+ATTR_LATEX: :float sideways :placement [H]
+#+ATTR_LATEX: :font \tiny
+#+HEADER: :exports results :results table latex :colnames yes
+#+RESULTS:
+| Reference                    | Value                     | Footprint                                                  | QUANTITY |
+|------------------------------+---------------------------+------------------------------------------------------------+----------|
+| CONN1                        | 3.5m_TRS                  |                                                            |        1 |
+| CONNN1                       | CONN-KSTONE-USBAfmxUSBAfm |                                                            |        1 |
+| CONNN2                       | CONN-KSTONE-USBCfmxUSBCfm |                                                            |        1 |
+| J2                           | Raspberry_Pi_2_3_GPIO     | Connector_PinHeader_2.54mm:PinHeader_2x20_P2.54mm_Vertical |        1 |
+| J4                           | USB-Afm,THT               | Connector_USB:USB_A_Molex_67643_Horizontal                 |        1 |
+| J11,J13,J19,J21,J24,J28,J101 | Wafer,1x2,m               | jj-foot:Wafer_1x02_P2.54mm_Vertical_male                   |        7 |
+| J18,J26                      | Wafer,1x3,m               | jj-foot:Wafer_1x03_P2.54mm_Vertical_male                   |        2 |
+| J107,J110                    | Wafer,1x2,fm              | Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical |        2 |
+| J109                         | Wafer,1x3,fm              |                                                            |        1 |
+| Q1                           | BSS138                    | Package_TO_SOT_SMD:SOT-23                                  |        1 |
+| R1,R2                        | 100k                      | Resistor_SMD:R_0805_2012Metric                             |        2 |
+| R3,R4                        | 5k1                       | Resistor_SMD:R_0805_2012Metric                             |        2 |
+| SW1,SW2                      | SW_PUSH_THT_6mm           | Button_Switch_THT:SW_PUSH_6mm                              |        2 |
+
+
+
+
+
+** Release management
+*** Releases
+
+   |-----------+-----+-----------------+-----|
+   |      Date | Rel | Comments        | PCB |
+   |-----------+-----+-----------------+-----|
+   |  4.2.2025 | C   | First version   | X   |
+   | 19.2.2025 | D   | JRR-{1,2,3,4,5} | X   |
+   |-----------+-----+-----------------+-----|
+
+*** Issues
+
+#+ATTR_LATEX: :font \tiny
+   |-------+--------+-----------+---------+------------------------------+------------------------------|
+   | #     | In Rel | Fixed rel | Ref     | As-is                        | Tobe                         |
+   |-------+--------+-----------+---------+------------------------------+------------------------------|
+   | JRR-1 | C      | D         | F1      | 1.5A                         | 1.1A,SMD,polyfuse            |
+   | JRR-2 | C      | D         | F1      |                              | 1812 footprint               |
+   | JRR-3 | C      | D         | Q1      | drain 3 = GND, source 2= out | source 2 = GND, drain 3= out |
+   | JRR-4 | C      | D         | Conn    | footprint pinhder            | wafer pinheader              |
+   | JRR-5 | C      | D         | Edgecut | to righ                      | to left                      |
+   | JRR-6 | D      |           | Q1      | BSS138->DMN3042L-7           |                              |
+   | JRR-7 | D      | E         | Q1      |                              | schottky x 2                 |
+   | JRR-8 | D      |           |         | Mounting holes placement     |                              |
+   | JRR-9 | D      |           |         | Silkscreen text              | Using macros                 |
+   |-------+--------+-----------+---------+------------------------------+------------------------------|
+
+*** Deploy ~DATA_SHEET_DIR/DOC-RELEASE.pdf~                        :noexport:
+  #+BEGIN_SRC bash :eval no-export :results output
+  echo RELEASE=$RELEASE
+  echo DATA_SHEET_DIR=$DATA_SHEET_DIR
+  echo SCHEMA_NAME=$SCHEMA_NAME
+  echo DOC=$DOC
+  #+END_SRC
+
+  #+RESULTS:
+  : RELEASE=D
+  : DATA_SHEET_DIR=/home/jj/work/data-sheets/omat
+  : SCHEMA_NAME=jrr5
+  : DOC=jrr5-pcb
+
+
+  #+BEGIN_SRC bash :eval no-export :results output
+  ls -ltr $DATA_SHEET_DIR/$DOC* ; true
+  #+END_SRC
+
+  #+RESULTS:
+  : -rw-rw-r-- 1 jj jj 668631 helmi   6 15:00 /home/jj/work/data-sheets/omat/jrr5-pcb-jrr5-A.pdf
+  : -rw-rw-r-- 1 jj jj 668631 helmi   6 15:02 /home/jj/work/data-sheets/omat/jrr5-pcb-jrr5-C.pdf
+  : -rw-rw-r-- 1 jj jj 634648 helmi  19 10:05 /home/jj/work/data-sheets/omat/jrr5-pcb-jrr5-D.pdf
+
+  Export to pdf
+  #+BEGIN_SRC elisp
+  (org-latex-export-to-pdf)
+  #+END_SRC
+
+  #+RESULTS:
+  : /home/jj/work/järviradio-radio/jrr5-pcb.pdf
+
+  Show pdf
+  #+BEGIN_SRC bash :eval no-export :results output
+  ls -ltr $DOC.pdf
+  #+END_SRC
+
+  #+RESULTS:
+  : -rw-rw-r-- 1 jj jj 634648 helmi  19 10:05 jrr5-pcb.pdf
+
+
+  Copy exported pdf as ~${RELEASE}~ -version to ~$DATA_SHEET_DIR~.
+  #+BEGIN_SRC bash :eval no-export :results output file
+  TARGET=$DATA_SHEET_DIR/${DOC}-${SCHEMA_NAME}-${RELEASE}.pdf
+  cp $DOC.pdf $TARGET 
+  echo -n $TARGET 
+  #+END_SRC
+
+  #+RESULTS:
+  [[file:/home/jj/work/data-sheets/omat/jrr5-pcb-jrr5-D.pdf]]
+
+  Datasheets installed into directory: 
+  #+BEGIN_SRC bash :eval no-export :results output file :exports results
+  echo -n $DATA_SHEET_DIR
+  #+END_SRC
+
+  #+RESULTS:
+  [[file:/home/jj/work/data-sheets/omat]]
+
+  #+BEGIN_SRC bash :eval no-export :results output
+  ls -lt $DATA_SHEET_DIR/${DOC}-*.pdf $DOC.org   $DOC.pdf
+  #+END_SRC
+
+  #+RESULTS:
+  : -rw-rw-r-- 1 jj jj  11287 helmi   6 15:02 jrr5-pcb.org
+  : -rw-rw-r-- 1 jj jj 668631 helmi   6 15:02 /home/jj/work/data-sheets/omat/jrr5-pcb-jrr5-C.pdf
+  : -rw-rw-r-- 1 jj jj 668631 helmi   6 15:02 jrr5-pcb.pdf
+  : -rw-rw-r-- 1 jj jj 668631 helmi   6 15:00 /home/jj/work/data-sheets/omat/jrr5-pcb-jrr5-A.pdf
+
+    
+
+* Admin
+
+** Kicad
+*** ~kicad-bom~: Create bom table for SCHEMA_NAME
+
+#+name: kicad-bom
+#+BEGIN_SRC bash :eval no-export :results table :exports results :var SCHEMA_NAME="bolo-clock" SCHEMA_ROOT="schema" BOM_COLS="Reference,Value,Footprint,${QUANTITY}"
+CSV_FILE=$SCHEMA_ROOT/$SCHEMA_NAME/$SCHEMA_NAME.csv
+
+#           --filter '${EXCLUDE_FROM_BOM}' \
+
+cat <<HERE >&2
+Running in $(pwd) host '$(hostname)' on $(date)
+
+Parameters
+- BOM_COLS[comma serated list of columsn]=${BOM_COLS}
+
+Output:
+- CSV_FILE=$SCHEMA_ROOT/$SCHEMA_NAME/$SCHEMA_NAME.csv 
+HERE
+
+# --preset "Grouped By Value" \
+#          --fields ${BOM_COLS} \
+#          --exclude-dnp \
+
+kicad-cli sch export bom \
+          --output $CSV_FILE \
+          --field-delimiter "|" \
+          --string-delimiter "" \
+          --group-by "Value" \
+          --fields ${BOM_COLS} \
+          schema/$SCHEMA_NAME/$SCHEMA_NAME.kicad_sch \
+          >/dev/null # &2\
+          
+# echo '#+ATTR_LATEX: :font \tiny'
+cat $CSV_FILE
+#+END_SRC
+
+#+RESULTS: kicad-bom
+
+
+*** ~kicad-schema-pic~: Create schema pdf for SCHEMA_NAME under SCHEMA_ROOT
+
+#+name: kicad-schema-pic
+#+BEGIN_SRC bash :eval no-export :results file :var SCHEMA_ROOT="schema"
+echo "Running in $(pwd) host '$(hostname)' on $(date)" >&2
+echo "SCHEMA_ROOT=$SCHEMA_ROOT, SCHEMA_NAME=$SCHEMA_NAME" >&2
+PDF_FILE=pics/$SCHEMA_NAME.pdf
+          # --black-and-white \
+kicad-cli sch export pdf \
+          --output  $PDF_FILE \
+          $SCHEMA_ROOT/$SCHEMA_NAME/$SCHEMA_NAME.kicad_sch >/dev/null
+
+echo -n $PDF_FILE
+#+END_SRC
+
+  
+* Fin                                                              :noexport:
+
+
+** Emacs variables
+
+#+RESULTS:
+
+# Local Variables:
+# time-stamp-line-limit: -8
+# time-stamp-start: "Modified:"
+# time-stamp-format: "%:y-%02m-%02d.%02H:%02M"
+# time-stamp-time-zone: nil
+# time-stamp-end: "; # time-stamp"
+# eval: (add-hook 'before-save-hook 'time-stamp)
+# org-confirm-babel-evaluate: nil
+# End:
+#
+# Muuta
+# org-cdlatex-mode: t
+# eval: (cdlatex-mode)
+#
+# Local ebib:
+# org-ref-default-bibliography: "./jrr5-pcb.bib"
+# org-ref-bibliography-notes: "./jrr5-pcb-notes.org"
+# org-ref-pdf-directory: "./pdf/"
+# org-ref-notes-directory: "."
+# bibtex-completion-notes-path: "./jrr5-pcb-notes.org"
+# ebib-preload-bib-files: ("./jrr5-pcb.bib")
+# ebib-notes-file: ("./jrr5-pcb-notes.org")
+# reftex-default-bibliography: ("./jrr5-pcb.bib")
+
+
+Modified:2025-06-11.13:02; # time-stamp
