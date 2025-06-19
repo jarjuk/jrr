@@ -116,6 +116,29 @@ https://www.ranecommercial.com/legacy/note110.html
     #+RESULTS:
     [[file:pics/jrr5.pdf]]
 
+** Mechanical design
+
+[[file:pics-keep/jrr5-front.png]]
+
+Aukkojen mitoitus
+
+#+BEGIN_SRC octave :eval no-export :results output :session *Octave* :exports both
+
+  mm = 1;
+
+  pin2edge=8.315;
+  edge2button = 22.5;
+
+  hdr_slot_tol = 1+0.5;
+
+  hdr_slot2button =  edge2button + pin2edge  - hdr_slot_tol
+
+
+  #+END_SRC   
+
+  #+RESULTS:
+  : hdr_slot2button = 29.315
+
 
 ** PCB Layout
 
@@ -142,6 +165,7 @@ https://www.ranecommercial.com/legacy/note110.html
 | CONN1                        | 3.5m_TRS                  |                                                            |        1 |
 | CONNN1                       | CONN-KSTONE-USBAfmxUSBAfm |                                                            |        1 |
 | CONNN2                       | CONN-KSTONE-USBCfmxUSBCfm |                                                            |        1 |
+| D1,D2                        | Schottky,15mA             | PCM_JLCPCB:D_SOD-323                                       |        2 |
 | J2                           | Raspberry_Pi_2_3_GPIO     | Connector_PinHeader_2.54mm:PinHeader_2x20_P2.54mm_Vertical |        1 |
 | J4                           | USB-Afm,THT               | Connector_USB:USB_A_Molex_67643_Horizontal                 |        1 |
 | J11,J13,J19,J21,J24,J28,J101 | Wafer,1x2,m               | jj-foot:Wafer_1x02_P2.54mm_Vertical_male                   |        7 |
@@ -152,7 +176,6 @@ https://www.ranecommercial.com/legacy/note110.html
 | R1,R2                        | 100k                      | Resistor_SMD:R_0805_2012Metric                             |        2 |
 | R3,R4                        | 5k1                       | Resistor_SMD:R_0805_2012Metric                             |        2 |
 | SW1,SW2                      | SW_PUSH_THT_6mm           | Button_Switch_THT:SW_PUSH_6mm                              |        2 |
-
 
 
 
@@ -170,19 +193,20 @@ https://www.ranecommercial.com/legacy/note110.html
 *** Issues
 
 #+ATTR_LATEX: :font \tiny
-   |-------+--------+-----------+---------+------------------------------+------------------------------|
-   | #     | In Rel | Fixed rel | Ref     | As-is                        | Tobe                         |
-   |-------+--------+-----------+---------+------------------------------+------------------------------|
-   | JRR-1 | C      | D         | F1      | 1.5A                         | 1.1A,SMD,polyfuse            |
-   | JRR-2 | C      | D         | F1      |                              | 1812 footprint               |
-   | JRR-3 | C      | D         | Q1      | drain 3 = GND, source 2= out | source 2 = GND, drain 3= out |
-   | JRR-4 | C      | D         | Conn    | footprint pinhder            | wafer pinheader              |
-   | JRR-5 | C      | D         | Edgecut | to righ                      | to left                      |
-   | JRR-6 | D      |           | Q1      | BSS138->DMN3042L-7           |                              |
-   | JRR-7 | D      | E         | Q1      |                              | schottky x 2                 |
-   | JRR-8 | D      |           |         | Mounting holes placement     |                              |
-   | JRR-9 | D      |           |         | Silkscreen text              | Using macros                 |
-   |-------+--------+-----------+---------+------------------------------+------------------------------|
+   |--------+--------+-----------+---------+------------------------------+------------------------------|
+   | #      | In Rel | Fixed rel | Ref     | As-is                        | Tobe                         |
+   |--------+--------+-----------+---------+------------------------------+------------------------------|
+   | JRR-1  | C      | D         | F1      | 1.5A                         | 1.1A,SMD,polyfuse            |
+   | JRR-2  | C      | D         | F1      |                              | 1812 footprint               |
+   | JRR-3  | C      | D         | Q1      | drain 3 = GND, source 2= out | source 2 = GND, drain 3= out |
+   | JRR-4  | C      | D         | Conn    | footprint pinhder            | wafer pinheader              |
+   | JRR-5  | C      | D         | Edgecut | to righ                      | to left                      |
+   | JRR-6  | D      |           | Q1      | BSS138->DMN3042L-7           |                              |
+   | JRR-7  | D      | E         | Q1      |                              | schottky x 2                 |
+   | JRR-8  | D      |           |         | +Mounting holes placement+   |                              |
+   | JRR-9  | D      | E         |         | Silkscreen text              | Using macros                 |
+   | JRR-10 | D      | E         | SW{1,2} | Push buttons to left 15 mm   |                              |
+   |--------+--------+-----------+---------+------------------------------+------------------------------|
 
 *** Deploy ~DATA_SHEET_DIR/DOC-RELEASE.pdf~                        :noexport:
   #+BEGIN_SRC bash :eval no-export :results output
@@ -344,4 +368,4 @@ echo -n $PDF_FILE
 # reftex-default-bibliography: ("./jrr5-pcb.bib")
 
 
-Modified:2025-06-11.13:02; # time-stamp
+Modified:2025-06-18.12:46; # time-stamp
