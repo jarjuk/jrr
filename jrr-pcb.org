@@ -80,7 +80,6 @@ https://www.ranecommercial.com/legacy/note110.html
 | R        | black  | signal ground | black | S          |
 | S        | shield | shield        | NC    |            |
 
-
 * Järviradio-radion PCB suunnitetelu
 :PROPERTIES:
 :header-args+: :var  RELEASE="E"
@@ -88,7 +87,7 @@ https://www.ranecommercial.com/legacy/note110.html
 :header-args+: :var  DOC=(file-name-base (buffer-file-name))
 :END:
 
-** Schema design
+** Piirilevyn suunnittelu
 
     #+BEGIN_SRC bash :eval no-export :results output :exports results
     echo RELEASE=$RELEASE
@@ -116,11 +115,13 @@ https://www.ranecommercial.com/legacy/note110.html
     #+RESULTS:
     [[file:pics/jrr5.pdf]]
 
-** Mechanical design
+** Kotelon suunnittelu
+
+*** Piirilevyn mitoitus
 
 [[file:pics-keep/jrr5-front.png]]
 
-Aukkojen mitoitus
+*** Painonappien etäisyys näyttöupotuksen reunoista
 
 #+BEGIN_SRC octave :eval no-export :results output :session *Octave* :exports both
 
@@ -139,6 +140,9 @@ Aukkojen mitoitus
   #+RESULTS:
   : hdr_slot2button = 29.315
 
+*** Kotelon katon aukot
+
+[[file:cad/pages/katto.pdf]]
 
 ** PCB Layout
 
@@ -278,7 +282,6 @@ Aukkojen mitoitus
   : -rw-rw-r-- 1 jj jj 668631 helmi   6 15:00 /home/jj/work/data-sheets/omat/jrr5-pcb-jrr5-A.pdf
 
     
-
 * Admin
 
 ** Kicad
@@ -335,7 +338,6 @@ kicad-cli sch export pdf \
 echo -n $PDF_FILE
 #+END_SRC
 
-  
 * Fin                                                              :noexport:
 
 
@@ -368,4 +370,4 @@ echo -n $PDF_FILE
 # reftex-default-bibliography: ("./jrr5-pcb.bib")
 
 
-Modified:2025-06-18.12:46; # time-stamp
+Modified:2025-06-19.09:41; # time-stamp
