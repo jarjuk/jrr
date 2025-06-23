@@ -83,6 +83,7 @@ https://www.ranecommercial.com/legacy/note110.html
 * Järviradio-radion PCB suunnitetelu
 :PROPERTIES:
 :header-args+: :var  RELEASE="E"
+:header-args+: :var  SCHEMA_ROOT="schema"
 :header-args+: :var  SCHEMA_NAME="jrr5"
 :header-args+: :var  DOC=(file-name-base (buffer-file-name))
 :END:
@@ -90,23 +91,17 @@ https://www.ranecommercial.com/legacy/note110.html
 ** Piirilevyn suunnittelu
 
     #+BEGIN_SRC bash :eval no-export :results output :exports results
-    echo RELEASE=$RELEASE
+    echo SCHEMA_ROOT=$SCHEMA_ROOT
     echo SCHEMA_NAME=$SCHEMA_NAME
+    echo RELEASE=$RELEASE
     #+END_SRC
 
     #+RESULTS:
-    : RELEASE=D
+    : SCHEMA_ROOT=schema
     : SCHEMA_NAME=jrr5
+    : RELEASE=E
 
-    #+BEGIN_SRC elisp :eval no-export :noweb yes :results output :eval no-export :exports none
-    (start-process "server" "buf-server" "kicad" (concat "schema/"  SCHEMA_NAME "/" SCHEMA_NAME ".kicad_pro"))
-    #+END_SRC
-
-    #+RESULTS:
-    
-    #+BEGIN_SRC elisp :eval no-export :noweb yes :results output :eval no-export :exports none
-   (start-process "server" "buf-server" "eeschema" (concat "schema/" SCHEMA_NAME "/" SCHEMA_NAME ".kicad_sch"))
-    #+END_SRC
+    #+call:kicad-project()
 
     #+RESULTS:
 
@@ -149,7 +144,6 @@ https://www.ranecommercial.com/legacy/note110.html
 *** Front
 [[file:pics-keep/jrr5-F.png]]
 
-
 *** Back
 
 [[file:pics-keep/jrr5-B.png]]
@@ -181,6 +175,67 @@ https://www.ranecommercial.com/legacy/note110.html
 | R3,R4                        | 5k1                       | Resistor_SMD:R_0805_2012Metric                             |        2 |
 | SW1,SW2                      | SW_PUSH_THT_6mm           | Button_Switch_THT:SW_PUSH_6mm                              |        2 |
 
+** Gerbers
+
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+echo "SCHEMA_ROOT=$SCHEMA_ROOT"
+echo "SCHEMA_NAME=$SCHEMA_NAME"
+echo "RELEASE=$RELEASE"
+
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/jj/work/jrr host 'eero' on ma 23.6.2025 11.19.44 +0300
+: SCHEMA_ROOT=schema
+: SCHEMA_NAME=jrr5
+: RELEASE=E
+
+#+call: kicad-gerber()
+
+#+RESULTS:
+#+begin_example
+Running in /home/jj/work/jrr host 'eero' on ma 23.6.2025 11.59.57 +0300
+
+Creating gerber zip file ZIP_FILE=schema/jrr5/jrr5-E.zip for default SCHEMA_NAME=jrr5
+
+- SCHEMA_ROOT=schema ('panels' or 'schema')
+- PCB desing PCB_FILE=schema/jrr5/jrr5.kicad_pcb in PCB_DIR=schema/jrr5
+- Gerbers in GERBER_DIR=schema/jrr5/gerber
+- Zip file ZIP_FILE=schema/jrr5/jrr5-E.zip
+
+Using GERBER_DIR=schema/jrr5/gerber
+Loading board
+Plotted to 'schema/jrr5/gerber/jrr5-F_Cu.gtl'.
+Plotted to 'schema/jrr5/gerber/jrr5-B_Cu.gbl'.
+Plotted to 'schema/jrr5/gerber/jrr5-F_Paste.gtp'.
+Plotted to 'schema/jrr5/gerber/jrr5-B_Paste.gbp'.
+Plotted to 'schema/jrr5/gerber/jrr5-F_Silkscreen.gto'.
+Plotted to 'schema/jrr5/gerber/jrr5-B_Silkscreen.gbo'.
+Plotted to 'schema/jrr5/gerber/jrr5-F_Mask.gts'.
+Plotted to 'schema/jrr5/gerber/jrr5-B_Mask.gbs'.
+Plotted to 'schema/jrr5/gerber/jrr5-User_Comments.gbr'.
+Plotted to 'schema/jrr5/gerber/jrr5-Edge_Cuts.gm1'.
+Loading board
+Created file 'schema/jrr5/gerber/jrr5.drl'
+Created file 'schema/jrr5/gerber/jrr5-drl_map.pdf'.
+Done.
+  adding: schema/jrr5/gerber/ (stored 0%)
+  adding: schema/jrr5/gerber/jrr5-F_Paste.gtp (deflated 59%)
+  adding: schema/jrr5/gerber/jrr5-B_Silkscreen.gbo (deflated 83%)
+  adding: schema/jrr5/gerber/jrr5-drl_map.pdf (deflated 12%)
+  adding: schema/jrr5/gerber/jrr5-B_Paste.gbp (deflated 65%)
+  adding: schema/jrr5/gerber/jrr5-F_Mask.gts (deflated 72%)
+  adding: schema/jrr5/gerber/jrr5-F_Cu.gtl (deflated 74%)
+  adding: schema/jrr5/gerber/jrr5-B_Cu.gbl (deflated 75%)
+  adding: schema/jrr5/gerber/jrr5.drl (deflated 65%)
+  adding: schema/jrr5/gerber/jrr5-F_Silkscreen.gto (deflated 83%)
+  adding: schema/jrr5/gerber/jrr5-Edge_Cuts.gm1 (deflated 39%)
+  adding: schema/jrr5/gerber/jrr5-B_Mask.gbs (deflated 73%)
+  adding: schema/jrr5/gerber/jrr5-User_Comments.gbr (deflated 67%)
+  adding: schema/jrr5/gerber/jrr5-job.gbrjob (deflated 73%)
+Done OK
+#+end_example
 
 
 
@@ -322,6 +377,19 @@ cat $CSV_FILE
 
 #+RESULTS: kicad-bom
 
+*** ~kicad-project~: Open project SCHEMA_NAME under SCHEMA_ROOT
+
+    #+name: kicad-project
+    #+BEGIN_SRC elisp :eval no-export :noweb yes :results output :eval no-export :exports none :var SCHEMA_ROOT="schema"
+    (start-process "server" "buf-server" "kicad" (concat "schema/" SCHEMA_NAME "/" SCHEMA_NAME  ".kicad_pro"))
+    #+END_SRC
+
+*** ~kicad-schema~: Open schema designer SCHEMA_NAME under SCHEMA_ROOT
+
+    #+name: kicad-schema
+    #+BEGIN_SRC elisp :eval no-export :noweb yes :results output :eval no-export :exports none :var SCHEMA_ROOT="schema"
+    (start-process "server" "buf-server" "eeschema" (concat "schema/" SCHEMA_NAME "/" SCHEMA_NAME  ".kicad_sch"))
+    #+END_SRC
 
 *** ~kicad-schema-pic~: Create schema pdf for SCHEMA_NAME under SCHEMA_ROOT
 
@@ -337,6 +405,48 @@ kicad-cli sch export pdf \
 
 echo -n $PDF_FILE
 #+END_SRC
+
+*** ~kicad-gerber~: Create gerber zip for SCHEMA_NAME-RELEASE under SCHEMA_ROOT or
+
+#+name: kicad-gerber
+#+BEGIN_SRC bash :eval no-export :results output :var RELEASE="A" SCHEMA_ROOT="schema"
+PCB_DIR=$SCHEMA_ROOT/$SCHEMA_NAME
+PCB_FILE=$PCB_DIR/$SCHEMA_NAME.kicad_pcb
+GERBER_DIR=$SCHEMA_ROOT/$SCHEMA_NAME/gerber
+ZIP_FILE=$SCHEMA_ROOT/$SCHEMA_NAME/$SCHEMA_NAME-$RELEASE.zip
+cat <<HERE
+Running in $(pwd) host '$(hostname)' on $(date)
+
+Creating gerber zip file ZIP_FILE=$ZIP_FILE for default SCHEMA_NAME=$SCHEMA_NAME
+
+- SCHEMA_ROOT=$SCHEMA_ROOT ('panels' or 'schema')
+- PCB desing PCB_FILE=$PCB_FILE in PCB_DIR=$PCB_DIR
+- Gerbers in GERBER_DIR=$GERBER_DIR
+
+HERE
+
+if [ ! -d $GERBER_DIR ]; then
+    echo No such directory GERBER_DIR=$GERBER_DIR - creating it
+    mkdir -p $GERBER_DIR
+fi
+
+# cleanup
+rm -f $GERBER_DIR/*
+rm -f $ZIP_FILE
+
+echo Using GERBER_DIR=$GERBER_DIR
+kicad-cli pcb export gerbers \
+          --output $GERBER_DIR \
+          --layers 'F.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts,User.Comments' \
+          $PCB_FILE
+kicad-cli pcb export drill \
+          --output $GERBER_DIR \
+          --generate-map \
+          $PCB_FILE
+zip -r $ZIP_FILE $GERBER_DIR
+echo Done OK
+#+END_SRC
+
 
 * Fin                                                              :noexport:
 
@@ -370,4 +480,4 @@ echo -n $PDF_FILE
 # reftex-default-bibliography: ("./jrr5-pcb.bib")
 
 
-Modified:2025-06-19.09:41; # time-stamp
+Modified:2025-06-23.12:07; # time-stamp

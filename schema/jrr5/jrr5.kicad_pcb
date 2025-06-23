@@ -888,7 +888,7 @@
 		(descr "Through hole straight pin header, 2x20, 2.54mm pitch, double rows")
 		(tags "Through hole pin header THT 2x20 2.54mm double row")
 		(property "Reference" "J2"
-			(at -2.725 4.825 180)
+			(at 1.575 6.425 180)
 			(layer "F.SilkS")
 			(uuid "d32e9a3b-6662-4852-87ce-4bc10af87739")
 			(effects
