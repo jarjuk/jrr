@@ -1,3 +1,166 @@
 * Nettiradio
 
-TODO
+* Valikkorakenne
+
+#+name: plantuml2-wbs
+#+BEGIN_SRC plantuml :eval no-export :exports results :file pics/jrr-menu.png
+ @startwbs
+ ,* JRR
+ ,**:== Radio
+ ==Näyttökentät==
+,* Radiokanavan nimi
+,* Radiokanavan ikoni
+ ==Näppäin 1==
+ ,**<U+2022><U+00A0><U+00A0>**: Seuraava radiokanava
+ ,**<U+2014>** : Käynnistä asetusvalikko
+ ==Näppäin 2==
+ ,**<U+2022><U+00A0><U+00A0>**: Edellinen radiokanava
+ ,**<U+2014>** : Ei käytössä;
+
+
+,**: **Asetukset**
+ ==Näppäin 1==
+ ,**<U+2022><U+00A0><U+00A0>**: Seuraava valikko
+ ,**<U+2014>** : Käynnistä valikkotoiminto
+ ==Näppäin 2==
+ ,**<U+2022><U+00A0><U+00A0>**: Edellinen valikkko
+ ,**<U+2014>** : Palaa radion kuunteluun;
+
+,***: **Selaa kanavia**
+ ==Näyttökentät==
+,* Radiokanavan nimi
+,* Radiokanavan ikoni
+ ==Näppäin 1==
+ ,**<U+2022><U+00A0><U+00A0>**: Seuraava radiokanava
+ ,**<U+2014>** : Poista radiokanava
+ ==Näppäin 2==
+ ,**<U+2022><U+00A0><U+00A0>**: Edellinen radiokanava
+ ,**<U+2014>** : Takaisin asetukset -valikkoon;
+
+,***: **Poista kaikki kanavat**
+ ==Näppäin 1==
+ ,**<U+2022><U+00A0><U+00A0>**: Ei käytössä
+ ,**<U+2014>** : Poista kaikki radiokanavat
+ ==Näppäin 2==
+ ,**<U+2022><U+00A0><U+00A0>**: Ei käytössä
+ ,**<U+2014>** : Takaisin asetukset -valikkoon;
+
+,***: **Aktivoi radiokanavia**
+ ==Näyttökentät==
+ ,* Radiokanavan nimi
+ ,* Radiokanavan ikoni
+ ==Näppäin 1==
+ ,**<U+2022><U+00A0><U+00A0>**: Seuraava radiokanava
+ ,**<U+2014>** : Aktivoi radiokanava
+ ==Näppäin 2==
+ ,**<U+2022>**: Edellinen radiokanava
+ ,**<U+2014>** : Takaisin asetukset -valikkoon;
+
+,***: **Valitse wifi verkko**
+ ==Näyttökentät==
+,* SSID: Wifi verkon SSID 
+ ==Näppäin 1==
+ ,**<U+2022><U+00A0><U+00A0>**: Seurava Wifi-verkko
+ ,**<U+2014>** : Aktivoi Wifi-verkko
+ ==Näppäin 2==
+ ,**<U+2022><U+00A0><U+00A0>**: Edellinen Wifi-verkko
+ ,**<U+2014>** : Takaisin asetukset -valikkoon;
+
+,***: **Asetukset näppäimistöllä**
+----
+Alivalikko ei aukea, jos
+näppäimistöä ei ole kytketty 
+;
+,****: **Wifi-verkon valinta**
+ ==Näyttökentät==
+,* SSID: Wifi-verkon SSID 
+ ==Näppäin 1==
+ ,**<U+2022><U+00A0><U+00A0>**: Seuraava Wifi-verkko
+ ,**<U+2014>** : Käynnistä Wifi -verkon asetus
+ ==Näppäin 2==
+ ,**<U+2022><U+00A0><U+00A0>**: Edellinen Wifi-verkko
+ ,**<U+2014>** : Paluu asetusvalikkoon;
+,*****: **Wifi-verkon asetus**
+ ==Näyttökentät==
+,* SSID: Valitun Wifi verkon SSID 
+ ==Syöttökentät==
+,* Password: Wifi verkon salasana
+ ==Näppäin 1==
+ ,**<U+2022><U+00A0><U+00A0>**: Eikäytössä
+ ,**<U+2014>** : Aseta
+ ==Näppäin 2==
+ ,**<U+2022><U+00A0><U+00A0>**: Ei käytössä
+ ,**<U+2014>** : Takaisin;
+,****: **Radiokanavahakemiston asetus**
+ ==Syöttökentät==
+,* URL: Radiokanavahakemiston osoite (syöttökenttä)
+ ==Näppäin 1==
+ ,**<U+2022><U+00A0><U+00A0>**: Ei käytössä
+ ,**<U+2014>** : Aseta
+ ==Näppäin 2==
+ ,**<U+2022><U+00A0><U+00A0>**: Ei käytössä
+ ,**<U+2014>** : Takaisin;
+
+,****: **Ohjelmistopäivityksen aloitus**
+ ==Syöttökentät==
+,* URL: Ohjelmistopäivityksen latausosoite
+ ==Näppäin 1==
+ ,**<U+2022><U+00A0><U+00A0>**: Ei käytössä
+ ,**<U+2014>** : Valitse ohjelmistoversio
+ ==Näppäin 2==
+ ,**<U+2022><U+00A0><U+00A0>**: Ei käytössä
+ ,**<U+2014>** : Paluu asetusvalikkoon;
+
+,*****: **Ohjelmistoversion valinta ja käynnistys**
+ ==Näyttökentät==
+,* URL: Ohjelmistopäivityksen latausosoite
+,* versio: Valittu ohjelmistoversio
+ ==Näppäin 1==
+ ,**<U+2022><U+00A0><U+00A0>**: Seuraava ohjelmistoversio
+ ,**<U+2014>** : Käynnistä ohjelmistoversion päivitys
+ ==Näppäin 2==
+ ,**<U+2022><U+00A0><U+00A0>**: Edellinen ohjelmistoversio
+ ,**<U+2014>** : Paluu asetusvalikkoon;
+
+ @endwbs
+
+#+END_SRC
+
+#+RESULTS: plantuml2-wbs
+[[file:pics/jrr-menu.png]]
+
+
+
+* Fin                                                              :noexport:
+
+
+** Emacs variables
+
+#+RESULTS:
+
+# Local Variables:
+# time-stamp-line-limit: -8
+# time-stamp-start: "Modified:"
+# time-stamp-format: "%:y-%02m-%02d.%02H:%02M"
+# time-stamp-time-zone: nil
+# time-stamp-end: "; # time-stamp"
+# eval: (add-hook 'before-save-hook 'time-stamp)
+# org-confirm-babel-evaluate: nil
+# End:
+#
+# Muuta
+# org-cdlatex-mode: t
+# eval: (cdlatex-mode)
+#
+# Local ebib:
+# org-ref-default-bibliography: "./README.bib"
+# org-ref-bibliography-notes: "./README-notes.org"
+# org-ref-pdf-directory: "./pdf/"
+# org-ref-notes-directory: "."
+# bibtex-completion-notes-path: "./README-notes.org"
+# ebib-preload-bib-files: ("./README.bib")
+# ebib-notes-file: ("./README-notes.org")
+# reftex-default-bibliography: ("./README.bib")
+
+
+Modified:2025-06-24.10:29; # time-stamp
