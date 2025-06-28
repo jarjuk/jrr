@@ -1,0 +1,6 @@
+# screen_clear.dbg 
+#! 
+#! Send 'clear' message to 'screen' topic
+#! 
+#! 
+sleep| !screen

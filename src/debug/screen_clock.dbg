@@ -1,0 +1,7 @@
+# screen_clock.dbg 
+#! 
+#! Send
+#! - init
+#! - clock
+#! 
+clock|  !screen

@@ -1,0 +1,7 @@
+# jrr_streams.yaml
+#
+# Network radio streams
+- name: Järviradio
+  url: https://jarviradio.radiotaajuus.fi:9000/jr
+  icon: JÄRVIRADIO.png
+

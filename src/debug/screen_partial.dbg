@@ -1,0 +1,6 @@
+# screen_init.dbg 
+#! 
+#! Send show message to 'screen' 
+#! - partial non-emtry string = partial update
+#! 
+update| mode=partial name=clock !screen

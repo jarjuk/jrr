@@ -1,0 +1,8 @@
+# screen_clock.dbg 
+#! 
+#! Send
+#! - tick clock 
+#! - update clock
+#! 
+clock| !screen
+show| mode=partial name=clock !screen

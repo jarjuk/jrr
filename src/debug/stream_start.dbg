@@ -1,0 +1,4 @@
+#! 
+#! Start streamer https://jarviradio.radiotaajuus.fi:9000/jr
+#! 
+start_stream| url=https://jarviradio.radiotaajuus.fi:9000/jr !streamer

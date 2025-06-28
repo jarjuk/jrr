@@ -1,0 +1,16 @@
+# screen_init.dbg 
+#! 
+#! Send init message to 'screen topi'
+#! 
+#!
+clear|   !screen
+button| name=b1 text=button1 !screen
+button| name=b2 text=button2 !screen
+button| name=b3 text=button3 !screen
+button| name=b4 text=button4 !screen
+icon| icon=yle-1.jpeg !screen
+clock|  !screen
+show| mode=full  !screen
+# delay| ms=2000  !screen
+# show|   !screen
+# sleep| !screen

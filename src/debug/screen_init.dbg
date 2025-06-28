@@ -1,0 +1,6 @@
+# screen_init.dbg 
+#! 
+#! Send init message to 'screen topi'
+#! 
+#! 
+init| !screen

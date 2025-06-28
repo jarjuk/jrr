@@ -1,0 +1,9 @@
+# screen_clock.dbg 
+#! 
+#! Send
+#! - init
+#! - clock
+#! 
+info| name=msg1 text=hello_world !screen
+show| mode=partial name=msg1 !screen
+

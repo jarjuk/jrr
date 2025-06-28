@@ -1,0 +1,6 @@
+# screen_init.dbg 
+#! 
+#! Send 'test' message to 'screen' topic
+#! 
+#! 
+test| !screen

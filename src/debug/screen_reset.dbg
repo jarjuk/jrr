@@ -1,0 +1,7 @@
+# screen_full.dbg 
+#! 
+#! Send show message to 'screen' 
+#! - partial empty string => full update
+#!
+sleep| !screen
+update| mode=full !screen

@@ -1,0 +1,6 @@
+# screen_close.dbg 
+#! 
+#! Send 'close' message to 'screen' topic
+#! 
+#! 
+close| !screen
