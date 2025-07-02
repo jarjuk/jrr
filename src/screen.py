@@ -1046,6 +1046,12 @@ layout_base: Dict = {
     COROS.Screen.ENTRY_MSG_L1: [
         ScreenEntryInfo,
         {"x": COL2, "y": ROW_INFO, "text_len": 20, }],
+    COROS.Screen.ENTRY_VERSION: [
+        ScreenEntryInfo,
+        {"x": COL1, "y": ROW_INFO, "text_len": 20, "font_size": 10,
+         "text": "jrr-0.0.latest",
+         }],
+
     # COROS.Screen.ENTRY_MSG_L2: [ScreenEntryInfo,
     #                             {"x": COL2, "y": ROW_INFO + LINE_SPACING, "text_len": 10, }],
 }

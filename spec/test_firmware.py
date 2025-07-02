@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 
 from src import firmware, config
+from src import github
 from src.constants import APP_CONTEXT
 
 
@@ -16,13 +17,16 @@ def test_framework():
 # ------------------------------------------------------------------
 # Config fixtures
 LOCAL_ROOT0 = os.path.join(os.path.dirname(__file__), "fixture", "local-repo0")
-
 LOCAL_ROOT1 = os.path.join(os.path.dirname(__file__), "fixture", "local-repo1")
 LOCAL_ROOT2 = os.path.join(os.path.dirname(__file__), "fixture", "local-repo2")
 REPO_URL0 = LOCAL_ROOT0
 REPO_URL1 = LOCAL_ROOT1
 REPO_URL2 = LOCAL_ROOT2
+GITHUB_REPO = "https://github.com/jarjuk-demo/jrr"
 REPO_URL_ERR = "gitt:/githu.com"
+JRR_TAG_001 = "jrr-0.0.1"
+JRR_TAG_011 = "jrr-0.1.1"
+
 
 LOCAL_ROOT_STAGE = os.path.join(
     os.path.dirname(__file__), "..", "tmp", "stage")
@@ -42,6 +46,13 @@ def mock_create_empty_local_root():
         mock_property.return_value = LOCAL_ROOT_STAGE
         shutil.rmtree(LOCAL_ROOT_STAGE)
         Path(LOCAL_ROOT_STAGE).mkdir(exist_ok=False)
+        yield mock_property  # yields the mock in case you want to make assertions on it
+
+
+@pytest.fixture
+def mock_repo_github():
+    with patch.object(config.Config, 'firmware_repo_url', new_callable=PropertyMock) as mock_property:
+        mock_property.return_value = GITHUB_REPO
         yield mock_property  # yields the mock in case you want to make assertions on it
 
 
@@ -87,6 +98,27 @@ def mock_local_root2():
         yield mock_property  # yields the mock in case you want to make assertions on it
 
 
+@pytest.fixture
+def mock_github_tags1():
+    with patch('src.github.github_tags') as mock:
+        mock.return_value = [JRR_TAG_001]
+        yield mock  # yields the mock in case you want to make assertions on it
+
+
+@pytest.fixture
+def mock_github_tags2():
+    with patch('src.github.github_tags') as mock:
+        mock.return_value = [JRR_TAG_001, JRR_TAG_011]
+        yield mock  # yields the mock in case you want to make assertions on it
+
+
+@pytest.fixture
+def mock_github_tags0():
+    with patch('src.github.github_tags') as mock:
+        mock.return_value = []
+        yield mock  # yields the mock in case you want to make assertions on it
+
+
 # ------------------------------------------------------------------
 # Test config module mock
 
@@ -99,6 +131,18 @@ def test_config_mock():
 def test_config_property():
     assert config.app_config.firmware_local_root == os.path.join(
         Path.home(), "src")
+
+
+def test_func_mock(mock_github_tags1):
+    assert github.github_tags() == [JRR_TAG_001]
+
+
+def test_func_mock(mock_github_tags0):
+    assert github.github_tags() == []
+
+
+def test_func_mock(mock_github_tags2):
+    assert github.github_tags() == [JRR_TAG_001, JRR_TAG_011]
 
 # ------------------------------------------------------------------
 # class FirmwareVersion
@@ -251,10 +295,19 @@ def test_firmware_repo_index_2_zip(mock_repo_url2):
     assert len(fw_pkgs) == 2
     assert "jrr-0.1.2.zip" in [fw.version for fw in fw_pkgs]
 
+
 def test_firmware_repo_index_err(mock_repo_url_error):
     assert firmware.firmware_repo_url() == REPO_URL_ERR
     with pytest.raises(ValueError, match=f"Unsupported scheme"):
         fw_pkgs = firmware.firmware_repo_index()
+
+
+def test_firmware_repo_index_err(mock_repo_github, mock_github_tags2):
+    assert firmware.firmware_repo_url() == GITHUB_REPO
+    fw_pkgs = firmware.firmware_repo_index()
+    assert len(fw_pkgs) == 2
+    assert JRR_TAG_001 in [fw.version for fw in fw_pkgs]
+    assert JRR_TAG_011 in [fw.version for fw in fw_pkgs]
 
 # ------------------------------------------------------------------
 # firmware_current_link + firmware_current

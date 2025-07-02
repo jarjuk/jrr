@@ -22,6 +22,7 @@ from urllib.parse import urlparse
 from src.config import app_config
 from src.constants import APP_CONTEXT
 from src.utils import copy_file_or_directory
+from src  import github
 
 import logging
 logger = logging.getLogger(__name__)
@@ -40,9 +41,10 @@ class FirmwareVersion:
 
     # Factories
     @classmethod
-    def create_repo_version(cls, repo_url: str) -> Self:
+    def create_repo_version(cls, repo_url: str, version_tag: str | None = None) -> Self:
         """Factory method to from repo-url"""
-        version_tag = FirmwareVersion.url2version_tag(repo_url)
+        if version_tag is None:
+            version_tag = FirmwareVersion.url2version_tag(repo_url)
         firmware_version = cls(
             version=version_tag, repo_url=FirmwareVersion.ensure_protocol(repo_url))
         return firmware_version
@@ -191,6 +193,19 @@ def _local_zip_index(repo_url: str) -> List[FirmwareVersion]:
     return firmwares
 
 
+def _github_tag_index(owner: str, repo: str) -> List[FirmwareVersion]:
+    """Return list of """
+    api_url = f"https://api.github.com/repos/{owner}/{repo}/tags"
+    logger.info("_github_tag_index: api_url='%s', owner=%s, repo=%s",
+                api_url, owner, repo)
+    tags = github.github_tags(tags_url=api_url)
+    firmwares = [FirmwareVersion.create_repo_version(
+        version_tag=tag,
+        repo_url=f"https://github.com/{owner}/{repo}/archive/refs/tags/{tag}.zip")
+                 for tag in tags]
+    return firmwares
+
+
 def firmware_repo_index() -> List[FirmwareVersion]:
     """Return list of firmware versions in 'firmware repo'."""
     repo_url = app_config.firmware_repo_url
@@ -198,6 +213,12 @@ def firmware_repo_index() -> List[FirmwareVersion]:
 
     if parsed.scheme == "file" or parsed.scheme == "":
         return _local_zip_index(repo_url=repo_url)
+    elif parsed.scheme == "https" and parsed.netloc.startswith("github"):
+        logger.info(": parsed.path='%s', split=%s",
+                    parsed.path, parsed.path.split("/"))
+        _, owner, repo = parsed.path.split("/")
+
+        return _github_tag_index(owner, repo)
     else:
         raise ValueError(
             f"Unsupported scheme='{parsed.scheme}' in {repo_url=}")

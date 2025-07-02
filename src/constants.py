@@ -169,6 +169,7 @@ class COROS:
         ENTRY_B3 = "b3"
         ENTRY_B4 = "b4"
         ENTRY_MSG_L1 = "msg1"
+        ENTRY_VERSION = "version"
         ENTRY_MSG_L2 = "msg2"
 
 

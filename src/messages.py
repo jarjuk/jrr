@@ -181,6 +181,7 @@ class MsgClockUpdate(MsgScreen):
     network_status: bool
     streaming_status: bool
     keyboard_status: bool
+    jrr_version: str
 
 
 @dataclass
@@ -533,6 +534,7 @@ def message_clock_update(
         network_status: bool,
         streaming_status: bool,
         keyboard_status: bool,
+        jrr_version: str,
 ) -> MsgClockUpdate:
     """Message to update clock on screen, and possibly
     'refresh_display'.
@@ -550,6 +552,7 @@ def message_clock_update(
             "network_status": network_status,
             "streaming_status": streaming_status,
             "keyboard_status": keyboard_status,
+            "jrr_version": jrr_version,
         })
     msg_clock = cast(MsgClockUpdate, msg)
     return msg_clock

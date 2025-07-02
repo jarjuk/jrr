@@ -11,6 +11,7 @@ import os
 import yaml
 
 
+
 from .console import console_output, console_close
 from .config import app_config
 from .publish_subsrcibe import Hub
@@ -99,6 +100,8 @@ class ControllerState:
     # screen overlays for configuration
     config_screens: DApp = screen_ovrlays
 
+    jrr_version: str = "jrr-1.2.3"
+
     def __init__(self):
         self.state_machine = None
         self.menu_step = 0
@@ -170,7 +173,7 @@ class ControllerState:
             yaml.dump(state_dict, f)
 
     def restore_state(self):
-        """Restrore some fields from """
+        """Restrore some fields from file from 'state_config' and version info."""
         yaml_str, stat = read_file(app_config.state_config)
         logger.debug("restore_state: yaml_str='%s', stat=%s", yaml_str, stat)
         if stat:
@@ -183,6 +186,11 @@ class ControllerState:
 
         # Radio menu step in lock step with stream number
         self.menu_step = self.current_stream
+
+        # Load VERSION info
+        version_file = os.path.join( os.path.dirname(__file__), "VERSION")
+        with open(version_file,'r') as f:
+            self.jrr_version = f.read()
 
     # ------------------------------------------------------------------
     # Stream management
@@ -423,13 +431,12 @@ class ControllerState:
                         self.keyboard_status)
         return changed
 
+# ------------------------------------------------------------------
+# Module state
+
 
 logger = logging.getLogger(__name__)
 controller_state = ControllerState()
-
-# ------------------------------------------------------------------
-# Helpers
-
 
 # ------------------------------------------------------------------
 # Actions used in state machines
@@ -487,34 +494,9 @@ def ctrl_act_update_status(hub: Hub, network_status: bool | None = None):
             network_status=controller_state.network_status,
             streaming_status=controller_state.streamer_status,
             keyboard_status=controller_state.keyboard_status,
+            jrr_version=controller_state.jrr_version,
         )
     )
-
-    # hub.publish(
-    #     topic=TOPICS.SCREEN,
-    #     message=message_status_icons(
-    #         network=controller_state.network_status,
-    #         streaming=controller_state.streamer_status,
-    #         keyboard=controller_state.get_keyboard_status,
-    #     )
-    # )
-
-
-# def ctrl_act_screen_set_menu_name(hub: Hub, menu_name: str):
-#     """Set 'menu_name' on configuration menu.
-
-#     Sends CONFIG_MENU -message to SCREEN.
-
-#     """
-
-#     hub.publish(
-#         topic=TOPICS.SCREEN,
-#         message=message_create(
-#             message_type=TOPICS.SCREEN_MESSAGES.CONFIG_MENU,
-#             d={
-#                 "header": menu_name,
-#                 "selection": None,
-#             }))
 
 
 def ctrl_act_screen_config_prompt(
@@ -1876,97 +1858,6 @@ def ctrl_menu_chdelete_with_confirm(
 
     # Start executing menu
     f_config_enter(hub, menu=menu, step_resume=0)
-
-
-# def ctrl_menu_channel_setup(hub: Hub, step_resume: int | None = None):
-#     """Menu for choosing actions in channel setup.
-
-#     """
-#     logger.debug("ctrl_menu_channel_setup: step_resume='%s', menu_step=%s",
-#                  step_resume, controller_state.menu_step)
-
-#     # Default step starts from first wifi selection
-#     if step_resume is None:
-#         step_resume = 0
-
-#     # remeber caller menu - later resume there
-#     caller_menu_step = controller_state.menu_step
-
-#     def _my_resume(hub):
-#         ctrl_menu_setup_main(hub, step_resume=caller_menu_step)
-#         return None
-
-#     # NOTICE: update menu_name_2_title and menu_name_2_sub_title
-#     # when updating menu
-
-#     menu_name_2_title = {
-#         APP_CONTEXT.MENU.MENU_CHANNELS_BROWSE: "Selaa",
-#         APP_CONTEXT.MENU.MENU_CHANNELS_ADD: "Lisää",
-#         APP_CONTEXT.MENU.MENU_CHANNELS_LOAD_URL: "Kanavien",
-#         APP_CONTEXT.MENU.MENU_CHANNELS_DEL_ALL: "Poista kaikki",
-#         # APP_CONTEXT.MENU.MENU_CHANNELS_RESET: "Resetoi",
-#     }
-#     menu_name_2_sub_title = {
-#         APP_CONTEXT.MENU.MENU_CHANNELS_BROWSE: "kanavia",
-#         APP_CONTEXT.MENU.MENU_CHANNELS_ADD: "kanava",
-#         APP_CONTEXT.MENU.MENU_CHANNELS_LOAD_URL: "URL -latus",
-#         APP_CONTEXT.MENU.MENU_CHANNELS_DEL_ALL: "kanavat",
-#         # APP_CONTEXT.MENU.MENU_CHANNELS_RESET: "kanavat",
-#     }
-
-#     def _my_entry_action(hub: Hub, menu_name: str, ):
-#         hub.publish(
-#             topic=TOPICS.SCREEN,
-#             message=message_config_title(
-#                 title=menu_name_2_title[menu_name],
-#                 sub_title=menu_name_2_sub_title[menu_name]))
-
-#     def _maybe_brose_channels(hub: Hub):
-#         if len(controller_state.streams) > 0:
-#             ctrl_menu_browse_channels(hub=hub)
-#         else:
-#             ctrl_act_screen_info_txt(hub, message="Ei kanavia")
-#         return None
-
-#     # NOTICE: update menu_name_2_title and menu_name_2_sub_title
-#     # when updating menu
-
-#     menu = {
-#         APP_CONTEXT.MENU.MENU_CHANNELS_BROWSE: {
-#             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
-#                 APP_CONTEXT.MENU.MENU_CHANNELS_ADD,       # bt1-short
-#                 APP_CONTEXT.MENU.CHOOSE,                  # bt1-long
-#                 APP_CONTEXT.MENU.MENU_CHANNELS_DEL_ALL,   # bt2-short
-#                 APP_CONTEXT.MENU.CONFIG_RETURN,           # bt2-long
-#             ],
-#             APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _my_entry_action,
-#             APP_CONTEXT.MENU.ACTS.BTN1_SHORT: None,
-#             APP_CONTEXT.MENU.ACTS.BTN1_LONG: _maybe_brose_channels,
-#             APP_CONTEXT.MENU.ACTS.BTN2_SHORT: None,
-#             APP_CONTEXT.MENU.ACTS.BTN2_LONG: _my_resume,
-#             APP_CONTEXT.MENU.ACTS.KEYBOARD: ctr_act_none,
-#         },  # Browse channels
-
-#         APP_CONTEXT.MENU.MENU_CHANNELS_ADD: {
-#             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
-#                 APP_CONTEXT.MENU.MENU_CHANNELS_LOAD_URL,  # bt1-short
-#                 APP_CONTEXT.MENU.CHOOSE,                  # bt1-long
-#                 APP_CONTEXT.MENU.MENU_CHANNELS_BROWSE,    # bt2-short
-#                 APP_CONTEXT.MENU.CONFIG_RETURN,           # bt2-long
-#             ],
-#             APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _my_entry_action,
-#             APP_CONTEXT.MENU.ACTS.BTN1_SHORT: None,
-#             APP_CONTEXT.MENU.ACTS.BTN1_LONG: ctr_act_none,
-#             APP_CONTEXT.MENU.ACTS.BTN2_SHORT: None,
-#             APP_CONTEXT.MENU.ACTS.BTN2_LONG: _my_resume,
-#             APP_CONTEXT.MENU.ACTS.KEYBOARD: ctr_act_none,
-#         },  # Add channel
-
-#     }
-
-#     if step_resume is None:
-#         step_resume = 0
-#     f_config_enter(hub, menu=menu, step_resume=step_resume)
 
 
 # ------------------------------------------------------------------

@@ -2889,9 +2889,9 @@ echo "var=$var"
 
 #+RESULTS:
 #+begin_example
-Rsync SDIR=src/ from host=eero to jrr5.local:jrr/src.init/ on ti 1.7.2025 15.29.10 +0300
+Rsync SDIR=src/ from host=eero to jrr5.local:jrr/src.init/ on ke 2.7.2025 14.23.22 +0300
 rsync -a --delete --update --verbose --checksum --recursive src/ jrr5:jrr/src.init/
-total 358
+total 364
 -rw-rw-r-- 1 jj jj  6032 joulu   9  2024 epd2in13b_V3.py
 -rw-rw-r-- 1 jj jj  5904 joulu   9  2024 epd2in13bc.py
 drwxrwxr-x 3 jj jj     3 joulu   9  2024 lib
@@ -2932,7 +2932,6 @@ drwxrwxr-x 2 jj jj     5 kesä    2 10:50 resources
 -rw-rw-r-- 1 jj jj  1317 kesä    5 13:25 jrr_dapp.py
 -rw-rw-r-- 1 jj jj   839 kesä    6 08:46 wifi.py
 -rw-rw-r-- 1 jj jj 19849 kesä    6 10:03 screen_coro.py
--rw-rw-r-- 1 jj jj 42090 kesä    6 10:38 screen.py
 -rwxr-xr-x 1 jj jj 11238 kesä    6 11:32 jrr_streamer.sh
 -rw-rw-r-- 1 jj jj  2064 kesä    6 14:10 network_coro.py
 -rw-rw-r-- 1 jj jj 19083 kesä    9 08:59 messages.py
@@ -2942,335 +2941,37 @@ drwxrwxr-x 3 jj jj     4 kesä    9 13:35 cnf
 -rw-rw-r-- 1 jj jj  4142 kesä   10 09:59 jrr_converter.py
 -rw-rw-r-- 1 jj jj  4989 kesä   26 13:21 config.py
 -rw-rw-r-- 1 jj jj  1767 kesä   27 10:51 apu.py
--rw-rw-r-- 1 jj jj 15076 kesä   27 12:15 constants.py
--rw-rw-r-- 1 jj jj  8155 kesä   27 13:39 utils.py
--rw-rw-r-- 1 jj jj 11442 kesä   28 09:52 firmware.py
-drwxrwxr-x 2 jj jj    59 kesä   28 09:52 __pycache__
+-rw-rw-r-- 1 jj jj     6 heinä   2 10:11 VERSION
+-rw-rw-r-- 1 jj jj  1393 heinä   2 11:01 github.py
+-rw-rw-r-- 1 jj jj  8156 heinä   2 11:03 utils.py
+-rw-rw-r-- 1 jj jj 12350 heinä   2 12:26 firmware.py
+-rw-rw-r-- 1 jj jj 15110 heinä   2 14:21 constants.py
+-rw-rw-r-- 1 jj jj 42249 heinä   2 14:22 screen.py
+drwxrwxr-x 2 jj jj    60 heinä   2 14:22 __pycache__
 sending incremental file list
-created directory jrr/src.init
 ./
-.gitignore
-__init__.py
-apu.py
-channel_manager.py
-clock_coro.py
-config.py
-console.py
+VERSION
 constants.py
-convert.py
-demo_ili9486.py
-demo_keyboard.py
-dscreen.py
-epd2in13b_V3.py
-epd2in13b_V3_async.py
-epd2in13bc.py
-epd2in13bc_async.py
-epd2in13d.py
-epd2in13d_async.py
-epd2in7_V2_async.py
-epd2in7b_V2_async.py
-epdconfig_async.py
-exceptions.py
 firmware.py
-gpio_coro.py
-helpers.py
-jrr.py
-jrr_converter.py
-jrr_dapp.py
-jrr_radio.py
-jrr_streamer.sh
-jrr_streams.yaml
-kb.py
-kb_coro.py
-messages.py
-network_coro.py
-publish_subsrcibe.py
-pushbutton_coro.py
-reader_coro.py
+github.py
 screen.py
-screen_coro.py
-spriter.py
-stdin_coro.py
-streamer_coro.py
-test_image.py
-tft_ili9486.py
 utils.py
-wifi.py
+deleting Python_ILI9486/.lgd-nfy0
+deleting Python_ILI9486/__pycache__/config.cpython-311.pyc
+deleting Python_ILI9486/__pycache__/ILI9486.cpython-311.pyc
+deleting __pycache__/jrr_dapp.cpython-311.pyc
+deleting __pycache__/console.cpython-311.pyc
 Python_ILI9486/
-Python_ILI9486/.gitignore
-Python_ILI9486/ILI9486.py
-Python_ILI9486/LICENSE
-Python_ILI9486/README.md
-Python_ILI9486/config.py
-Python_ILI9486/image.py
-Python_ILI9486/requirements.txt
-Python_ILI9486/sample.png
-Python_ILI9486/.mypy_cache/
-Python_ILI9486/.mypy_cache/.gitignore
-Python_ILI9486/.mypy_cache/CACHEDIR.TAG
-Python_ILI9486/.mypy_cache/3.12/
-Python_ILI9486/.mypy_cache/3.12/@plugins_snapshot.json
-Python_ILI9486/.mypy_cache/3.12/_ast.data.json
-Python_ILI9486/.mypy_cache/3.12/_ast.meta.json
-Python_ILI9486/.mypy_cache/3.12/_codecs.data.json
-Python_ILI9486/.mypy_cache/3.12/_codecs.meta.json
-Python_ILI9486/.mypy_cache/3.12/_collections_abc.data.json
-Python_ILI9486/.mypy_cache/3.12/_collections_abc.meta.json
-Python_ILI9486/.mypy_cache/3.12/abc.data.json
-Python_ILI9486/.mypy_cache/3.12/abc.meta.json
-Python_ILI9486/.mypy_cache/3.12/builtins.data.json
-Python_ILI9486/.mypy_cache/3.12/builtins.meta.json
-Python_ILI9486/.mypy_cache/3.12/codecs.data.json
-Python_ILI9486/.mypy_cache/3.12/codecs.meta.json
-Python_ILI9486/.mypy_cache/3.12/contextlib.data.json
-Python_ILI9486/.mypy_cache/3.12/contextlib.meta.json
-Python_ILI9486/.mypy_cache/3.12/dataclasses.data.json
-Python_ILI9486/.mypy_cache/3.12/dataclasses.meta.json
-Python_ILI9486/.mypy_cache/3.12/enum.data.json
-Python_ILI9486/.mypy_cache/3.12/enum.meta.json
-Python_ILI9486/.mypy_cache/3.12/genericpath.data.json
-Python_ILI9486/.mypy_cache/3.12/genericpath.meta.json
-Python_ILI9486/.mypy_cache/3.12/io.data.json
-Python_ILI9486/.mypy_cache/3.12/io.meta.json
-Python_ILI9486/.mypy_cache/3.12/pathlib.data.json
-Python_ILI9486/.mypy_cache/3.12/pathlib.meta.json
-Python_ILI9486/.mypy_cache/3.12/posixpath.data.json
-Python_ILI9486/.mypy_cache/3.12/posixpath.meta.json
-Python_ILI9486/.mypy_cache/3.12/re.data.json
-Python_ILI9486/.mypy_cache/3.12/re.meta.json
-Python_ILI9486/.mypy_cache/3.12/resource.data.json
-Python_ILI9486/.mypy_cache/3.12/resource.meta.json
-Python_ILI9486/.mypy_cache/3.12/sre_compile.data.json
-Python_ILI9486/.mypy_cache/3.12/sre_compile.meta.json
-Python_ILI9486/.mypy_cache/3.12/sre_constants.data.json
-Python_ILI9486/.mypy_cache/3.12/sre_constants.meta.json
-Python_ILI9486/.mypy_cache/3.12/sre_parse.data.json
-Python_ILI9486/.mypy_cache/3.12/sre_parse.meta.json
-Python_ILI9486/.mypy_cache/3.12/subprocess.data.json
-Python_ILI9486/.mypy_cache/3.12/subprocess.meta.json
-Python_ILI9486/.mypy_cache/3.12/types.data.json
-Python_ILI9486/.mypy_cache/3.12/types.meta.json
-Python_ILI9486/.mypy_cache/3.12/typing.data.json
-Python_ILI9486/.mypy_cache/3.12/typing.meta.json
-Python_ILI9486/.mypy_cache/3.12/typing_extensions.data.json
-Python_ILI9486/.mypy_cache/3.12/typing_extensions.meta.json
-Python_ILI9486/.mypy_cache/3.12/_typeshed/
-Python_ILI9486/.mypy_cache/3.12/_typeshed/__init__.data.json
-Python_ILI9486/.mypy_cache/3.12/_typeshed/__init__.meta.json
-Python_ILI9486/.mypy_cache/3.12/_typeshed/importlib.data.json
-Python_ILI9486/.mypy_cache/3.12/_typeshed/importlib.meta.json
-Python_ILI9486/.mypy_cache/3.12/collections/
-Python_ILI9486/.mypy_cache/3.12/collections/__init__.data.json
-Python_ILI9486/.mypy_cache/3.12/collections/__init__.meta.json
-Python_ILI9486/.mypy_cache/3.12/collections/abc.data.json
-Python_ILI9486/.mypy_cache/3.12/collections/abc.meta.json
-Python_ILI9486/.mypy_cache/3.12/email/
-Python_ILI9486/.mypy_cache/3.12/email/__init__.data.json
-Python_ILI9486/.mypy_cache/3.12/email/__init__.meta.json
-Python_ILI9486/.mypy_cache/3.12/email/_policybase.data.json
-Python_ILI9486/.mypy_cache/3.12/email/_policybase.meta.json
-Python_ILI9486/.mypy_cache/3.12/email/charset.data.json
-Python_ILI9486/.mypy_cache/3.12/email/charset.meta.json
-Python_ILI9486/.mypy_cache/3.12/email/contentmanager.data.json
-Python_ILI9486/.mypy_cache/3.12/email/contentmanager.meta.json
-Python_ILI9486/.mypy_cache/3.12/email/errors.data.json
-Python_ILI9486/.mypy_cache/3.12/email/errors.meta.json
-Python_ILI9486/.mypy_cache/3.12/email/header.data.json
-Python_ILI9486/.mypy_cache/3.12/email/header.meta.json
-Python_ILI9486/.mypy_cache/3.12/email/message.data.json
-Python_ILI9486/.mypy_cache/3.12/email/message.meta.json
-Python_ILI9486/.mypy_cache/3.12/email/policy.data.json
-Python_ILI9486/.mypy_cache/3.12/email/policy.meta.json
-Python_ILI9486/.mypy_cache/3.12/importlib/
-Python_ILI9486/.mypy_cache/3.12/importlib/__init__.data.json
-Python_ILI9486/.mypy_cache/3.12/importlib/__init__.meta.json
-Python_ILI9486/.mypy_cache/3.12/importlib/_abc.data.json
-Python_ILI9486/.mypy_cache/3.12/importlib/_abc.meta.json
-Python_ILI9486/.mypy_cache/3.12/importlib/abc.data.json
-Python_ILI9486/.mypy_cache/3.12/importlib/abc.meta.json
-Python_ILI9486/.mypy_cache/3.12/importlib/machinery.data.json
-Python_ILI9486/.mypy_cache/3.12/importlib/machinery.meta.json
-Python_ILI9486/.mypy_cache/3.12/importlib/readers.data.json
-Python_ILI9486/.mypy_cache/3.12/importlib/readers.meta.json
-Python_ILI9486/.mypy_cache/3.12/importlib/metadata/
-Python_ILI9486/.mypy_cache/3.12/importlib/metadata/__init__.data.json
-Python_ILI9486/.mypy_cache/3.12/importlib/metadata/__init__.meta.json
-Python_ILI9486/.mypy_cache/3.12/importlib/metadata/_meta.data.json
-Python_ILI9486/.mypy_cache/3.12/importlib/metadata/_meta.meta.json
-Python_ILI9486/.mypy_cache/3.12/importlib/resources/
-Python_ILI9486/.mypy_cache/3.12/importlib/resources/__init__.data.json
-Python_ILI9486/.mypy_cache/3.12/importlib/resources/__init__.meta.json
-Python_ILI9486/.mypy_cache/3.12/importlib/resources/_common.data.json
-Python_ILI9486/.mypy_cache/3.12/importlib/resources/_common.meta.json
-Python_ILI9486/.mypy_cache/3.12/importlib/resources/abc.data.json
-Python_ILI9486/.mypy_cache/3.12/importlib/resources/abc.meta.json
-Python_ILI9486/.mypy_cache/3.12/os/
-Python_ILI9486/.mypy_cache/3.12/os/__init__.data.json
-Python_ILI9486/.mypy_cache/3.12/os/__init__.meta.json
-Python_ILI9486/.mypy_cache/3.12/os/path.data.json
-Python_ILI9486/.mypy_cache/3.12/os/path.meta.json
-Python_ILI9486/.mypy_cache/3.12/src/
-Python_ILI9486/.mypy_cache/3.12/src/Python_ILI9486.data.json
-Python_ILI9486/.mypy_cache/3.12/src/Python_ILI9486.meta.json
-Python_ILI9486/.mypy_cache/3.12/src/__init__.data.json
-Python_ILI9486/.mypy_cache/3.12/src/__init__.meta.json
-Python_ILI9486/.mypy_cache/3.12/src/Python_ILI9486/
-Python_ILI9486/.mypy_cache/3.12/src/Python_ILI9486/config.data.json
-Python_ILI9486/.mypy_cache/3.12/src/Python_ILI9486/config.meta.json
-Python_ILI9486/.mypy_cache/3.12/sys/
-Python_ILI9486/.mypy_cache/3.12/sys/__init__.data.json
-Python_ILI9486/.mypy_cache/3.12/sys/__init__.meta.json
-Python_ILI9486/.mypy_cache/3.12/sys/_monitoring.data.json
-Python_ILI9486/.mypy_cache/3.12/sys/_monitoring.meta.json
-Python_ILI9486/.mypy_cache/3.12/zipfile/
-Python_ILI9486/.mypy_cache/3.12/zipfile/__init__.data.json
-Python_ILI9486/.mypy_cache/3.12/zipfile/__init__.meta.json
-Python_ILI9486/.mypy_cache/3.12/zipfile/_path.data.json
-Python_ILI9486/.mypy_cache/3.12/zipfile/_path.meta.json
 Python_ILI9486/__pycache__/
-Python_ILI9486/__pycache__/ILI9486.cpython-312.pyc
 __pycache__/
-__pycache__/__init__.cpython-311.pyc
-__pycache__/__init__.cpython-312.pyc
-__pycache__/__init__.cpython-39.pyc
-__pycache__/channel_manager.cpython-311.pyc
-__pycache__/clock_coro.cpython-311.pyc
-__pycache__/clock_coro.cpython-312.pyc
-__pycache__/config.cpython-311.pyc
-__pycache__/config.cpython-312.pyc
 __pycache__/constants.cpython-311.pyc
-__pycache__/constants.cpython-312.pyc
-__pycache__/debugger.cpython-312.pyc
-__pycache__/demo_ili9486.cpython-311.pyc
-__pycache__/dscreen.cpython-311.pyc
-__pycache__/exceptions.cpython-311.pyc
-__pycache__/exceptions.cpython-312.pyc
 __pycache__/firmware.cpython-311.pyc
-__pycache__/flycheck_test.cpython-39-pytest-8.3.4.pyc
-__pycache__/gpio_coro.cpython-311.pyc
-__pycache__/gpio_coro.cpython-312.pyc
-__pycache__/helpers.cpython-311.pyc
-__pycache__/helpers.cpython-312.pyc
-__pycache__/jrr.cpython-311.pyc
-__pycache__/jrr.cpython-312.pyc
-__pycache__/jrr_converter.cpython-311.pyc
-__pycache__/jrr_converter.cpython-312.pyc
-__pycache__/jrr_radio.cpython-311.pyc
-__pycache__/jrr_radio.cpython-312.pyc
-__pycache__/kb.cpython-311.pyc
-__pycache__/kb_coro.cpython-311.pyc
-__pycache__/messages.cpython-311.pyc
-__pycache__/messages.cpython-312.pyc
-__pycache__/network_coro.cpython-311.pyc
-__pycache__/network_coro.cpython-312.pyc
-__pycache__/publish_subsrcibe.cpython-311.pyc
-__pycache__/publish_subsrcibe.cpython-312.pyc
-__pycache__/reader_coro.cpython-311.pyc
-__pycache__/reader_coro.cpython-312.pyc
+__pycache__/github.cpython-311.pyc
 __pycache__/screen.cpython-311.pyc
-__pycache__/screen.cpython-312.pyc
-__pycache__/screen_coro.cpython-311.pyc
-__pycache__/screen_coro.cpython-312.pyc
-__pycache__/stdin_coro.cpython-311.pyc
-__pycache__/stdin_coro.cpython-312.pyc
-__pycache__/streamer_coro.cpython-311.pyc
-__pycache__/streamer_coro.cpython-312.pyc
-__pycache__/test_inotify1.cpython-39-pytest-8.3.4.pyc
-__pycache__/test_pubsub1.cpython-39-pytest-8.3.4.pyc
-__pycache__/test_pubsub2.cpython-39-pytest-8.3.4.pyc
-__pycache__/test_pubsub3.cpython-39-pytest-8.3.4.pyc
-__pycache__/test_pubsub4.cpython-39-pytest-8.3.4.pyc
-__pycache__/test_stdin1.cpython-39-pytest-8.3.4.pyc
-__pycache__/test_stdin2.cpython-39-pytest-8.3.4.pyc
-__pycache__/tft_ili9486.cpython-311.pyc
-__pycache__/tft_ili9486.cpython-312.pyc
 __pycache__/utils.cpython-311.pyc
-__pycache__/utils.cpython-312.pyc
-__pycache__/wifi.cpython-311.pyc
-cnf/
-cnf/jrr_streams.yaml
-cnf/icons/
-cnf/icons/JÄRVIRADIO.png
-cnf/icons/YLE-1.png
-cnf/icons/YLE-SUOMI.png
-cnf/icons/classic.png
-cnf/icons/jrr-help.png
-cnf/icons/jrr-stop.png
-cnf/icons/jrr.png
-cnf/icons/järviradio.png
-cnf/icons/järviratio.png
-cnf/icons/radio-suomi.png
-cnf/icons/yle-1.jpeg
-cnf/icons/yle-puhe.png
-cnf/icons/yle-radio-1.png
-debug/
-debug/debugger.py
-debug/exit.dbg
-debug/screen_bt1.dbg
-debug/screen_bt2.dbg
-debug/screen_case1.dbg
-debug/screen_clear.dbg
-debug/screen_clock.dbg
-debug/screen_close.dbg
-debug/screen_full.dbg
-debug/screen_icon.dbg
-debug/screen_info.dbg
-debug/screen_init.dbg
-debug/screen_partial.dbg
-debug/screen_reset.dbg
-debug/screen_rondo.dbg
-debug/screen_sleep.dbg
-debug/screen_sprite.dbg
-debug/screen_sprite2.dbg
-debug/screen_test.dbg
-debug/screen_tick.dbg
-debug/screen_yle1.dbg
-debug/shutdown.dbg
-debug/stream_start.dbg
-debug/stream_status.dbg
-debug/stream_stop.dbg
-debug/__pycache__/
-debug/__pycache__/debugger.cpython-311.pyc
-debug/__pycache__/debugger.cpython-312.pyc
-examples/
-examples/epd_2in13b_V3_test.py
-examples/epd_2in13bc_test.py
-examples/epd_2in13d_test.py
-examples/epd_2in7_V2_test.py
-examples/epd_2in7_V2_test_jj1.py
-lib/
-lib/waveshare_epd/
-lib/waveshare_epd/epd2in13d.py
-lib/waveshare_epd/epd2in7_V2.py
-lib/waveshare_epd/epd2in7b_V2.py
-lib/waveshare_epd/epdconfig.py
-pic/
-pic/100x100.bmp
-pic/2in13-v2.bmp
-pic/2in13.bmp
-pic/2in13_1.bmp
-pic/2in13_2.bmp
-pic/2in13_b1.bmp
-pic/2in13_y1.bmp
-pic/2in13b_V4b.bmp
-pic/2in13b_V4r.bmp
-pic/2in13bc-b.bmp
-pic/2in13bc-ry.bmp
-pic/2in13d.bmp
-pic/2in13d_1.bmp
-pic/2in13g.bmp
-pic/2in7.bmp
-pic/2in7_Scale.bmp
-pic/2in7b-b.bmp
-pic/2in7b-r.bmp
-pic/Font.ttc
-resources/
-resources/error-100.png
-resources/icon-sprite.png
-resources/question-100.png
 
-sent 14.005.320 bytes  received 5.828 bytes  3.113.588,44 bytes/sec
-total size is 13.975.003  speedup is 1,00
+sent 64.666 bytes  received 1.968 bytes  44.422,67 bytes/sec
+total size is 13.981.546  speedup is 209,83
 #+end_example
 
 ** Create ~.venv~ with python installs
@@ -3934,15 +3635,15 @@ RestartSec=1
 User=pi
 Group=pi
 # RemainAfterExit=yes
-WorkingDirectory=/home/pi
+WorkingDirectory=/home/pi/jrr
 
-ExecStart=/home/pi/bin/jrr.sh daemon
+ExecStart=/home/pi/jrr/bin/jrr.sh daemon
 
-ExecStop=/home/pi/bin/jrr.sh daemon-stop
+ExecStop=/home/pi/jrr/bin/jrr.sh daemon-stop
 
-ExecReload=/home/pi/bin/jrr.sh daemon-kill
+ExecReload=/home/pi/jrr/bin/jrr.sh daemon-kill
 ExecReload=sleep 1
-ExecReload=/home/pi/bin/jrr.sh daemon
+ExecReload=/home/pi/jrr/bin/jrr.sh daemon
 
 TimeoutStopSec=infinity
 StandardOutput=journal
@@ -4011,13 +3712,13 @@ Group=pi
 # RemainAfterExit=yes
 WorkingDirectory=/home/pi
 
-ExecStart=/home/pi/bin/jrr.sh daemon
+ExecStart=/home/pi/jrr/bin/jrr.sh daemon
 
-ExecStop=/home/pi/bin/jrr.sh daemon-stop
+ExecStop=/home/pi/jrr/bin/jrr.sh daemon-stop
 
-ExecReload=/home/pi/bin/jrr.sh daemon-kill
+ExecReload=/home/pi/jrr/bin/jrr.sh daemon-kill
 ExecReload=sleep 1
-ExecReload=/home/pi/bin/jrr.sh daemon
+ExecReload=/home/pi/jrr/bin/jrr.sh daemon
 
 TimeoutStopSec=infinity
 StandardOutput=journal
@@ -4119,7 +3820,7 @@ Mar 12 19:06:54 jrr5 systemd[1]: Failed to start jrr.service - Järvidio service
 Issue command in terminal with session to ~pi@jrr5.local~
 
 #+begin_example
-killall ffmpeg ; .venv/bin/python ./jrr.py -v -v  radio |   tee tmp/apu.log
+killall ffmpeg ; .venv/bin/python ./jrr.py -v -v  radio |   tee ../tmp/apu.log
 #+end_example
 
 or launch xterm session with the command above
@@ -6715,4 +6416,4 @@ sine-gen.sh alsa-devices
 # reftex-default-bibliography: ("./raspberry.bib")
 
 
-Modified:2025-07-01.16:08; # time-stamp
+Modified:2025-07-02.14:24; # time-stamp

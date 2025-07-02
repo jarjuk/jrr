@@ -351,7 +351,13 @@ async def _screen_action(msg: Any, hub: Hub):
             mode=update_mode,
         )
 
-        # Sprite icongs
+        await screen_driver.add_or_update(
+            name=COROS.Screen.ENTRY_VERSION,
+            entry_props={"text": msg_clock.jrr_version},
+            mode=update_mode,
+        )
+
+        # Sprite icons
         props = {
             "imagepath": APP_CONTEXT.ICON_SPRITE_FILE_PATH,
             "network": msg_clock.network_status,

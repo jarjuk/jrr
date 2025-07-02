@@ -181,7 +181,7 @@ def _copy_http(src_url: str, dest_path: str) -> str:
     dest_dir = os.path.dirname(dest_path)
     tempfile = os.path.join(dest_dir, f"_{filename}")
 
-    with open(tempfile, "w") as fhandle:
+    with open(tempfile, "wb") as fhandle:
         with urllib.request.urlopen(src_url) as response:
             fhandle.write(response.read())
 
