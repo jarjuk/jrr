@@ -1576,6 +1576,9 @@ def ctrl_menu_activate_with_confirm(
                 imagepath=imagepath,
             ))
 
+        # Reboot on activation
+        ctrl_act_reboot(hub=hub)
+
     def _do_resume(hub: Hub):
         """Continue in lambda passed in parameter 'ctrl_menu_resume'."""
         # ctrl_menu_browse_channels(hub=hub, step_resume=step_resume)

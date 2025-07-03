@@ -50,9 +50,10 @@ class FirmwareVersion:
         return firmware_version
 
     @classmethod
-    def create_local_version(cls, file_path: str) -> Self:
+    def create_local_version(cls, file_path: str, version_tag: str | None = None) -> Self:
         """Factory method for firmware in local repo"""
-        version_tag = FirmwareVersion.url2version_tag(file_path)
+        if version_tag is None:
+            version_tag = FirmwareVersion.url2version_tag(file_path)
         firmware_version = cls(version=version_tag, local_url=file_path)
         return firmware_version
 
@@ -78,7 +79,7 @@ class FirmwareVersion:
     @property
     def semantic_version(self) -> Tuple[int, int, int]:
         """Semantic versioning policy triple for 'self.version' """
-        pattern = r"[^0-9]*(?P<major>[0-9]+)\.(?P<minor>[0-9]+)\.(?P<patch>\w+)"
+        pattern = r"[^0-9]*(?P<major>[0-9]+)\.(?P<minor>[0-9]+)\.(?P<patch>[\w-]+)"
         matchi = re.search(pattern, self.version)
         if not matchi:
             return None
@@ -270,7 +271,8 @@ def firmware_current() -> FirmwareVersion | None:
     if not matchi:
         return None
 
-    return FirmwareVersion.create_local_version(dir_path)
+    return FirmwareVersion.create_local_version(
+        dir_path, version_tag=matchi.group(0))
 
 
 def firmware_repo_download(firmware_version: FirmwareVersion):
@@ -318,13 +320,16 @@ def firmware_available_versions() -> List[FirmwareVersion]:
     """
     repo_index = firmware_repo_index()
     logger.info("firmware_available_versions: repo_index='%s'", repo_index)
+    logger.debug("firmware_available_versions: repo_index.semancic='%s'",
+                 [fw.semantic_version for fw in repo_index])
     local_index = firmware_local_index()
     logger.info("firmware_available_versions: local_index='%s'", local_index)
 
     # maybe None (if no FIRMWARE_CURRENT_LINK exist)
     current_firmware = firmware_current()
-    logger.info("firmware_available_versions: current_firmware='%s'",
-                current_firmware)
+    logger.info("firmware_available_versions: current_firmware='%s' semantic: %s",
+                current_firmware,
+                None if current_firmware is None else current_firmware.semantic_version)
 
     def choose_applicable(remotes: List[FirmwareVersion],
                           downloaded: List[FirmwareVersion],

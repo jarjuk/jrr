@@ -220,7 +220,7 @@ class APP_CONTEXT:
     # Url to download firmware versions
     # DEFAULT_FIRMWARE_REPO_URL = f"file://{Path.home()}/jrr"
     DEFAULT_FIRMWARE_REPO_URL = "https://github.com/jarjuk/jrr"
-    FIRMWARE_TAG_PATTERN = r'jrr-(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\w+)'
+    FIRMWARE_TAG_PATTERN = r'jrr-(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>[\w-]+)'
     DEBUG_DIR = Path.home() / "src/debug/"
     DEBUG_SUFFIX = "dbg"
     APP_RESOURCES = os.path.join(os.path.dirname(__file__), "resources")

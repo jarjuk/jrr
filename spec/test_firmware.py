@@ -160,6 +160,16 @@ def test_class_semantic_version():
     assert fw1.version == tag1
     assert fw1.semantic_version == [0, 1, "2"]
 
+    tag1 = "0.0.4-alpha1"
+    fw1 = firmware.FirmwareVersion(version=tag1)
+    assert fw1.version == tag1
+    assert fw1.semantic_version == [0, 0, "4-alpha1"]
+
+    tag1 = "0.0.4_alpha2"
+    fw1 = firmware.FirmwareVersion(version=tag1)
+    assert fw1.version == tag1
+    assert fw1.semantic_version == [0, 0, "4_alpha2"]
+
     tag1 = "jr2"
     fw1 = firmware.FirmwareVersion(version=tag1)
     assert fw1.version == tag1
