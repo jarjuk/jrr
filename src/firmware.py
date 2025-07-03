@@ -22,7 +22,7 @@ from urllib.parse import urlparse
 from src.config import app_config
 from src.constants import APP_CONTEXT
 from src.utils import copy_file_or_directory
-from src  import github
+from src import github
 
 import logging
 logger = logging.getLogger(__name__)
@@ -202,7 +202,7 @@ def _github_tag_index(owner: str, repo: str) -> List[FirmwareVersion]:
     firmwares = [FirmwareVersion.create_repo_version(
         version_tag=tag,
         repo_url=f"https://github.com/{owner}/{repo}/archive/refs/tags/{tag}.zip")
-                 for tag in tags]
+        for tag in tags]
     return firmwares
 
 
@@ -210,7 +210,8 @@ def firmware_repo_index() -> List[FirmwareVersion]:
     """Return list of firmware versions in 'firmware repo'."""
     repo_url = app_config.firmware_repo_url
     parsed = urlparse(repo_url)
-    logger.debug("firmware_repo_index: repo_url='%s' -> parsed=%s", repo_url, parsed)
+    logger.debug("firmware_repo_index: repo_url='%s' -> parsed=%s",
+                 repo_url, parsed)
 
     if parsed.scheme == "file" or parsed.scheme == "":
         return _local_zip_index(repo_url=repo_url)
@@ -251,6 +252,9 @@ def firmware_local_index() -> List[FirmwareVersion]:
                  for dirent in local_repo_glob
                  if os.path.isdir(dirent) and
                  re.search(APP_CONTEXT.FIRMWARE_TAG_PATTERN, dirent)]
+
+    logger.info("firmware_local_index: firmwares='%s', FIRMWARE_TAG_PATTERN=%s",
+                firmwares, APP_CONTEXT.FIRMWARE_TAG_PATTERN)
 
     return firmwares
 
@@ -313,10 +317,14 @@ def firmware_available_versions() -> List[FirmwareVersion]:
 
     """
     repo_index = firmware_repo_index()
+    logger.info("firmware_available_versions: repo_index='%s'", repo_index)
     local_index = firmware_local_index()
+    logger.info("firmware_available_versions: local_index='%s'", local_index)
 
     # maybe None (if no FIRMWARE_CURRENT_LINK exist)
     current_firmware = firmware_current()
+    logger.info("firmware_available_versions: current_firmware='%s'",
+                current_firmware)
 
     def choose_applicable(remotes: List[FirmwareVersion],
                           downloaded: List[FirmwareVersion],
@@ -332,6 +340,7 @@ def firmware_available_versions() -> List[FirmwareVersion]:
         remotes=repo_index,
         downloaded=local_index,
         current=current_firmware)
+    logger.info("firmware_available_versions: available='%s'", available)
 
     return sorted(available)
 

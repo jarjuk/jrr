@@ -231,6 +231,7 @@ class APP_CONTEXT:
 
     class STREAMER_COMMANDS:
         WIFI_SETUP = "wifi-setup"              # wifi SSID PASSI
+        FIRMWARE_ACTIVATE = "firmware"         # download zip, unpack, make pending
 
     class SCREEN:
         MODE_FULL = "full"                 # screen update full

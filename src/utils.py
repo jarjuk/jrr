@@ -235,6 +235,19 @@ def set_wifi_password(ssid: str, password: str):
         logger.error("set_wifi_password: error in running='%s'", os_command)
 
 
+def download_extract_pending(url: str):
+    """Download from firmware from remote repo url and make it pending.
+
+    """
+    script = APP_CONTEXT.STREAMER_SCRIPT
+    script_command = APP_CONTEXT.STREAMER_COMMANDS.FIRMWARE_ACTIVATE
+    os_command = f"{script} {script_command} {url}"
+    status = _run_os_command(os_command)
+    if not status:
+        logger.error("download_extract_pending: error in running='%s'",
+                     os_command)
+
+
 # ------------------------------------------------------------------
 # send dmesg
 

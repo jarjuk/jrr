@@ -115,7 +115,7 @@ activate_pendig() {
         rm -f $PREV_LINK
         mv $CURRENT_LINK $PREV_LINK
         mv $PENDING_LINK $CURRENT_LINK
-        log 2 "activate_pending: post $(ls -ltr $CURRENT_LINK $PENDING_LINK $PREV_LINK)"
+        log 2 "activate_pending: post $(ls -ltr $CURRENT_LINK $PREV_LINK)"
     fi 
 }
 

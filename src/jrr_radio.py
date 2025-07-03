@@ -26,7 +26,7 @@ from .channel_manager import (read_file, StreamConfig,
                               channel_activation_list, channel_activate, channel_activation_index,
                               channel_icon_image)
 from .constants import (DSCREEN, TOPICS, COROS, RPI, APP_CONTEXT,)
-from .utils import set_wifi_password, current_IP, current_ssid
+from .utils import set_wifi_password, current_IP, current_ssid, download_extract_pending
 from .gpio_coro import (
     gpio_init,
     init_GPIO_buttons, init_GPIO_shutdown, GPIO_button_coro, gpio_close)
@@ -887,7 +887,7 @@ def ctrl_menu_wifi_ssid_setup(
             ssid = overlay_msg.fieldStrValue(DSCREEN.WIFI_OVERLAY.SSID)
             password = overlay_msg.fieldStrValue(DSCREEN.WIFI_OVERLAY.PASSWORD)
             if ssid is not None and password is not None:
-                # mark
+                # call script to set ssid password
                 set_wifi_password(ssid=ssid, password=password)
             else:
                 logging.log(
@@ -1085,7 +1085,7 @@ def ctrl_menu_firmware_setup(
             ],
             APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _enter_version_setup,
             APP_CONTEXT.MENU.ACTS.BTN1_LONG: partial(
-                ctrl_menu_firmware_with_confirm,
+                ctrl_menu_firmware_activate,
                 firmware=firmware_versions[i],
                 ctrl_menu_resume=ctrl_menu_resume,
                 step_resume=caller_menu_step
@@ -1619,13 +1619,13 @@ def ctrl_menu_activate_with_confirm(
     f_config_enter(hub, menu=menu, step_resume=0)
 
 
-def ctrl_menu_firmware_with_confirm(
+def ctrl_menu_firmware_activate(
         hub: Hub,
         firmware: FirmwareVersion,
         ctrl_menu_resume: Callable,
         step_resume: int,
 ):
-    """Ask confirmation to activate 'channel'.
+    """Ask confirmation to activate 'firmaware'.
 
     :ctrl_menu_resume: lambda of controller where to resume back to.
 
@@ -1658,6 +1658,12 @@ def ctrl_menu_firmware_with_confirm(
         menu.
 
         """
+        if new_firmware.repo_url is not None:
+            download_extract_pending(url=new_firmware.repo_url)
+        else:
+            logger.error("_do_activate_firmware: new_firmware='%s' - repo_url None",
+                         new_firmware)
+
         _do_resume(hub)
 
     # See f_config_enter for documentation

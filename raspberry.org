@@ -2889,7 +2889,7 @@ echo "var=$var"
 
 #+RESULTS:
 #+begin_example
-Rsync SDIR=src/ from host=eero to jrr5.local:jrr/src.init/ on ke 2.7.2025 14.23.22 +0300
+Rsync SDIR=src/ from host=eero to jrr5.local:jrr/src.init/ on to 3.7.2025 13.33.17 +0300
 rsync -a --delete --update --verbose --checksum --recursive src/ jrr5:jrr/src.init/
 total 364
 -rw-rw-r-- 1 jj jj  6032 joulu   9  2024 epd2in13b_V3.py
@@ -2929,50 +2929,46 @@ drwxrwxr-x 4 jj jj    12 touko  22 10:55 Python_ILI9486
 -rw-rw-r-- 1 jj jj  4910 touko  28 09:08 jrr.py
 -rw-rw-r-- 1 jj jj  9210 touko  30 10:00 kb.py
 drwxrwxr-x 2 jj jj     5 kesä    2 10:50 resources
--rw-rw-r-- 1 jj jj  1317 kesä    5 13:25 jrr_dapp.py
 -rw-rw-r-- 1 jj jj   839 kesä    6 08:46 wifi.py
--rw-rw-r-- 1 jj jj 19849 kesä    6 10:03 screen_coro.py
--rwxr-xr-x 1 jj jj 11238 kesä    6 11:32 jrr_streamer.sh
 -rw-rw-r-- 1 jj jj  2064 kesä    6 14:10 network_coro.py
--rw-rw-r-- 1 jj jj 19083 kesä    9 08:59 messages.py
 -rw-rw-r-- 1 jj jj 10151 kesä    9 09:55 channel_manager.py
--rw-rw-r-- 1 jj jj 94442 kesä    9 13:28 jrr_radio.py
 drwxrwxr-x 3 jj jj     4 kesä    9 13:35 cnf
 -rw-rw-r-- 1 jj jj  4142 kesä   10 09:59 jrr_converter.py
--rw-rw-r-- 1 jj jj  4989 kesä   26 13:21 config.py
 -rw-rw-r-- 1 jj jj  1767 kesä   27 10:51 apu.py
--rw-rw-r-- 1 jj jj     6 heinä   2 10:11 VERSION
 -rw-rw-r-- 1 jj jj  1393 heinä   2 11:01 github.py
 -rw-rw-r-- 1 jj jj  8156 heinä   2 11:03 utils.py
--rw-rw-r-- 1 jj jj 12350 heinä   2 12:26 firmware.py
--rw-rw-r-- 1 jj jj 15110 heinä   2 14:21 constants.py
--rw-rw-r-- 1 jj jj 42249 heinä   2 14:22 screen.py
-drwxrwxr-x 2 jj jj    60 heinä   2 14:22 __pycache__
+-rw-rw-r-- 1 jj jj 19170 heinä   2 14:38 messages.py
+-rw-rw-r-- 1 jj jj 20034 heinä   2 14:46 screen_coro.py
+-rw-rw-r-- 1 jj jj 12436 heinä   2 15:54 firmware.py
+-rw-rw-r-- 1 jj jj  4997 heinä   2 15:59 config.py
+-rw-rw-r-- 1 jj jj  1578 heinä   3 08:52 jrr_dapp.py
+-rw-rw-r-- 1 jj jj 15666 heinä   3 09:03 constants.py
+-rw-rw-r-- 1 jj jj 43070 heinä   3 09:07 screen.py
+drwxrwxr-x 2 jj jj    60 heinä   3 09:07 __pycache__
+-rw-rw-r-- 1 jj jj    10 heinä   3 11:55 VERSION
+-rwxr-xr-x 1 jj jj 14396 heinä   3 12:29 jrr_streamer.sh
+-rw-rw-r-- 1 jj jj 96556 heinä   3 13:31 jrr_radio.py
 sending incremental file list
-./
-VERSION
-constants.py
-firmware.py
-github.py
-screen.py
-utils.py
-deleting Python_ILI9486/.lgd-nfy0
-deleting Python_ILI9486/__pycache__/config.cpython-311.pyc
-deleting Python_ILI9486/__pycache__/ILI9486.cpython-311.pyc
-deleting __pycache__/jrr_dapp.cpython-311.pyc
-deleting __pycache__/console.cpython-311.pyc
-Python_ILI9486/
-Python_ILI9486/__pycache__/
-__pycache__/
-__pycache__/constants.cpython-311.pyc
-__pycache__/firmware.cpython-311.pyc
-__pycache__/github.cpython-311.pyc
-__pycache__/screen.cpython-311.pyc
-__pycache__/utils.cpython-311.pyc
 
-sent 64.666 bytes  received 1.968 bytes  44.422,67 bytes/sec
-total size is 13.981.546  speedup is 209,83
+sent 14.743 bytes  received 37 bytes  9.853,33 bytes/sec
+total size is 13.989.900  speedup is 946,54
 #+end_example
+
+Create symlink ~src~ pointing to ~src.init~ show ~src/VERSION~
+#+name: src-init
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+cd jrr
+rm -f src
+ln -s src.init src
+# ls -latr
+cat src/VERSION
+#+END_SRC
+
+#+RESULTS: src-init
+: Running in /home/pi host 'jrr5' on Thu Jul  3 13:37:17 EEST 2025
+: 0.0.3-beta1
+
 
 ** Create ~.venv~ with python installs
 :PROPERTIES:
@@ -6416,4 +6412,4 @@ sine-gen.sh alsa-devices
 # reftex-default-bibliography: ("./raspberry.bib")
 
 
-Modified:2025-07-02.14:24; # time-stamp
+Modified:2025-07-03.13:37; # time-stamp
