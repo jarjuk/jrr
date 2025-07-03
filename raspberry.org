@@ -2966,8 +2966,17 @@ cat src/VERSION
 #+END_SRC
 
 #+RESULTS: src-init
-: Running in /home/pi host 'jrr5' on Thu Jul  3 13:37:17 EEST 2025
-: 0.0.3-beta1
+: Running in /home/pi host 'jrr5' on Thu Jul  3 14:46:26 EEST 2025
+: 0.0.3-beta2
+
+#+BEGIN_SRC bash :eval no-export :results output :dir .
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+cat src/VERSION
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/jj/work/jrr host 'eero' on to 3.7.2025 14.46.51 +0300
+: 0.0.4-alpha1
 
 
 ** Create ~.venv~ with python installs
@@ -6412,4 +6421,4 @@ sine-gen.sh alsa-devices
 # reftex-default-bibliography: ("./raspberry.bib")
 
 
-Modified:2025-07-03.13:37; # time-stamp
+Modified:2025-07-03.14:46; # time-stamp
