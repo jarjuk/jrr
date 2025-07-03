@@ -2,5 +2,6 @@
 
 
 0.0.4
-- Fix: kanavien akviointi ei toiminut
+- DONE: firmaware asennus - pyydä kuittaus uudelleenkäynnistykselle
+- FIX: kanavien akviointi ei toiminut
 

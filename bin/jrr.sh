@@ -253,6 +253,7 @@ do
 	        ;;
         
         daemon)
+            activate_pending
 	        kill_streamer
             do_kill
             log 1 "User '$(whoami)' launching järviradioradio daemon"

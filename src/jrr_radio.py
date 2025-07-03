@@ -1063,7 +1063,7 @@ def ctrl_menu_firmware_setup(
         logger.debug("_enter_firmware_setup: menu_name='%s'", menu_name)
         controller_state.config_screens.activateScreen(
             DSCREEN.SCREEN_OVERLAYS.FIRMWARE,
-            init_values=[(DSCREEN.FIRMWARE_OVERLAY.TITLE, "Ohjelmistoversio"),
+            init_values=[(DSCREEN.FIRMWARE_OVERLAY.TITLE, "Päivitetäänkö"),
                          (DSCREEN.FIRMWARE_OVERLAY.VERSION_TAG, menu_name),
                          ])
         overlay_msg = controller_state.config_screens.message()
@@ -1576,7 +1576,6 @@ def ctrl_menu_activate_with_confirm(
                 imagepath=imagepath,
             ))
 
-
     def _do_resume(hub: Hub):
         """Continue in lambda passed in parameter 'ctrl_menu_resume'."""
         # ctrl_menu_browse_channels(hub=hub, step_resume=step_resume)
@@ -1645,12 +1644,9 @@ def ctrl_menu_firmware_activate(
         hub.publish(
             topic=TOPICS.SCREEN,
             message=message_question(
-                title=APP_CONTEXT.MENU.MAY_ACTIVATE,
+                title=APP_CONTEXT.MENU.MAY_UPDATE,
                 question=f"Versio '{firmware.version}'",
             ))
-
-        # Reboot on activation
-        ctrl_act_reboot(hub=hub)
 
     def _do_resume(hub: Hub):
         """Continue in lambda passed in parameter 'ctrl_menu_resume'."""
@@ -1668,7 +1664,14 @@ def ctrl_menu_firmware_activate(
             logger.error("_do_activate_firmware: new_firmware='%s' - repo_url None",
                          new_firmware)
 
-        _do_resume(hub)
+        # Reboot on activation
+        ctrl_menu_reboot_confirm(
+            hub=hub,
+            message="Uudelleenkäynnistys",
+            instructions="OK hyväksy käynnistys",
+            ctrl_menu_resume=ctrl_menu_resume,
+            step_resume=step_resume,
+        )
 
     # See f_config_enter for documentation
 
@@ -1676,7 +1679,7 @@ def ctrl_menu_firmware_activate(
         "activate": {
             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
                 APP_CONTEXT.MENU.UN_USED,           # bt1-short
-                APP_CONTEXT.MENU.ACTIVATE_CONFIRM,  # bt1-long
+                APP_CONTEXT.MENU.OK,                # bt1-long
                 APP_CONTEXT.MENU.UN_USED,           # bt2-short
                 APP_CONTEXT.MENU.CONFIG_RETURN,     # bt2-long
             ],
@@ -1852,6 +1855,63 @@ def ctrl_menu_setup_channel_origin(hub: Hub, step_resume: int | None = None):
 # Callable sub-menus
 
 
+def ctrl_menu_reboot_confirm(
+        hub: Hub,
+        message: str,
+        ctrl_menu_resume: Callable,
+        step_resume: int,
+        instructions: str | None = None,
+):
+    """Report error and wait for any button-press.
+
+    :message: Message on screen.
+
+    :instructions: default text 'Paina jotain näppäintä jatkaaksesi'.
+
+    """
+    logger.debug("ctrl_menu_reboot_confirm - starting, error=%s", message)
+    if instructions is None:
+        instructions = "Paina jotain näppäintä jatkaaksesi"
+
+    def _do_resume(hub: Hub):
+        """Continue in lambda passed in parameter 'ctrl_menu_resume'."""
+        # ctrl_menu_browse_channels(hub=hub, step_resume=step_resume)
+        ctrl_menu_resume(hub, step_resume=step_resume)
+
+    def _my_entry(hub: Hub, menu_name: str):
+        hub.publish(
+            topic=TOPICS.SCREEN,
+            message=message_error(
+                error=message,
+                instructions=instructions))
+
+    def _do_restart(hub: Hub):
+        """Continue in lambda passed in parameter 'ctrl_menu_resume'."""
+        # ctrl_menu_browse_channels(hub=hub, step_resume=step_resume)
+        ctrl_act_reboot(hub=hub)
+        _do_resume(hub=hub)
+
+    menu = {
+        "menu-entry": {
+            APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
+                APP_CONTEXT.MENU.UN_USED,               # bt1-short
+                APP_CONTEXT.MENU.OK,                    # bt1-long
+                APP_CONTEXT.MENU.UN_USED,               # bt2-short
+                APP_CONTEXT.MENU.UN_USED,               # bt2-long
+            ],
+            APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _my_entry,
+            APP_CONTEXT.MENU.ACTS.KEYBOARD: ctrl_act_null,
+            APP_CONTEXT.MENU.ACTS.BTN1_SHORT: ctrl_act_null,
+            APP_CONTEXT.MENU.ACTS.BTN1_LONG: _do_restart,
+            APP_CONTEXT.MENU.ACTS.BTN2_SHORT: ctrl_act_null,
+            APP_CONTEXT.MENU.ACTS.BTN2_LONG: ctrl_act_null,
+        }  # kb-nok MENU_INDEX_KB_NOK
+
+    }  # menu
+
+    f_config_enter(hub, menu=menu, step_resume=0)
+
+
 def ctrl_menu_error_confirm(
         hub: Hub,
         error: str,
@@ -1961,7 +2021,6 @@ def ctrl_menu_chdelete_with_confirm(
         step_resume: int,
 ):
     """Confirm delete 'stream_name' in 'controller_state.streams'.
-
 
     :stream: Stream about to be deleted, delete all streams if None.
 

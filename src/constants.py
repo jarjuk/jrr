@@ -270,10 +270,12 @@ class APP_CONTEXT:
         ACTIVATE_CONFIRM = "Aktivoidaan"
         MAY_DELETE = "Poistaanko"
         MAY_ACTIVATE = "Aktivoidaanko"
+        MAY_UPDATE = "Päivitetäänkö"        
         MAY_REBOOT_TITLE = "Käynnistetäänkö"
         MAY_REBOOT_SUBTITLE = "uudelleen?"
         RESUME = "Takaisin"
         RESTART = "Reset"
+        OK = "OK"
         LOAD_CHANNELS = "Kanavat"           # Load more channels
         MENU_SUCCESS = "Onnistui"           # Operation success
         MENU_FAILURE = "Virhe"              # Operation Failure
