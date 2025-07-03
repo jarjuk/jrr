@@ -106,11 +106,11 @@ do_kill() {
     fi
 }
 
-activate_pendig() {
+activate_pending() {
 
-    log 2 "activate_pendig: check $PENDING_LINK"
+    log 2 "activate_pending: check $PENDING_LINK"
     if [ -L $PENDING_LINK ]; then
-        log 1 "activate_pendig: $PENDING_LINK exists "
+        log 1 "activate_pending: $PENDING_LINK exists "
         log 2 "activate_pending: pre $(ls -ltr $CURRENT_LINK $PENDING_LINK)"
         rm -f $PREV_LINK
         mv $CURRENT_LINK $PREV_LINK

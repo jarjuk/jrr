@@ -6211,6 +6211,40 @@ Turning on idle mode
 Turning off idle mode
 #+end_example
 
+** Log-management
+*** ~syslog-tail~: Tail journal
+
+   #+name: syslog-tail
+   #+BEGIN_SRC elisp :noweb yes :results output :eval no-export :exports none  :var TERM_HEADER="jrr5 journalctl"
+   (start-process "server" "buf-server" "xterm"  "-T" TERM_HEADER "-fa" "'Monospace'" "-fs" "12" "-hold" "-e"  "bash" "-c" "ssh jrr5 journalctl -f")
+   #+END_SRC
+
+   #+RESULTS: syslog-tail
+
+*** ~dmesg-tail~: sorsa tail wave-2930150425.csv
+
+   #+name: dmesg-tail
+   #+BEGIN_SRC elisp :noweb yes :results output :eval no-export :exports none :var TERM_HEADER="jrr5 dmesg"
+   (start-process "server" "buf-server" "xterm"  "-T" "dmesg@sorsa" "-fa" "'Monospace'" "-fs" "12" "-hold" "-e"  "bash" "-c" (concat "ssh jrr5 dmesg -w" ) )
+   #+END_SRC
+
+   #+RESULTS: dmesg-tail
+
+   #+RESULTS: wavecsv-tail
+
+*** ~journald-vacuum~: clean up logs
+
+#+name: journald-vacuum
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+sudo journalctl --flush --rotate --vacuum-time=1s
+sudo journalctl --user --flush --rotate --vacuum-time=1s
+#+END_SRC
+
+#+RESULTS: journald-vacuum
+: Running in /home/pi host 'jrr5' on Wed May 21 14:22:30 EEST 2025
+
+
 
 * Notes                                                            :noexport:
 ** Raspberry PI audio output
@@ -6421,4 +6455,4 @@ sine-gen.sh alsa-devices
 # reftex-default-bibliography: ("./raspberry.bib")
 
 
-Modified:2025-07-03.14:46; # time-stamp
+Modified:2025-07-03.21:20; # time-stamp
