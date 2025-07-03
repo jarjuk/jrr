@@ -1576,8 +1576,6 @@ def ctrl_menu_activate_with_confirm(
                 imagepath=imagepath,
             ))
 
-        # Reboot on activation
-        ctrl_act_reboot(hub=hub)
 
     def _do_resume(hub: Hub):
         """Continue in lambda passed in parameter 'ctrl_menu_resume'."""
@@ -1650,6 +1648,9 @@ def ctrl_menu_firmware_activate(
                 title=APP_CONTEXT.MENU.MAY_ACTIVATE,
                 question=f"Versio '{firmware.version}'",
             ))
+
+        # Reboot on activation
+        ctrl_act_reboot(hub=hub)
 
     def _do_resume(hub: Hub):
         """Continue in lambda passed in parameter 'ctrl_menu_resume'."""

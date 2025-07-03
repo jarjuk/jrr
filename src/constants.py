@@ -31,10 +31,12 @@ class CLI:
 
     # Directories and files
     DEFAULT_ICON_SOURCE_DIR = Path.home() / ".icons"        # input for icon conversion
-    DEFAULT_ICON_DIR = os.path.join(
-        os.path.dirname(__file__), "../cnf", "icons")
-    DEFAULT_STREAM_YAML = os.path.join(
-        os.path.dirname(__file__), "../cnf", "jrr_streams.yaml")
+    # DEFAULT_ICON_DIR = os.path.join(
+    #     os.path.dirname(__file__), "../cnf", "icons")
+    # DEFAULT_STREAM_YAML = os.path.join(
+    #     os.path.dirname(__file__), "../cnf", "jrr_streams.yaml")
+    DEFAULT_ICON_DIR = Path().home() / "cnf/icons"
+    DEFAULT_STREAM_YAML = Path().home() / "cnf/jrr_streams.yaml"
 
     FACTORY_ICON_DIR = os.path.join(
         os.path.dirname(__file__), "cnf", "icons")
