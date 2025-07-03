@@ -1238,6 +1238,23 @@ _layout_url_load = {
          "font_size": 20, "text": "yaml", "stroke_width": 0}],
 }
 
+_layout_firmware = {
+    DSCREEN.FIRMWARE_OVERLAY.TITLE:  [
+        ScreenEntryTxt,
+        {"x": 0, "y": 0, "text_len": 30,
+         "font_size": 20,
+         "text": APP_CONTEXT.MENU.WIFI_SETUP, "stroke_width": 1}],
+    DSCREEN.FIRMWARE_OVERLAY.VERSION_TAG+"-prompt":  [
+        ScreenEntryTxt,
+        {"x": 0, "y": LINE_SPACING, "text_len": 20,
+         "font_size": 20, "text": "Versio:", "stroke_width": 1}],
+    DSCREEN.FIRMWARE_OVERLAY.VERSION_TAG:  [
+        ScreenEntryTxt,
+        {"x": 0, "y": LINE_SPACING*2, "text_len": 20,
+         "font_size": 20, "text": "", "stroke_width": 0}],
+}
+
+
 
 # One of these is active at one time (= images override each other.)
 # - This means that canvas sizes are equal (container size == stream icon size
@@ -1272,6 +1289,12 @@ overlay_layouts: Dict = {
         {"x": COL_STREAM_ICON, "y": ROW_STREAM_ICON,
          "size": OVERLAY_SIZE,
          "layout": _layout_url_load,
+         }],
+    COROS.Screen.ENTRY_FIRMWARE_OVL: [
+        ScreenEntryContainer,
+        {"x": COL_STREAM_ICON, "y": ROW_STREAM_ICON,
+         "size": OVERLAY_SIZE,
+         "layout": _layout_firmware,
          }],
     COROS.Screen.ENTRY_ERROR_OVL: [
         ScreenEntryContainer,

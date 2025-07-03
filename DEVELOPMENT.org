@@ -353,6 +353,29 @@ Examples:
 #+RESULTS:
 
 
+** Automation version tag
+:PROPERTIES:
+:header-args:
+:END:
+
+
+
+#+BEGIN_SRC bash :eval no-export :results output :shebang #!/bin/bash :tangle .git/hooks/post-commit
+
+# Only run if VERSION file was committed
+if git diff-tree --no-commit-id --name-only -r HEAD | grep -q '^src/VERSION$'; then
+    VERSION=$(cat src/VERSION)
+
+    # Check if tag already exists
+    if git rev-parse "$VERSION" >/dev/null 2>&1; then
+        echo "Tag '$VERSION' already exists. Skipping tagging."
+    else
+        git tag "$VERSION"
+        echo "Tagged commit with version: $VERSION"
+    fi
+fi
+#+END_SRC
+
 
 * Admin
 ** Os admin
@@ -1922,4 +1945,4 @@ echo "Create DIR=$DIR in host='$(hostname)' on $(date)"
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2025-06-27.10:43; # time-stamp
+Modified:2025-07-03.11:53; # time-stamp

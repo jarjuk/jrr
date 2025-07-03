@@ -158,6 +158,7 @@ class COROS:
         ENTRY_CONFIG_TITLE = "conf-menu-ovlay"
         ENTRY_WIFI_OVL = "wifi-ovlay"
         ENTRY_URL_LOAD_OVL = "url-load-ovlay"
+        ENTRY_FIRMWARE_OVL = "firmware-ovlay"
         ENTRY_ERROR_OVL = "error-ovlay"
         ENTRY_QUESTION_OVL = "question-ovlay"
         ENTRY_NETWORK_INFO_OVL = "network-ovlay"
@@ -206,13 +207,19 @@ class RPI:
 
 
 class APP_CONTEXT:
-    STREAMER_SCRIPT = Path.home() / "src/jrr_streamer.sh"
+    DEFAULT_FIRMWARE_LOCAL_ROOT = os.path.join(
+        Path.home(), "jrr")
+    # STREAMER_SCRIPT = Path.home() / "src/jrr_streamer.sh"
+    STREAMER_SCRIPT = os.path.join(
+        DEFAULT_FIRMWARE_LOCAL_ROOT, "src", "jrr_streamer.sh")
     # Symbolic link name
     FIRMWARE_CURRENT_LINK = "src"
     FIRMWARE_PENDING_LINK = "src.pending"
-    DEFAULT_FIRMWARE_LOCAL_ROOT = os.path.join(
-        Path.home(), FIRMWARE_CURRENT_LINK)
-    DEFAULT_FIRMWARE_REPO_URL = f"file://{Path.home()}/jrr"
+    VERSION_FILE = "VERSION"
+
+    # Url to download firmware versions
+    # DEFAULT_FIRMWARE_REPO_URL = f"file://{Path.home()}/jrr"
+    DEFAULT_FIRMWARE_REPO_URL = "https://github.com/jarjuk/jrr"
     FIRMWARE_TAG_PATTERN = r'jrr-(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\w+)'
     DEBUG_DIR = Path.home() / "src/debug/"
     DEBUG_SUFFIX = "dbg"
@@ -288,6 +295,7 @@ class APP_CONTEXT:
         CONFIG_PREV = PREV
 
         MENU_CONFIG_WIFI = "Wifi"
+        MENU_FIRMWARE_VERSION = "Ohjelmaversio"
         MENU_MAYBE_CONFIG_WIFI = "Valintaanko Wifi?"
         MENU_DO_CONFIG_WIFI = "Wifin aktivointi"
         MENU_CONFIG_SETUP = "Asetukset"
@@ -350,6 +358,9 @@ class KEYBOARD:
 class DSCREEN:
     """Screen data content manager used in controller."""
 
+    class COMMON:
+        HEADER = "header"
+
     class FIELD_STATUS(Enum):
         """Status enum for FieldValue."""
         OK = 0
@@ -369,6 +380,7 @@ class DSCREEN:
         """Overlays for configuration displays."""
         WIFI_SETUP = COROS.Screen.ENTRY_WIFI_OVL
         URL_LOAD = COROS.Screen.ENTRY_URL_LOAD_OVL
+        FIRMWARE = COROS.Screen.ENTRY_FIRMWARE_OVL 
 
     class WIFI_OVERLAY:
         """Layout names for Screen overlays, names of FieldValue
@@ -385,6 +397,12 @@ class DSCREEN:
         TITLE = "header"
         URL_BASE = "url"
         YAML_FILE = "yaml"
+
+    class FIRMWARE_OVERLAY:
+        """Field names for firmware selection
+        """
+        TITLE = "header"
+        VERSION_TAG = "version"
 
     class ERROR_OVERLAY:
         """Field names for url-loader.

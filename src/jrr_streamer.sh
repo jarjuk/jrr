@@ -28,7 +28,8 @@ terminator() {
 }
 
 
-
+# ------------------------------------------------------------------
+# Default configs
 
 VERSION=0.1
 # 1=warning
@@ -38,6 +39,7 @@ TS_FORMAT="+%Y%m%d-%T"
 # output device, one from list-devices, default  none
 AUDIO_OUT="" 
 SOUND_DIR=$HOME/tmp
+LOCAL_REPO=$HOME/jrr/
 DURATION=60
 LEFT_FREQ="1000"
 RIGHT_FREQ="440"
@@ -53,6 +55,7 @@ RGAIN=1.0
 LGAIN=1.0
 GAIN=4.0
 
+
 # ------------------------------------------------------------------
 # Subrus
 
@@ -62,6 +65,12 @@ log() {
     if [ $DEBUG -ge $LEVEL ]; then
         	echo $(date $TS_FORMAT): $0'|'$MSG 1>&2
     fi
+}
+
+error_msg() {
+    local MSG=$1
+    logger "$MSG"
+    log 1 "$MSG"
 }
 
 usage() {
@@ -99,6 +108,10 @@ usage() {
     echo "stream URL            : stream URL"
     echo "dmsg MSG              : send MSG to kernel /dev/kmsg"
     echo "wifi-setup SSID PASSWD: configure wifi SSID and PASSWORD"
+    echo "fw-download U         : Download firmware from url U to LOCAL_REPO=$LOCAL_REPO"
+    echo "fw-unpack U           : Unpack firmware package in LOCAL_REPO downloaded from url U"
+    echo "                        forexample U=https://github.com/jarjuk/jrr/archive/refs/tags/jrr-0.0.0.zip"
+    echo "fw-pending U          : Set symbolic link to fw unpacked into LOCAL_REPO fo remote repo url U"    
     echo ""
     echo "Examples:"
     echo ""
@@ -135,6 +148,54 @@ init_audio_out() {
     log 2 "init_audio_out: done AUDIO_OUT='$AUDIO_OUT'"
 
 }
+
+wget_o() {
+    local source=$1
+    local dest=$2
+
+    if [ -d $dest ]; then
+        dest=$dest/$(basename $source)
+    fi
+    log 2 "wget_o: dest=$dest, source=$source"
+    wget -O $dest $source
+}
+
+unpack() {
+    local url=$1; shift
+    local ddir=$1; shift
+    
+    local packed_file=$ddir/$(basename $url)
+
+    log 2 "unpack: url=$url, ddir=$ddir"
+    log 2 "unpack: checking packed_file=$packed_file"
+
+    if [ ! -f $packed_file ]; then
+       error_msg "No file packed_file=$packed_file to unpack "
+       exit 1
+    fi
+
+    log 2 "unpack: 'unzip $packed_file -d $packed_file'"
+    if [ $DEBUG -ge 3 ]; then
+        unzip -l $packed_file 
+    fi
+    # -o overwrite, -d destination directory
+    unzip -o $packed_file -d $ddir
+    
+}
+
+pending() {
+    local url=$1; shift
+    local ddir=$1; shift
+    
+    local un_packed_directory=$ddir/$(basename $url)
+    
+    log 2 "pending: url=$url, ddir=$ddir"
+    if [ ! -d $un_packed_directory ]; then
+        error_msg "No directory un_packed_directory=$un_packed_directory in: '$(ls -1 $ddir)'"
+        exit 1
+    fi
+}
+
 
 # Options - after functions
 
@@ -421,6 +482,28 @@ do
                 sudo raspi-config nonint do_wifi_ssid_passphrase $SSID $PASSI
             fi
             ;;
+
+        fw-download)
+            # VERSION=$1; shift
+            URL=$1; shift
+            log 2 "fw-download URL=$URL, LOCAL_REPO=$LOCAL_REPO"
+            wget_o $URL $LOCAL_REPO
+            ;;
+        
+        fw-unpack)
+            URL=$1; shift
+            # VERSION=$1; shift
+            log 2 "fw-upack URL=$URL, LOCAL_REPO=$LOCAL_REPO"
+            unpack $URL $LOCAL_REPO
+            ;;
+        
+        fw-pending)
+            URL=$1; shift
+            log 2 "fw-pending URL=$URL, LOCAL_REPO=$LOCAL_REPO"
+            pending $URL $LOCAL_REPO
+            ;;
+        
+        
 	    *)
 	        usage
 	        echo  "Unknown action: $CMD"

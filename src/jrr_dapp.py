@@ -25,6 +25,8 @@ ft_url_base = dscreen.FieldType(
     DSCREEN.URL_LOAD_OVERLAY.URL_BASE, type_alphanum)
 ft_yaml_file = dscreen.FieldType(
     DSCREEN.URL_LOAD_OVERLAY.YAML_FILE, type_alphanum)
+ft_firmware_version = dscreen.FieldType(
+    DSCREEN.FIRMWARE_OVERLAY.VERSION_TAG, type_alphanum_10)
 
 
 # Screen
@@ -32,8 +34,12 @@ wifi_screen = dscreen.DScreen(fieldTypes=[ft_ssid, ft_password,])
 url_load_screen = dscreen.DScreen(
     fieldTypes=[ft_title, ft_url_base, ft_yaml_file])
 
+firmware_screen = dscreen.DScreen(
+    fieldTypes=[ft_title, ft_firmware_version])
+
 
 # Screen collections (zero or one screen is active/current)
 screen_ovrlays = dscreen.DApp()
 screen_ovrlays.addScreen(DSCREEN.SCREEN_OVERLAYS.WIFI_SETUP, wifi_screen)
 screen_ovrlays.addScreen(DSCREEN.SCREEN_OVERLAYS.URL_LOAD, url_load_screen)
+screen_ovrlays.addScreen(DSCREEN.SCREEN_OVERLAYS.FIRMWARE, firmware_screen)

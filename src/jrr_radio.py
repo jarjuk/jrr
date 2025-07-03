@@ -11,7 +11,6 @@ import os
 import yaml
 
 
-
 from .console import console_output, console_close
 from .config import app_config
 from .publish_subsrcibe import Hub
@@ -38,6 +37,7 @@ from .streamer_coro import streamer_coro
 from .wifi import list_wifis
 from .dscreen import DApp
 from .jrr_dapp import screen_ovrlays
+from .firmware import FirmwareVersion, firmware_available_versions
 from .messages import (MsgRoot,
                        is_message_type,
                        message_halt, message_create,
@@ -187,9 +187,10 @@ class ControllerState:
         # Radio menu step in lock step with stream number
         self.menu_step = self.current_stream
 
-        # Load VERSION info
-        version_file = os.path.join( os.path.dirname(__file__), "VERSION")
-        with open(version_file,'r') as f:
+        # Load VERSION info from file
+        version_file = os.path.join(os.path.dirname(
+            __file__), APP_CONTEXT.VERSION_FILE)
+        with open(version_file, 'r') as f:
             self.jrr_version = f.read()
 
     # ------------------------------------------------------------------
@@ -854,7 +855,9 @@ def ctrl_menu_wifi_ssid_setup(
     def _enter_wifi_ssid_setup(hub: Hub, menu_name: str):
         """Publish SCREEN -message to display wifi-setup overlay."""
         logger.debug("_enter_wifi_ssid_setup: menu_name='%s'", menu_name)
+        # flag no wifi
         ctrl_act_update_status(hub, network_status=False)
+
         controller_state.config_screens.activateScreen(
             DSCREEN.SCREEN_OVERLAYS.WIFI_SETUP,
             init_values=[(DSCREEN.WIFI_OVERLAY.SSID, wifi_ssid),
@@ -1013,6 +1016,77 @@ def ctrl_menu_setup_with_keyboard(hub: Hub, step_resume: int | None = None):
     }  # menu
 
     f_config_enter(hub, menu, step_resume=step_resume)
+
+
+def ctrl_menu_firmware_setup(
+        hub: Hub,
+        ctrl_menu_resume: Callable,
+        step_resume: int | None = None,
+        firmware_versions: List[FirmwareVersion] | None = None,
+
+):
+    """Enter firmware selection.
+    """
+    logger.debug("ctrl_menu_firmware_setup: step_resume='%s', menu_step=%s",
+                 step_resume, controller_state.menu_step)
+
+    # List of availabe WIFI networks
+    if firmware_versions is None:
+        firmware_versions = firmware_available_versions()
+    logger.info("ctrl_menu_firmware_setup: firmware_versions='%s'",
+                firmware_versions)
+
+    # remeber caller menu - later resume there
+    caller_menu_step = controller_state.menu_step
+
+    # No new firmware versions found
+    if len(firmware_versions) == 0:
+        ctrl_menu_error_confirm(
+            hub,
+            error="Ei päivitettävää",
+            ctrl_menu_cancel=ctrl_menu_setup_main,
+            step_cancel=caller_menu_step,
+        )
+        return
+
+    # Default step starts from first wifi selection
+    if step_resume is None:
+        step_resume = 0
+
+    def _enter_version_setup(hub: Hub, menu_name: str):
+        """Publish SCREEN -message to display firmware overlay."""
+        logger.debug("_enter_firmware_setup: menu_name='%s'", menu_name)
+        controller_state.config_screens.activateScreen(
+            DSCREEN.SCREEN_OVERLAYS.FIRMWARE,
+            init_values=[(DSCREEN.FIRMWARE_OVERLAY.TITLE, "Ohjelmistoversio"),
+                         (DSCREEN.FIRMWARE_OVERLAY.VERSION_TAG, menu_name),
+                         ])
+        overlay_msg = controller_state.config_screens.message()
+        logger.debug("_enter_firmware_setup: overlay_msg='%s'", overlay_msg)
+        hub.publish(topic=TOPICS.SCREEN, message=overlay_msg)
+
+    def _do_resume(hub: Hub):
+        # ctrl_menu_setup_with_keyboard(hub, step_resume=caller_menu_step)
+        ctrl_menu_resume(hub, step_resume=caller_menu_step)
+
+    # See f_config_enter for documentation
+    menu = {
+        firmware_versions[i].version: {
+            APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
+                APP_CONTEXT.MENU.NEXT,           # bt1-short
+                APP_CONTEXT.MENU.CHOOSE,         # bt1-long
+                APP_CONTEXT.MENU.PREV,           # bt2-short
+                APP_CONTEXT.MENU.CONFIG_RETURN,  # bt2-long
+            ],
+            APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _enter_version_setup,
+            APP_CONTEXT.MENU.ACTS.BTN1_LONG: ctrl_act_null,
+            APP_CONTEXT.MENU.ACTS.BTN2_LONG: _do_resume,
+            APP_CONTEXT.MENU.ACTS.KEYBOARD: ctrl_act_null,
+        }
+        for i in range(len(firmware_versions))
+    }
+
+    f_config_enter(hub, menu=menu, step_resume=step_resume)
 
 
 def ctrl_menu_wifi_setup(
@@ -1197,6 +1271,7 @@ def ctrl_menu_setup_main(hub: Hub, step_resume: int | None = None):
         APP_CONTEXT.MENU.MENU_CHANNELS_DEL_ALL: "Poista",
         APP_CONTEXT.MENU.MENU_ACTIVATE_CHANNELS: "Aktivoi",
         APP_CONTEXT.MENU.MENU_CONFIG_WIFI: "Valitse",
+        APP_CONTEXT.MENU.MENU_FIRMWARE_VERSION: "Päivitä",
         APP_CONTEXT.MENU.MENU_CONFIG_KEYBOARD: "Asetukset",
         APP_CONTEXT.MENU.MENU_REBOOT: "Uudelleen",
     }
@@ -1205,6 +1280,7 @@ def ctrl_menu_setup_main(hub: Hub, step_resume: int | None = None):
         APP_CONTEXT.MENU.MENU_CHANNELS_DEL_ALL: "kaikki kanavat",
         APP_CONTEXT.MENU.MENU_ACTIVATE_CHANNELS: "kanavia",
         APP_CONTEXT.MENU.MENU_CONFIG_WIFI: "Wifi-verkko",
+        APP_CONTEXT.MENU.MENU_FIRMWARE_VERSION: "ohjelmistoversio",
         APP_CONTEXT.MENU.MENU_CONFIG_KEYBOARD: "näppäimistöllä",
         APP_CONTEXT.MENU.MENU_REBOOT: "käynnistys",
     }
@@ -1317,6 +1393,23 @@ def ctrl_menu_setup_main(hub: Hub, step_resume: int | None = None):
             ),
             APP_CONTEXT.MENU.ACTS.BTN2_LONG: _resume_radio,
         },  # wifi setup
+
+        APP_CONTEXT.MENU.MENU_FIRMWARE_VERSION: {
+            APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
+                APP_CONTEXT.MENU.NEXT,                  # bt1-short
+                APP_CONTEXT.MENU.CHOOSE,                # bt1-long
+                APP_CONTEXT.MENU.PREV,                  # bt2-short
+                APP_CONTEXT.MENU.CONFIG_RADIO,          # bt2-long
+            ],
+            APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _my_entry_action,
+            APP_CONTEXT.MENU.ACTS.BTN1_LONG: partial(
+                ctrl_menu_firmware_setup,
+                ctrl_menu_resume=ctrl_menu_setup_main,
+            ),
+            APP_CONTEXT.MENU.ACTS.BTN2_LONG: _resume_radio,
+        },  # wifi setup
+
+
 
         APP_CONTEXT.MENU.MENU_CONFIG_KEYBOARD: {
             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [

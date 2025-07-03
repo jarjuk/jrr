@@ -137,9 +137,9 @@ class Config():
     @property
     def firmware_local_root(self) -> str | None:
         """Read root directory for version sub-directories."""
-        if not hasattr(self, "_firmware_local_root"):
-            return APP_CONTEXT.DEFAULT_FIRMWARE_LOCAL_ROOT
-        return self._firmware_local_root
+        return APP_CONTEXT.DEFAULT_FIRMWARE_LOCAL_ROOT
+        # if not hasattr(self, "_firmware_local_root"):
+        # return self._firmware_local_root
 
     @property
     def firmware_repo_url(self) -> str:
@@ -148,10 +148,10 @@ class Config():
             return APP_CONTEXT.DEFAULT_FIRMWARE_REPO_URL
         return self._firmware_repo_url
 
-    @firmware_local_root.setter
-    def firmware_local_root(self, firmware_local_root: str):
-        """set root directory for version sub-directories."""
-        self._firmware_local_root = firmware_local_root
+    # @firmware_local_root.setter
+    # def firmware_local_root(self, firmware_local_root: str):
+    #     """set root directory for version sub-directories."""
+    #     self._firmware_local_root = firmware_local_root
 
     # @firmware_local_root.deleter
     # def firmware_local_root(self):

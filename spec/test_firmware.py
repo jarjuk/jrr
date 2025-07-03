@@ -130,7 +130,7 @@ def test_config_mock():
 
 def test_config_property():
     assert config.app_config.firmware_local_root == os.path.join(
-        Path.home(), "src")
+        Path.home(), "jrr")
 
 
 def test_func_mock(mock_github_tags1):

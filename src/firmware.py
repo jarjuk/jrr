@@ -210,6 +210,7 @@ def firmware_repo_index() -> List[FirmwareVersion]:
     """Return list of firmware versions in 'firmware repo'."""
     repo_url = app_config.firmware_repo_url
     parsed = urlparse(repo_url)
+    logger.debug("firmware_repo_index: repo_url='%s' -> parsed=%s", repo_url, parsed)
 
     if parsed.scheme == "file" or parsed.scheme == "":
         return _local_zip_index(repo_url=repo_url)

@@ -10,6 +10,7 @@ JRR_DEBUG=""                # default WARNING, more -v's --> more output
 # JRR_DEBUG="-v -v"  
 ALL_LINES=""                # default - only one console line per time tick
 # ALL_LINES="--all-lines"
+LOCAL_REPO=$HOME/jrr/
 
 # ------------------------------------------------------------------
 # Subrus
@@ -56,6 +57,12 @@ log() {
     fi
 }
 
+error_msg() {
+    local MSG=$1
+    logger "$MSG"
+    log 1 "$MSG"
+}
+
 kill_streamer() {
     killall ffmpeg
 }
@@ -91,7 +98,6 @@ do_kill() {
         log 1 "do_kill: no jrr.py process found"
     fi
 }
-
 
 
 # ------------------------------------------------------------------
