@@ -1026,6 +1026,11 @@ def ctrl_menu_firmware_setup(
 
 ):
     """Enter firmware selection.
+
+    :ctrl_menu_resume: fst where to return
+
+    :step_resume: fst step to return back to 
+
     """
     logger.debug("ctrl_menu_firmware_setup: step_resume='%s', menu_step=%s",
                  step_resume, controller_state.menu_step)
@@ -1039,7 +1044,7 @@ def ctrl_menu_firmware_setup(
     # remeber caller menu - later resume there
     caller_menu_step = controller_state.menu_step
 
-    # No new firmware versions found
+    # No firmware versions found -> no error -> back where called from
     if len(firmware_versions) == 0:
         ctrl_menu_error_confirm(
             hub,
@@ -1079,7 +1084,13 @@ def ctrl_menu_firmware_setup(
                 APP_CONTEXT.MENU.CONFIG_RETURN,  # bt2-long
             ],
             APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _enter_version_setup,
-            APP_CONTEXT.MENU.ACTS.BTN1_LONG: ctrl_act_null,
+            APP_CONTEXT.MENU.ACTS.BTN1_LONG: partial(
+                ctrl_menu_firmware_with_confirm,
+                firmware=firmware_versions[i],
+                ctrl_menu_resume=ctrl_menu_resume,
+                step_resume=caller_menu_step
+            ),
+
             APP_CONTEXT.MENU.ACTS.BTN2_LONG: _do_resume,
             APP_CONTEXT.MENU.ACTS.KEYBOARD: ctrl_act_null,
         }
@@ -1597,6 +1608,73 @@ def ctrl_menu_activate_with_confirm(
             APP_CONTEXT.MENU.ACTS.BTN1_LONG: partial(
                 _do_activate_stream,
                 new_stream=channel,
+            ),
+            APP_CONTEXT.MENU.ACTS.BTN2_SHORT: ctr_act_none,
+            APP_CONTEXT.MENU.ACTS.BTN2_LONG: _do_resume,
+            APP_CONTEXT.MENU.ACTS.KEYBOARD: ctrl_act_null,
+        }
+    }
+
+    # Start executing menu
+    f_config_enter(hub, menu=menu, step_resume=0)
+
+
+def ctrl_menu_firmware_with_confirm(
+        hub: Hub,
+        firmware: FirmwareVersion,
+        ctrl_menu_resume: Callable,
+        step_resume: int,
+):
+    """Ask confirmation to activate 'channel'.
+
+    :ctrl_menu_resume: lambda of controller where to resume back to.
+
+    :step_resume: menu_step to resume to 'ctrl_menu_resume' -lambda
+
+    :stream: new stream to activate
+    """
+    logger.info("ctrl_menu_firmware_with_confirm: firmware=%s",
+                firmware)
+
+    def _entry_to_confirmation(hub: Hub, menu_name: str | None):
+        """Ask for confirmation to activate 'firmware'.
+        """
+        # confirm delete on one channel
+
+        hub.publish(
+            topic=TOPICS.SCREEN,
+            message=message_question(
+                title=APP_CONTEXT.MENU.MAY_ACTIVATE,
+                question=f"Versio '{firmware.version}'",
+            ))
+
+    def _do_resume(hub: Hub):
+        """Continue in lambda passed in parameter 'ctrl_menu_resume'."""
+        # ctrl_menu_browse_channels(hub=hub, step_resume=step_resume)
+        ctrl_menu_resume(hub, step_resume=step_resume)
+
+    def _do_activate_firmware(hub: Hub, new_firmware: FirmwareVersion):
+        """Active 'firmaware'. Resume back to 'step_resume' in upper
+        menu.
+
+        """
+        _do_resume(hub)
+
+    # See f_config_enter for documentation
+
+    menu = {
+        "activate": {
+            APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
+                APP_CONTEXT.MENU.UN_USED,           # bt1-short
+                APP_CONTEXT.MENU.ACTIVATE_CONFIRM,  # bt1-long
+                APP_CONTEXT.MENU.UN_USED,           # bt2-short
+                APP_CONTEXT.MENU.CONFIG_RETURN,     # bt2-long
+            ],
+            APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _entry_to_confirmation,
+            APP_CONTEXT.MENU.ACTS.BTN1_SHORT: ctr_act_none,
+            APP_CONTEXT.MENU.ACTS.BTN1_LONG: partial(
+                _do_activate_firmware,
+                new_firmware=firmware,
             ),
             APP_CONTEXT.MENU.ACTS.BTN2_SHORT: ctr_act_none,
             APP_CONTEXT.MENU.ACTS.BTN2_LONG: _do_resume,

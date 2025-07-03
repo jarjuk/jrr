@@ -10,7 +10,13 @@ JRR_DEBUG=""                # default WARNING, more -v's --> more output
 # JRR_DEBUG="-v -v"  
 ALL_LINES=""                # default - only one console line per time tick
 # ALL_LINES="--all-lines"
-LOCAL_REPO=$HOME/jrr/
+
+# Firmware update configs
+LOCAL_REPO=$HOME/jrr
+PENDING_LINK=$LOCAL_REPO/src.next
+CURRENT_LINK=$LOCAL_REPO/src
+PREV_LINK=$LOCAL_REPO/src.prev
+
 
 # ------------------------------------------------------------------
 # Subrus
@@ -40,7 +46,8 @@ usage() {
     echo "stop                  : Stop jrr -service"
     echo "start                 : start jrr -service"    
     echo "status                : Show process ids for jrr.py and ffmpeg streamer process"
-    echo "kill-ffmpeg           : Kill ffmpeg streamer process"    
+    echo "kill-ffmpeg           : Kill ffmpeg streamer process"
+    echo "activate-pending      : Activate  PENDING_LINK if it valid"    
     echo ""
     echo "Examples:"
     echo ""
@@ -99,6 +106,18 @@ do_kill() {
     fi
 }
 
+activate_pendig() {
+
+    log 2 "activate_pendig: check $PENDING_LINK"
+    if [ -L $PENDING_LINK ]; then
+        log 1 "activate_pendig: $PENDING_LINK exists "
+        log 2 "activate_pending: pre $(ls -ltr $CURRENT_LINK $PENDING_LINK)"
+        rm -f $PREV_LINK
+        mv $CURRENT_LINK $PREV_LINK
+        mv $PENDING_LINK $CURRENT_LINK
+        log 2 "activate_pending: post $(ls -ltr $CURRENT_LINK $PENDING_LINK $PREV_LINK)"
+    fi 
+}
 
 # ------------------------------------------------------------------
 # Starting
@@ -282,6 +301,10 @@ do
             do_kill
             ;;
         
+        activate-pending)
+            activate_pendig
+            ;;
+
         true)
             ;;
 

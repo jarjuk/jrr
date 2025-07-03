@@ -39,7 +39,7 @@ TS_FORMAT="+%Y%m%d-%T"
 # output device, one from list-devices, default  none
 AUDIO_OUT="" 
 SOUND_DIR=$HOME/tmp
-LOCAL_REPO=$HOME/jrr/
+
 DURATION=60
 LEFT_FREQ="1000"
 RIGHT_FREQ="440"
@@ -54,6 +54,10 @@ MONO_OR_STEREO_CMD=""
 RGAIN=1.0
 LGAIN=1.0
 GAIN=4.0
+
+# Firmware update configs
+LOCAL_REPO=$HOME/jrr/
+PENDING_LINK=$LOCAL_REPO/src.next
 
 
 # ------------------------------------------------------------------
@@ -111,7 +115,8 @@ usage() {
     echo "fw-download U         : Download firmware from url U to LOCAL_REPO=$LOCAL_REPO"
     echo "fw-unpack U           : Unpack firmware package in LOCAL_REPO downloaded from url U"
     echo "                        forexample U=https://github.com/jarjuk/jrr/archive/refs/tags/jrr-0.0.0.zip"
-    echo "fw-pending U          : Set symbolic link to fw unpacked into LOCAL_REPO fo remote repo url U"    
+    echo "fw-pending U          : Set symbolic link to fw unpacked into LOCAL_REPO fo remote repo url U"
+    echo "firmware U            : Download, unpack and mark pending in LOCAL_REPO remote repo firmware url U"        
     echo ""
     echo "Examples:"
     echo ""
@@ -186,14 +191,30 @@ unpack() {
 pending() {
     local url=$1; shift
     local ddir=$1; shift
-    
-    local un_packed_directory=$ddir/$(basename $url)
-    
     log 2 "pending: url=$url, ddir=$ddir"
+
+    local pkg_name=$(basename $url)
+    local version="${pkg_name%.*}"
+    log 2 "pending: pkg_name=$pkg_name, version=$version"    
+    
+    local un_packed_directory=$ddir/jrr-$version
+
+    # Exepect to find unpackaged directrory
     if [ ! -d $un_packed_directory ]; then
         error_msg "No directory un_packed_directory=$un_packed_directory in: '$(ls -1 $ddir)'"
         exit 1
     fi
+
+    local un_packed_directory_src=$un_packed_directory/src
+    # Expect to see src -sub directory in 'un_packed_directory'
+    if [ ! -d $un_packed_directory_src ]; then
+        error_msg "No directory src direcotory under un_packed_directory=$un_packed_directory in: '$(ls -1 $un_packed_directory)'"
+        exit 1
+        
+    fi
+
+    rm -f $PENDING_LINK 
+    ln -s $un_packed_directory_src $PENDING_LINK 
 }
 
 
@@ -500,6 +521,13 @@ do
         fw-pending)
             URL=$1; shift
             log 2 "fw-pending URL=$URL, LOCAL_REPO=$LOCAL_REPO"
+            pending $URL $LOCAL_REPO
+            ;;
+
+        firmware)
+            URL=$1; shift
+            wget_o $URL $LOCAL_REPO
+            unpack $URL $LOCAL_REPO
             pending $URL $LOCAL_REPO
             ;;
         
