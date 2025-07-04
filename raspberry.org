@@ -2863,14 +2863,18 @@ echo "var=$var"
 #+call: src-rsync[:dir .](SDIR="bin/", DDIR="jrr/bin/"")
 
 #+RESULTS:
-: Rsync SDIR=bin/ from host=eero to jrr5.local:jrr/bin/ on ti 1.7.2025 16.08.12 +0300
-: rsync -a --delete --update --verbose --checksum --recursive bin/ jrr5:jrr/bin/
-: total 5
-: -rwxr-xr-x 1 jj jj 6699 heinä   1 16:05 jrr.sh
-: sending incremental file list
-: 
-: sent 93 bytes  received 19 bytes  224,00 bytes/sec
-: total size is 6.699  speedup is 59,81
+#+begin_example
+Rsync SDIR=bin/ from host=eero to jrr5.local:jrr/bin/ on pe 4.7.2025 09.02.25 +0300
+rsync -a --delete --update --verbose --checksum --recursive bin/ jrr5:jrr/bin/
+total 5
+-rwxr-xr-x 1 jj jj 7804 heinä   4 08:56 jrr.sh
+sending incremental file list
+./
+jrr.sh
+
+sent 1.181 bytes  received 104 bytes  2.570,00 bytes/sec
+total size is 7.804  speedup is 6,07
+#+end_example
 
 #+call: src-rsync[:dir .](SDIR="jrr.py", DDIR="jrr/")
 
@@ -6455,4 +6459,4 @@ sine-gen.sh alsa-devices
 # reftex-default-bibliography: ("./raspberry.bib")
 
 
-Modified:2025-07-03.21:20; # time-stamp
+Modified:2025-07-04.09:02; # time-stamp

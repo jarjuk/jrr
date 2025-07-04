@@ -208,16 +208,28 @@ pending() {
         exit 1
     fi
 
-    local un_packed_directory_src=$un_packed_directory/src
-    # Expect to see src -sub directory in 'un_packed_directory'
+
+
+    local un_packed_directory_tmp=${un_packed_directory}.tmp
+    local un_packed_directory_src=$un_packed_directory_tmp/src
+
+    mv $un_packed_directory ${un_packed_directory}.tmp
+    
+    # Expect to see src -sub directory in 'un_packed_directory_tmp'
     if [ ! -d $un_packed_directory_src ]; then
-        error_msg "No directory src direcotory under un_packed_directory=$un_packed_directory in: '$(ls -1 $un_packed_directory)'"
+        error_msg "No directory src directory under un_packed_directory=$un_packed_directory_tmp in: '$(ls -1 $un_packed_directory_tmp)'"
         exit 1
         
     fi
 
+    # replace un_packed_directory with src -subdirecory
+    mv ${un_packed_directory_src} ${un_packed_directory}
+    rm -rf $un_packed_directory_tmp
+
+    # PENDING_LINK points to 'un_packed_directory' (with content of
+    # src -subdirectory)
     rm -f $PENDING_LINK 
-    ln -s $un_packed_directory_src $PENDING_LINK 
+    ln -s $un_packed_directory $PENDING_LINK 
 }
 
 
