@@ -1187,7 +1187,7 @@ def ctrl_menu_wifi_setup(
 def ctrl_menu_browse_channels(
         hub: Hub,
         step_resume: int | None = None, ):
-    """Browse channels. Menu actions allow delete.
+    """Browse channels, allow for delete. Menu actions allow delete.
 
     Acting on controller_state.streams.
 
@@ -1221,7 +1221,7 @@ def ctrl_menu_browse_channels(
         hub.publish(
             topic=TOPICS.SCREEN,
             message=message_config_title(
-                title=APP_CONTEXT.MENU.MENU_CHANNELS_BROWSE,
+                title=APP_CONTEXT.MENU.MENU_CHANNELS_DELETE,
                 sub_title=stream.name,
                 imagepath=os.path.join(
                     APP_CONTEXT.CHANNEL_ICONS, stream.icon)
@@ -1278,7 +1278,7 @@ def ctrl_menu_setup_main(hub: Hub, step_resume: int | None = None):
 
     # NOTICE: Must match menu keys!
     menu_name_2_title = {
-        APP_CONTEXT.MENU.MENU_CHANNELS_BROWSE: "Selaa",
+        APP_CONTEXT.MENU.MENU_CHANNELS_DELETE: "Poista",
         APP_CONTEXT.MENU.MENU_CHANNELS_DEL_ALL: "Poista",
         APP_CONTEXT.MENU.MENU_ACTIVATE_CHANNELS: "Aktivoi",
         APP_CONTEXT.MENU.MENU_CONFIG_WIFI: "Valitse",
@@ -1287,7 +1287,7 @@ def ctrl_menu_setup_main(hub: Hub, step_resume: int | None = None):
         APP_CONTEXT.MENU.MENU_REBOOT: "Uudelleen",
     }
     menu_name_2_sub_title = {
-        APP_CONTEXT.MENU.MENU_CHANNELS_BROWSE: "kanavia",
+        APP_CONTEXT.MENU.MENU_CHANNELS_DELETE: "kanavia",
         APP_CONTEXT.MENU.MENU_CHANNELS_DEL_ALL: "kaikki kanavat",
         APP_CONTEXT.MENU.MENU_ACTIVATE_CHANNELS: "kanavia",
         APP_CONTEXT.MENU.MENU_CONFIG_WIFI: "Wifi-verkko",
@@ -1340,7 +1340,7 @@ def ctrl_menu_setup_main(hub: Hub, step_resume: int | None = None):
     # See f_config_enter for documentation
     menu = {
 
-        APP_CONTEXT.MENU.MENU_CHANNELS_BROWSE: {
+        APP_CONTEXT.MENU.MENU_CHANNELS_DELETE: {
             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
                 APP_CONTEXT.MENU.NEXT,                    # bt1-short
                 APP_CONTEXT.MENU.CHOOSE,                  # bt1-long
