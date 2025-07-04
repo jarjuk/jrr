@@ -1,9 +1,8 @@
 - TODO: RELEASE tiedojen selaus
-- TODO: Cleanup old version directories & zips
-
 
 
 0.0.4
+- DOING: Cleanup old version directories & zips
 - DONE: kanavien poisto toiminnon otsikko (selaa->poista)
 - DONE: firmaware asennus - pyydä kuittaus uudelleenkäynnistykselle
 - FIX: kanavien akviointi ei toiminut

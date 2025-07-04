@@ -106,14 +106,25 @@ do_kill() {
     fi
 }
 
+# Activate PENDING_LINK (if it exists)
+# - cleanup PREV_LINK and directory it points to
+# - move CURRENT_LINK to PREV_LINK
+# - deploy PENDING_LINK as CURRENT_LINK
 activate_pending() {
+
 
     log 2 "activate_pending: check $PENDING_LINK"
     if [ -L $PENDING_LINK ]; then
         log 1 "activate_pending: $PENDING_LINK exists "
         log 2 "activate_pending: pre $(ls -ltr $CURRENT_LINK $PENDING_LINK)"
+	# Cleanup PREV_LINK and directory it points to
+	rm -rf $(readlink -f $PREV_LINK)
         rm -f $PREV_LINK
+
+	# Mark CURRENT as PREV
         mv $CURRENT_LINK $PREV_LINK
+
+	# Deploy PENDING as CURRENT
         mv $PENDING_LINK $CURRENT_LINK
         log 2 "activate_pending: post $(ls -ltr $CURRENT_LINK $PREV_LINK)"
     fi 

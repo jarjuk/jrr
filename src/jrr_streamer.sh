@@ -185,6 +185,9 @@ unpack() {
     fi
     # -o overwrite, -d destination directory
     unzip -o $packed_file -d $ddir
+
+    # cleanup zipfile after unpack
+    rm -f $packed_file
     
 }
 
