@@ -123,7 +123,7 @@ async def _streamer_run(url: str):
         APP_CONTEXT.STREAMER_SCRIPT,
         "--mono",
         "--file", url,
-        "--gain", "1",
+        "--gain", "2",
         "play",
     ]
     # runner_proc = await asyncio.create_subprocess_shell(

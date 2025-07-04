@@ -308,7 +308,7 @@ class APP_CONTEXT:
         MENU_CHANNELS_SETUP = "Kanavat"
         MENU_REBOOT = "Reboot"
         MENU_CHANNELS_ORIGIN = "Hakemisto"
-        MENU_CHANNELS_BROWSE = "Selaa"
+        MENU_CHANNELS_DELETE = "poista"
         MENU_IP = "Verkkoyhteys"
         MENU_CHANNELS_ADD = "Lisää"
         MENU_ACTIVATE_CHANNELS = "Aktivoi kanavia"
