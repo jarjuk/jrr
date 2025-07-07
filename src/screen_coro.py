@@ -419,6 +419,21 @@ async def _screen_action(msg: Any, hub: Hub):
             mode=MsgScreenUpdate.MODE_FULL,
         )
 
+    elif is_message_type(msg, TOPICS.SCREEN_MESSAGES.FIRMAWRE):
+        logger.debug("firmware: msg='%s'", msg)
+
+        # Only one active from alternatives
+        screen_driver.xor_alternatives(
+            name=COROS.Screen.ENTRY_FIRMWARE2_OVL)
+
+        _overlay_props = _msg_to_overlay_props(msg)
+
+        await screen_driver.add_or_update(
+            name=COROS.Screen.ENTRY_FIRMWARE2_OVL,
+            entry_props=_overlay_props,
+            mode=MsgScreenUpdate.MODE_FULL,
+        )
+
     elif is_message_type(msg, TOPICS.SCREEN_MESSAGES.NETWORK_INFO):
         logger.debug("NETWORK_INFO: msg='%s'", msg)
 

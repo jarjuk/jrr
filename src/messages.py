@@ -214,6 +214,14 @@ class MsgScreenQuestion(MsgScreen):
 
 
 @dataclass
+class MsgScreenFirmware(MsgScreen):
+    """Firmaware version and release notes"""
+    header: str        # short name/classification
+    version_tag: str   # version tag jrr-0.1.1
+    notes: str         # relases notes (multiline)
+
+
+@dataclass
 class MsgScreenNetworkInfo(MsgScreen):
     """Show 'error' and """
     title: str
@@ -301,6 +309,8 @@ message_constructors = {
     TOPICS.SCREEN_MESSAGES.DSCREEN: MsgDScreen,
     TOPICS.SCREEN_MESSAGES.ERROR: MsgScreenError,               # Some sort of an error
     TOPICS.SCREEN_MESSAGES.QUESTION: MsgScreenQuestion,         # Confirmation question
+    # Firmware w. release notes
+    TOPICS.SCREEN_MESSAGES.FIRMAWRE: MsgScreenFirmware,
     TOPICS.SCREEN_MESSAGES.NETWORK_INFO: MsgScreenNetworkInfo,  # Wifi info
 }
 
@@ -712,6 +722,19 @@ def message_question(title: str, question: str, imagepath: str | None = None) ->
     )
     msg_question = cast(MsgScreenQuestion, msg)
     return msg_question
+
+
+def message_firmware(title: str, version_tag: str, notes: str) -> MsgScreenFirmware:
+    msg = message_create(
+        message_type=TOPICS.SCREEN_MESSAGES.FIRMAWRE,
+        d={
+            "header": title,
+            "version_tag": version_tag,
+            "notes": notes
+        }
+    )
+    msg_firmware = cast(MsgScreenFirmware, msg)
+    return msg_firmware
 
 
 def message_network_info(

@@ -122,6 +122,27 @@ def firmware_repo_url() -> str:
     return app_config.firmware_repo_url
 
 
+def _github_release_notes_url(owner: str, repo: str) -> str:
+    """Return release notes url for 'owner' github 'repo'.
+
+    :return:
+    https://raw.githubusercontent.com/{owner}/{repo}/refs/heads/main/src/RELEASES
+
+    """
+    api_url = f"https://raw.githubusercontent.com/{owner}/{repo}/refs/heads/main/src/RELEASES"
+    logger.info("_github_release_notes: api_url='%s', owner=%s, repo=%s",
+                api_url, owner, repo)
+    return api_url
+
+
+def firmware_repo_release_notes_url() -> str:
+    """return url for RELEASE notes  in 'firmware_repo_url'"""
+    repo_url = firmware_repo_url()
+    owner, repo = _repo_url_2_owner_repo(repo_url)
+
+    return _github_release_notes_url(owner=owner, repo=repo)
+
+
 def firmware_pending_link(local_root: str | None = None) -> str:
     """Name of symbolic link pointing to version sub-directory
     containing next firmware version to activate.
@@ -207,6 +228,16 @@ def _github_tag_index(owner: str, repo: str) -> List[FirmwareVersion]:
     return firmwares
 
 
+def _repo_url_2_owner_repo(repo_url: str) -> Tuple[str, str]:
+    """Extract 'owner' and 'repo' from 'github_url'."""
+    parsed = urlparse(repo_url)
+    if parsed.scheme == "https" and parsed.netloc.startswith("github"):
+        _, owner, repo = parsed.path.split("/")
+    else:
+        raise ValueError(f"Unsupported scheme='{parsed.scheme}'/netloc='{parsed.netloc}' in {repo_url=}")
+    return (owner, repo)
+
+
 def firmware_repo_index() -> List[FirmwareVersion]:
     """Return list of firmware versions in 'firmware repo'."""
     repo_url = app_config.firmware_repo_url
@@ -225,6 +256,7 @@ def firmware_repo_index() -> List[FirmwareVersion]:
     else:
         raise ValueError(
             f"Unsupported scheme='{parsed.scheme}' in {repo_url=}")
+
 
 # ------------------------------------------------------------------
 # Basic actions/firmware_repo_index

@@ -26,7 +26,8 @@ from .channel_manager import (read_file, StreamConfig,
                               channel_activation_list, channel_activate, channel_activation_index,
                               channel_icon_image)
 from .constants import (DSCREEN, TOPICS, COROS, RPI, APP_CONTEXT,)
-from .utils import set_wifi_password, current_IP, current_ssid, download_extract_pending
+from .utils import (set_wifi_password, current_IP,
+                    current_ssid, download_extract_pending, read_url)
 from .gpio_coro import (
     gpio_init,
     init_GPIO_buttons, init_GPIO_shutdown, GPIO_button_coro, gpio_close)
@@ -37,7 +38,7 @@ from .streamer_coro import streamer_coro
 from .wifi import list_wifis
 from .dscreen import DApp
 from .jrr_dapp import screen_ovrlays
-from .firmware import FirmwareVersion, firmware_available_versions
+from .firmware import FirmwareVersion, firmware_available_versions, firmware_repo_release_notes_url
 from .messages import (MsgRoot,
                        is_message_type,
                        message_halt, message_create,
@@ -51,7 +52,7 @@ from .messages import (MsgRoot,
                        message_clock_update,
                        message_button_labels,
                        message_config_title,
-                       message_error, message_question,
+                       message_error, message_question, message_firmware,
                        message_network_info,
                        message_keyboard_start, message_keyboard_stop,
                        MsgNetwork,
@@ -1062,8 +1063,8 @@ def ctrl_menu_firmware_setup(
         """Publish SCREEN -message to display firmware overlay."""
         logger.debug("_enter_firmware_setup: menu_name='%s'", menu_name)
         controller_state.config_screens.activateScreen(
-            DSCREEN.SCREEN_OVERLAYS.FIRMWARE,
-            init_values=[(DSCREEN.FIRMWARE_OVERLAY.TITLE, "Päivitetäänkö"),
+            DSCREEN.SCREEN_OVERLAYS.FIRMWARE1,
+            init_values=[(DSCREEN.FIRMWARE_OVERLAY.HEADER, "Päivitetäänkö"),
                          (DSCREEN.FIRMWARE_OVERLAY.VERSION_TAG, menu_name),
                          ])
         overlay_msg = controller_state.config_screens.message()
@@ -1625,33 +1626,61 @@ def ctrl_menu_firmware_activate(
         ctrl_menu_resume: Callable,
         step_resume: int,
 ):
-    """Ask confirmation to activate 'firmaware'.
+    """Ask confirmation to activate 'firmaware', allow user to browse
+    release notes.
 
     :ctrl_menu_resume: lambda of controller where to resume back to.
 
     :step_resume: menu_step to resume to 'ctrl_menu_resume' -lambda
 
     :stream: new stream to activate
+
     """
     logger.info("ctrl_menu_firmware_with_confirm: firmware=%s",
                 firmware)
 
+    # read notes from repo
+    lines = read_url(firmware_repo_release_notes_url())
+    if lines is None:
+        lines = ""
+    notes = lines.split("\n")
+    logger.debug("ctrl_menu_firmware_activate: notes='%s'", notes)
+
+    # index to 'notes' array
+    notes_pos = {"index": 0}
+
     def _entry_to_confirmation(hub: Hub, menu_name: str | None):
         """Ask for confirmation to activate 'firmware'.
         """
-        # confirm delete on one channel
+        logger.debug("_entry_to_confirmation: notes='%s'", notes)
+        max_notes_lines = 10
+        notes_lines = [
+            line for line in
+            notes[notes_pos['index']:notes_pos['index']+max_notes_lines]
+        ]
 
         hub.publish(
             topic=TOPICS.SCREEN,
-            message=message_question(
+            message=message_firmware(
                 title=APP_CONTEXT.MENU.MAY_UPDATE,
-                question=f"Versio '{firmware.version}'",
+                version_tag=firmware.version,
+                notes="\n".join(notes_lines),
             ))
 
     def _do_resume(hub: Hub):
         """Continue in lambda passed in parameter 'ctrl_menu_resume'."""
         # ctrl_menu_browse_channels(hub=hub, step_resume=step_resume)
         ctrl_menu_resume(hub, step_resume=step_resume)
+
+    def _button_short(hub: Hub, direction: int):
+        """Advance 'notes_pos' (=index in 'notes' array)."""
+        notes_pos['index'] += direction
+        if notes_pos['index'] >= len(notes):
+            notes_pos['index'] = len(notes)-1
+        if notes_pos['index'] < 0:
+            notes_pos['index'] = 0
+        # choose the one and only menu --> calls entry action
+        return 0
 
     def _do_activate_firmware(hub: Hub, new_firmware: FirmwareVersion):
         """Active 'firmaware'. Resume back to 'step_resume' in upper
@@ -1678,18 +1707,24 @@ def ctrl_menu_firmware_activate(
     menu = {
         "activate": {
             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
-                APP_CONTEXT.MENU.UN_USED,           # bt1-short
+                APP_CONTEXT.MENU.BROWSE_FWD,        # bt1-short
                 APP_CONTEXT.MENU.OK,                # bt1-long
-                APP_CONTEXT.MENU.UN_USED,           # bt2-short
+                APP_CONTEXT.MENU.BROWSE_BACK,       # bt2-short
                 APP_CONTEXT.MENU.CONFIG_RETURN,     # bt2-long
             ],
             APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _entry_to_confirmation,
-            APP_CONTEXT.MENU.ACTS.BTN1_SHORT: ctr_act_none,
+            APP_CONTEXT.MENU.ACTS.BTN1_SHORT: partial(
+                _button_short,
+                direction=1
+            ),
             APP_CONTEXT.MENU.ACTS.BTN1_LONG: partial(
                 _do_activate_firmware,
                 new_firmware=firmware,
             ),
-            APP_CONTEXT.MENU.ACTS.BTN2_SHORT: ctr_act_none,
+            APP_CONTEXT.MENU.ACTS.BTN2_SHORT: partial(
+                _button_short,
+                direction=-1
+            ),
             APP_CONTEXT.MENU.ACTS.BTN2_LONG: _do_resume,
             APP_CONTEXT.MENU.ACTS.KEYBOARD: ctrl_act_null,
         }

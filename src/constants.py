@@ -120,6 +120,7 @@ class TOPICS:
         CONFIG_TITLE = "title-subtitle"            # bold title, sub-title
         ERROR = "error"                            # error message ()
         QUESTION = "question"                      # confirm/other question
+        FIRMAWRE = "firmware"                      # firmware w. release notes
         DSCREEN = "dscreen"                        # generic dscreen message
         NETWORK_INFO = "network"                   # ssid and IP address
 
@@ -160,7 +161,8 @@ class COROS:
         ENTRY_CONFIG_TITLE = "conf-menu-ovlay"
         ENTRY_WIFI_OVL = "wifi-ovlay"
         ENTRY_URL_LOAD_OVL = "url-load-ovlay"
-        ENTRY_FIRMWARE_OVL = "firmware-ovlay"
+        ENTRY_FIRMWARE1_OVL = "firmware1-ovlay"
+        ENTRY_FIRMWARE2_OVL = "firmware2-ovlay"
         ENTRY_ERROR_OVL = "error-ovlay"
         ENTRY_QUESTION_OVL = "question-ovlay"
         ENTRY_NETWORK_INFO_OVL = "network-ovlay"
@@ -257,6 +259,8 @@ class APP_CONTEXT:
 
         # Common
         NEXT = "Seuraava"
+        BROWSE_FWD = "Eteen"
+        BROWSE_BACK = "Taakse"        
         PREV = "Edellinen"
         RADIO = "Radio"
         NO_ACTION = ""                      # No menu action
@@ -270,7 +274,7 @@ class APP_CONTEXT:
         ACTIVATE_CONFIRM = "Aktivoidaan"
         MAY_DELETE = "Poistaanko"
         MAY_ACTIVATE = "Aktivoidaanko"
-        MAY_UPDATE = "Päivitetäänkö"        
+        MAY_UPDATE = "Päivitetäänkö"
         MAY_REBOOT_TITLE = "Käynnistetäänkö"
         MAY_REBOOT_SUBTITLE = "uudelleen?"
         RESUME = "Takaisin"
@@ -385,7 +389,8 @@ class DSCREEN:
         """Overlays for configuration displays."""
         WIFI_SETUP = COROS.Screen.ENTRY_WIFI_OVL
         URL_LOAD = COROS.Screen.ENTRY_URL_LOAD_OVL
-        FIRMWARE = COROS.Screen.ENTRY_FIRMWARE_OVL 
+        FIRMWARE1 = COROS.Screen.ENTRY_FIRMWARE1_OVL
+        FIRMWARE2 = COROS.Screen.ENTRY_FIRMWARE2_OVL
 
     class WIFI_OVERLAY:
         """Layout names for Screen overlays, names of FieldValue
@@ -406,8 +411,9 @@ class DSCREEN:
     class FIRMWARE_OVERLAY:
         """Field names for firmware selection
         """
-        TITLE = "header"
-        VERSION_TAG = "version"
+        HEADER = "header"
+        VERSION_TAG = "version_tag"
+        NOTES = "notes"
 
     class ERROR_OVERLAY:
         """Field names for url-loader.

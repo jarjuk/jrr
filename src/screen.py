@@ -75,7 +75,7 @@ BUTTON_SPACING = 3
 # overlay stream icons with config screen
 ROW_STREAM_ICON = 75
 COL_STREAM_ICON = 200
-OVERLAY_SIZE = (COL_STREAM_ICON, COL_STREAM_ICON)
+OVERLAY_SIZE = (COL_STREAM_ICON+50, COL_STREAM_ICON)
 
 # Adjust config title with btn1-long
 ROW_CONFIG_TITLE = ROW_STREAM_ICON + BUTTON_SPACING - ROW1
@@ -1165,7 +1165,26 @@ _layout_question = {
          "width": int(OVERLAY_SIZE[0]/2), "height": int(OVERLAY_SIZE[1]/2),
          "imagepath": None, "volatile": True
          }],
+}
 
+_layout_firware_info = {
+    DSCREEN.FIRMWARE_OVERLAY.HEADER:  [
+        ScreenEntryTxt,
+        {"x": 0, "y": 0, "text_len": 15,
+         "font_size": 20, "anchor": "ma",
+         "text": None, "stroke_width": 1}],
+
+    DSCREEN.FIRMWARE_OVERLAY.VERSION_TAG:  [
+        ScreenEntryTxt,
+        {"x": 0, "y": LINE_SPACING, "text_len": 15,
+         "font_size": 20, "anchor": "ma",
+         "text": None, "stroke_width": 1}],
+
+    DSCREEN.FIRMWARE_OVERLAY.NOTES:  [
+        ScreenEntryMultilineTxt,
+        {"x": 0, "y": 2*LINE_SPACING, "text_len": 30,
+         "font_size": 10, "anchor": "la",
+         "text": None, "stroke_width": 0}],
 }
 
 _layout_network_info = {
@@ -1239,7 +1258,7 @@ _layout_url_load = {
 }
 
 _layout_firmware = {
-    DSCREEN.FIRMWARE_OVERLAY.TITLE:  [
+    DSCREEN.FIRMWARE_OVERLAY.HEADER:  [
         ScreenEntryTxt,
         {"x": 0, "y": 0, "text_len": 30,
          "font_size": 20,
@@ -1290,7 +1309,7 @@ overlay_layouts: Dict = {
          "size": OVERLAY_SIZE,
          "layout": _layout_url_load,
          }],
-    COROS.Screen.ENTRY_FIRMWARE_OVL: [
+    COROS.Screen.ENTRY_FIRMWARE1_OVL: [
         ScreenEntryContainer,
         {"x": COL_STREAM_ICON, "y": ROW_STREAM_ICON,
          "size": OVERLAY_SIZE,
@@ -1313,6 +1332,12 @@ overlay_layouts: Dict = {
         {"x": COL_STREAM_ICON, "y": ROW_STREAM_ICON,
          "size": OVERLAY_SIZE,
          "layout": _layout_network_info,
+         }],
+    COROS.Screen.ENTRY_FIRMWARE2_OVL: [
+        ScreenEntryContainer,
+        {"x": COL_STREAM_ICON, "y": ROW_STREAM_ICON,
+         "size": OVERLAY_SIZE,
+         "layout": _layout_firware_info,
          }],
 }  # overlay_layouts - dict
 

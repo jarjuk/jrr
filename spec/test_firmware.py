@@ -22,7 +22,7 @@ LOCAL_ROOT2 = os.path.join(os.path.dirname(__file__), "fixture", "local-repo2")
 REPO_URL0 = LOCAL_ROOT0
 REPO_URL1 = LOCAL_ROOT1
 REPO_URL2 = LOCAL_ROOT2
-GITHUB_REPO = "https://github.com/jarjuk-demo/jrr"
+GITHUB_REPO_MOCK = "https://github.com/jarjuk-demo/jrr"
 REPO_URL_ERR = "gitt:/githu.com"
 JRR_TAG_001 = "jrr-0.0.1"
 JRR_TAG_011 = "jrr-0.1.1"
@@ -52,7 +52,7 @@ def mock_create_empty_local_root():
 @pytest.fixture
 def mock_repo_github():
     with patch.object(config.Config, 'firmware_repo_url', new_callable=PropertyMock) as mock_property:
-        mock_property.return_value = GITHUB_REPO
+        mock_property.return_value = GITHUB_REPO_MOCK
         yield mock_property  # yields the mock in case you want to make assertions on it
 
 
@@ -283,6 +283,19 @@ def test_firmware_mock1b_fixture(mock_local_root1):
 def test_firmware_repo_url_1(mock_repo_url1):
     assert firmware.firmware_repo_url() == REPO_URL1
 
+# ------------------------------------------------------------------
+# firmware_repo_revion_notes_url
+
+def test_firmware_repo_release_notes():
+    owner = "jarjuk"
+    repo = "jrr"
+    expect_url = f"https://raw.githubusercontent.com/{owner}/{repo}/refs/heads/main/src/RELEASES"
+    assert firmware.firmware_repo_release_notes_url() == expect_url
+
+def test_firmware_repo_release_notes_no_github(mock_repo_url1):
+    with pytest.raises(ValueError, match="Unsupported scheme.*"):
+        assert firmware.firmware_repo_release_notes_url()
+
 
 # ------------------------------------------------------------------
 # firmware_repo_index
@@ -313,7 +326,7 @@ def test_firmware_repo_index_err(mock_repo_url_error):
 
 
 def test_firmware_repo_index_err(mock_repo_github, mock_github_tags2):
-    assert firmware.firmware_repo_url() == GITHUB_REPO
+    assert firmware.firmware_repo_url() == GITHUB_REPO_MOCK
     fw_pkgs = firmware.firmware_repo_index()
     assert len(fw_pkgs) == 2
     assert JRR_TAG_001 in [fw.version for fw in fw_pkgs]

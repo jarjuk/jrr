@@ -12,6 +12,9 @@ import re
 import socket
 import urllib.request
 from urllib.parse import urlparse
+from urllib.request import urlopen
+from urllib.error import HTTPError
+from typing import Generator
 
 from .constants import APP_CONTEXT
 
@@ -213,6 +216,21 @@ def copy_file_or_directory(src: str, dest: str) -> str:
     else:
         raise ValueError(f"Unsupported URL scheme: {scheme}")
     return dest_path
+
+
+def read_url(url: str) -> str | None:
+    """Generator reading 'url'
+
+    :return: None if not found
+
+    """
+    with urlopen(url) as response:
+        try:
+            body = response.read()
+            return body.decode("utf-8")
+        except HTTPError as e:
+            logger.warning("read_url: url='%s': %s", url, e)
+            return None
 
 # ------------------------------------------------------------------
 # run script
