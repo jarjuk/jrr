@@ -175,6 +175,40 @@ https://www.ranecommercial.com/legacy/note110.html
 | R3,R4                        | 5k1                       | Resistor_SMD:R_0805_2012Metric                             |        2 |
 | SW1,SW2                      | SW_PUSH_THT_6mm           | Button_Switch_THT:SW_PUSH_6mm                              |        2 |
 
+** Fab
+
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+echo "SCHEMA_ROOT=$SCHEMA_ROOT"
+echo "SCHEMA_NAME=$SCHEMA_NAME"
+echo "RELEASE=$RELEASE"
+
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/jj/work/jrr host 'eero' on ma 7.7.2025 13.41.58 +0300
+: SCHEMA_ROOT=schema
+: SCHEMA_NAME=jrr5
+: RELEASE=E
+
+#+call: kicad-fab()
+
+#+RESULTS:
+#+begin_example
+Running in /home/jj/work/jrr host 'eero' on ma 7.7.2025 13.53.40 +0300
+
+Creating pdf for pcb layers in SCHEMA_NAME=jrr5
+
+- LAYERS=B.Fab,Edge.Cuts,User.Comments,User.Drawings
+- SCHEMA_ROOT=schema ('panels' or 'schema')
+- PCB desing PCB_FILE=schema/jrr5/jrr5.kicad_pcb in PCB_DIR=schema/jrr5
+- Images in IMAGE_PDF=pics/fab.pdf
+
+Using IMAGE_DIR=
+Loading board
+Done OK
+#+end_example
+
 ** Gerbers
 
 #+BEGIN_SRC bash :eval no-export :results output
@@ -265,6 +299,7 @@ Done OK
    | JRR-8  | D      |           |         | +Mounting holes placement+   |                              |
    | JRR-9  | D      | E         |         | Silkscreen text              | Using macros                 |
    | JRR-10 | D      | E         | SW{1,2} | Push buttons to left 15 mm   |                              |
+   | JRR-11 | E      |           | D1, D2  | pads too small               | +0.5 mm w, +.0.5 extend out  |
    |--------+--------+-----------+---------+------------------------------+------------------------------|
 
 *** Deploy ~DATA_SHEET_DIR/DOC-RELEASE.pdf~                        :noexport:
@@ -447,6 +482,38 @@ zip -r $ZIP_FILE $GERBER_DIR
 echo Done OK
 #+END_SRC
 
+*** ~kicad-fab~: Create gerber zip for SCHEMA_NAME-RELEASE under SCHEMA_ROOT or
+
+#+name: kicad-fab
+#+BEGIN_SRC bash :eval no-export :results output :var RELEASE="A" SCHEMA_ROOT="schema"
+PCB_DIR=$SCHEMA_ROOT/$SCHEMA_NAME
+PCB_FILE=$PCB_DIR/$SCHEMA_NAME.kicad_pcb
+LAYERS="B.Fab,Edge.Cuts,User.Comments,User.Drawings"
+IMAGE_PDF=pics/fab.pdf
+cat <<HERE
+Running in $(pwd) host '$(hostname)' on $(date)
+
+Creating pdf for pcb layers in SCHEMA_NAME=$SCHEMA_NAME
+
+- LAYERS=$LAYERS
+- SCHEMA_ROOT=$SCHEMA_ROOT ('panels' or 'schema')
+- PCB desing PCB_FILE=$PCB_FILE in PCB_DIR=$PCB_DIR
+- Images in IMAGE_PDF=$IMAGE_PDF
+
+HERE
+
+
+# cleanup
+
+echo Using IMAGE_DIR=$IMAGE_DIR
+kicad-cli pcb export pdf \
+          --output $IMAGE_PDF \
+          --layers $LAYERS \
+          $PCB_FILE
+echo Done OK
+#+END_SRC
+
+
 
 * Fin                                                              :noexport:
 
@@ -480,4 +547,4 @@ echo Done OK
 # reftex-default-bibliography: ("./jrr5-pcb.bib")
 
 
-Modified:2025-06-23.12:07; # time-stamp
+Modified:2025-07-08.10:38; # time-stamp

@@ -1787,7 +1787,6 @@ cnf/icons/järviradio.png - created
 #+end_example
 
 
-
 * App  install and config to ROOT_DIR -target
 :PROPERTIES:
 :header-args+: :var  ROOT_DIR="/ssh:jrr5:"
@@ -6249,7 +6248,6 @@ sudo journalctl --user --flush --rotate --vacuum-time=1s
 : Running in /home/pi host 'jrr5' on Wed May 21 14:22:30 EEST 2025
 
 
-
 * Notes                                                            :noexport:
 ** Raspberry PI audio output
 :PROPERTIES:
@@ -6426,7 +6424,6 @@ sine-gen.sh alsa-devices
 - Readme [[file:bom/2024-12-09-waveshare-2_3_v3.txt]]
 - Wikipage [[file:bom/2024-12-09-Waveshare-2.13inch-ePaperHAT-Wiki.pdf]]
 
-
 * Fin                                                              :noexport:
 
 
@@ -6459,4 +6456,4 @@ sine-gen.sh alsa-devices
 # reftex-default-bibliography: ("./raspberry.bib")
 
 
-Modified:2025-07-04.09:02; # time-stamp
+Modified:2025-07-08.11:38; # time-stamp

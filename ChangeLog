@@ -1,0 +1,29 @@
+2025-07-08  jj  <jj@eero>
+
+	* jrr-pcb.org (Issues): JRR11: pad size too small
+
+2025-07-04  jj  <jj@eero>
+
+	* src/jrr_streamer.sh (pending): replace unpackaged_directory with
+	src -sub directory
+
+	* bin/jrr.sh (activate_pending): cleanup PREV_LINK
+
+	* src/jrr_streamer.sh (unpack): rm packed file 
+
+2025-05-30  jj  <jj@eero>
+
+	* src/jrr_radio.py (ControllerState.restore_state): implemented
+
+2025-05-06  jj  <jj@eero>
+
+	* src/screen.py (ScreenEntryContainer.__init__):
+	layout_name/layout alternative
+
+2024-12-11  jj  <jj@eero>
+
+	* runner/desktop/rondo.desktop (Exec): Fixed url, Exec location fixed
+
+	* jrr.org (Configuration): JRR-IP moved to global variable
+	(Install new 3.5" display): Installed new 3.5 to jrr1
+

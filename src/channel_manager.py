@@ -71,9 +71,9 @@ class StreamConfig:
 # read_file (from from or from file)
 
 def read_file(url: str, encoding="utf-8") -> Tuple[str, bool]:
-    """Read 'url' content.
+    """Read 'url' content (where url may be file or http resource)
 
-    :url: suports file://  prefix
+    :url: supports file://, https:// -scheme (or without scheme)
 
     :return: on success Tuple[url content, True], on failure
     Tuple[error-string, False]
@@ -242,7 +242,7 @@ def init_streams(url: str | None = None) -> Tuple[List[StreamConfig] | None, boo
 
 
 def channel_activation_index(activation_url: str) -> str:
-    """Return yaml-file in 'activation_url' -path """
+    """Return yaml-file (index.yaml) in 'activation_url' -path."""
     return f"{activation_url}/index.yaml"
 
 

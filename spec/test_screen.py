@@ -261,7 +261,7 @@ def test_screen_entry_container():
     assert len(s.screen_entries) == 3
 
     config_entry = s.named_screen_entry(name=config_entry_name)
-    assert config_entry.screen.size == (200, 200)
+    assert config_entry.screen.size == screen.OVERLAY_SIZE
     assert isinstance(config_entry, screen.ScreenEntryContainer)
     # By default inits empty screen_entries
     assert len(config_entry.screen.screen_entries) == 2
