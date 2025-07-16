@@ -1,7 +1,88 @@
 #+PROPERTY: header-args+ :var  MEM_STICK="/media/jj/jj"
 
 
-* Deploy
+* Kotelon osat
+
+** Osien leikkaus MDF levystä
+
+Kotelon osat 3:lle radiolle 600 mm x 800 mm x 19 mm MDF levystä leikattaessa:
+- 6 kpl x 232mm x 138mm
+- 6 kpl x 232mm x 100mm
+- 6 kpl x 100mm x 100mm   
+
+Leikkaussuunnitelma 600 mm x 800 mm levylle:
+
+| 232mm+232mm+100 = 564mm => | 232mm sorko | 232mm sorko | 100mm  sorko |
+|---------------------------+-------------+-------------+--------------|
+|                           |         138 |         138 |          100 |
+|                           |         138 |         100 |          100 |
+|                           |         138 |         100 |          100 |
+|                           |         138 |         100 |          100 |
+|                           |         138 |         100 |          100 |
+|                           |         100 |         100 |          100 |
+|---------------------------+-------------+-------------+--------------|
+| Yhteensä < 800mm          |         790 |         638 |          600 |
+#+TBLFM: @>$2=vsum(@I..@II)::@>$3=vsum(@I..@II)::@>$4=vsum(@I..@II)
+
+** Katto
+
+[[file:cad/pages/katto.pdf]]
+
+** Takaseinä
+
+[[file:cad/pages/takaseinä.pdf]]
+
+** Etuseinä
+[[file:cad/pages/etuseinä.pdf]]
+
+* Jyrsinnät
+** Katon jyrsintä
+
+- Origo: xy, keskelle aihiota, z=0 aihion yläpinnalle
+- Jyrsintä:
+  - 4mm x 20mm terällä:
+    - katto-01-nappainreijat-04mm.ngc
+    - katto-02-liitin-04mm.ngc
+  - 6mm x 20mm terällä
+    - katto-03-naytto-06mm.ngc
+
+** Etuseinän jyrsint
+
+- Origo: xy, keskelle aihiota, z=0 aihion yläpinnalle
+- Jyrsintä:
+  - 6mm x 20mm terällä
+    - etu-kytkin.ngc
+    - etu-pls-läpi.ngc
+    - etu-pls-upotus.ngc
+    - etu-pls-reunat.ngc
+  
+
+** Takaseinän jyrsintä
+
+- Origo: xy, keskelle aihiota, z=0 aihion yläpinnalle
+- Jyrsintä:
+  - 6mm x 20mm terällä
+    - taka-kytkin.ngc
+    - taka-keystone-vasen.ngc
+    - taka-keystone-oikea.ngc (mikäli kalustetaan RC input:lle)
+
+* Issues
+
+#+ATTR_LATEX: :font \tiny
+   |-----------+-----------+---------------------------------+------------+----------------------------------------+-----------------|
+   | #         |      Date | Ref                             | Fixed date | As-is                                  | Tobe            |
+   |-----------+-----------+---------------------------------+------------+----------------------------------------+-----------------|
+   | JRR-CAD-1 | 15.7.2025 | katto-03-naytto-06mm.ngc        |            | Step down 3+3+0.5+1                    | 3.5 + 3.5 + 0.5 |
+   | JRR-CAD-2 | 15.7.2025 | katto-03-liitin-reunat-04mm.ngc |  16.5.2025 | Step down 2.0                          | 3.5             |
+   | JRR-CAD-3 | 15.7.2025 | katto-03-liitin-reunat-04mm.ngc |            | Separate from katto-02-liitin-04mm.ngc | Combine         |
+   | JRR-CAD-4 | 15.7.2025 | Katto*                          |  16.5.2025 | Safe height < 30mm, Clearance < 10>    | 30/10mm         |
+   | JRR-CAD-5 | 15.7.2025 | cad                             |  16.5.2025 | Automate copy to USB                   |                 |
+   | JRR-CAD-6 | 15.7.2025 | Katto*                          |  16.5.2025 | Too much to the right                  | -43 mm          |
+   | JRR-CAD-7 | 16.5.2025 | Katto                           |  16.5.2025 | Origin lower-right                     | Center block    |
+   |-----------+-----------+---------------------------------+------------+----------------------------------------+-----------------|
+
+
+* Deploy                                                           :noexport:
 
 #+call: sync-info()
 
@@ -63,22 +144,7 @@ drwxr-xr-x 5 jj jj      5 heinä   8 14:03 jyrsi
 -rw-rw-r-- 1 jj jj 199517 heinä  15 12:26 jrr5.FCStd
 #+end_example
 
-* Issues
-
-#+ATTR_LATEX: :font \tiny
-   |-----------+-----------+---------------------------------+------------+----------------------------------------+-----------------|
-   | #         |      Date | Ref                             | Fixed date | As-is                                  | Tobe            |
-   |-----------+-----------+---------------------------------+------------+----------------------------------------+-----------------|
-   | JRR-CAD-1 | 15.7.2025 | katto-03-naytto-06mm.ngc        |            | Step down 3+3+0.5+1                    | 3.5 + 3.5 + 0.5 |
-   | JRR-CAD-2 | 15.7.2025 | katto-03-liitin-reunat-04mm.ngc |            | Step down 2.0                          | 3.0             |
-   | JRR-CAD-3 | 15.7.2025 | katto-03-liitin-reunat-04mm.ngc |            | Separate from katto-02-liitin-04mm.ngc | Combine         |
-   | JRR-CAD-4 | 15.7.2025 | Katto*                          |            | Safe height < 30mm, Clearance < 10>    | 30/10mm         |
-   | JRR-CAD-5 | 15.7.2025 | cad                             |  16.5.2025 | Automate copy to USB                   |                 |
-   | JRR-CAD-6 | 15.7.2025 | Katto*                          |            | Too much to the right                  | -43 mm          |
-   |-----------+-----------+---------------------------------+------------+----------------------------------------+-----------------|
-
-
-* Admin
+* Admin                                                            :noexport:
 ** Sync
 :PROPERTIES:
 :header-args+: :var  PROJECT="jrr"
@@ -213,4 +279,4 @@ drwxr-xr-x 5 jj jj      5 heinä   8 14:03 jyrsi
 # reftex-default-bibliography: ("./jrr-cad.bib")
 
 
-Modified:2025-07-16.08:52; # time-stamp
+Modified:2025-07-16.12:02; # time-stamp
