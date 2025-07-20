@@ -1,0 +1,101 @@
+
+* BOM
+
+** Piirilevy
+
+[[file:jrr-pcb.org]]
+
+
+** Materiaalit
+
+
+| Käyttökohde       | Materiaali                                 | Toimittaja                 | Hinta |
+|-------------------+--------------------------------------------+----------------------------+-------|
+| Kotelon liimaus   | EriKeeper                                  | Bauhaus                    | 10.00 |
+| Kotelon liimaus   | Lamelli 0                                  | Bauhaus                    |     5 |
+| Pohjamaali        | Futura Aqua3 0.45l valkoinen               | RTV                        | 16.90 |
+| Harmaa            | Futura Aqua40 0.9l, puolikiiltävä, RAL7004 | RTV                        | 39.00 |
+| Punainen          | [[file:bom/2020-03-10-spraymaali.jpg][Montana Gold, 400ML, 3070 purple red]]       | [[https://www.decovari.fi/][Decoväri]]                   | 10.00 |
+| Kaiutin pölysuoja | Fender style black kaiutin kangas, 60x60cm | [[https://uraltone.com/fender-style-black-kaiutinkangas-grill-cloth-60x60cm.html][Uraltone 926-F-BLACK-60x60]] |    9. |
+|-------------------+--------------------------------------------+----------------------------+-------|
+|                   | Yhteensä                                   |                            |  80.9 |
+#+TBLFM: @>$4=vsum(@I..@II)
+
+
+** Osat
+
+\tiny
+| S[fn:S] | Kohde                   | Koodi               | Toimittaja                              | Kpl | A-hinta |   Yht |
+|---------+-------------------------+---------------------+-----------------------------------------+-----+---------+-------|
+| E       | Vahvistin               | [[file:bom/PAM8403-datasheet.pdf][PAM8403]]             | [[https://uraltone.com/vahvistinmoduli-pam8403-class-d-2x3w.html][Uraltone 190-PAM8403-2x3W-AMP]]           |   1 |     5.0 |    5. |
+| E       | 3.5mm DAC muunnin       | ALC5686             | [[https://www.aliexpress.com/item/1005004358120260.html][Axpress 1005004358120260]]                |   1 |    7.85 |  7.85 |
+| E       | Nuppi/vahvistin         | 6mm,20mm/phi,16mm/h | [[https://www.aliexpress.com/item/1005007000845408.html][Axpress 1005007000845408]]                |   1 |         |     0 |
+| E       | Nupin jatkovarsi        | 6mm,10mm/phi,25mm/h | [[https://www.aliexpress.com/item/1005006549662711.html][Axpress 1005006549662711]]                |   1 |         |     0 |
+| E       | Vahvistimen asennuslevy |                     | Laserleikkaus                           |   1 |       0 |     0 |
+| E       | Rampamuhvi/vahvistin    | M3X10X6             | [[https://www.ruuvikeskus.fi/?tuote=315-7-0310061][Ruuvikeskus 315-7-0310061]]               |   4 |    0.41 |  1.64 |
+| E       | Pultti/vahvistin        | M3x10mm             |                                         |   4 |    0.02 |  0.08 |
+| E       | Kaiutinelementti        | [[file:bom/peerless-830986.pdf][PLS-P830986]]         | [[https://www.soundimports.eu/en/peerless-by-tymphany-pls-p830986.html][SoundImports PLS-P830986]]                |   1 |   28.45 | 28.45 |
+| E       | Rampamuhvi/kaiutin      | M3X10X6             | [[file:bom/RAMPAMUTTERI ST M3X10X6 .png][Ruuvikeskus]]                             |   4 |    0.41 |  1.64 |
+| E       | Pultti/kaiutin          | M3x16mm, musta      | [[https://www.aliexpress.com/item/1005003640558992.html][Axpress 1005003640558992 M3,16mm]]        |   4 |    0.08 |  0.32 |
+| E       | Asennuskehys/kaiutin    | [[file:cad/laseroinnit/LaseroiKaiutinRengas.pdf][KaiutinRengas.pdf]]   | Laserleikkaus                           |   2 |       0 |     0 |
+|---------+-------------------------+---------------------+-----------------------------------------+-----+---------+-------|
+| K       | Korotushylsy/piirilevy  | \phi3.2mmx5mm       | [[https://www.aliexpress.com/item/1005006287632632.html][Axpress 1005006287632632 M3.2,OD7,5mm]]   |   6 |    0.05 |   0.3 |
+| K       | Rampamuhvi              | M3X10X6             | [[https://www.ruuvikeskus.fi/?tuote=315-7-0310061][Ruuvikeskus 315-7-0310061]]               |   6 |    0.41 |  2.46 |
+| K       | TFT3.52 näyttö          | [[file:bom/MHS3.5-display.pdf][ILI9486]]             | [[https://www.aliexpress.com/item/1005008964389076.html?spm=a2g0o.order_list.order_list_main.52.10b9180265YXoP][Axpress]]                                 |   1 |   14.40 |  14.4 |
+| K       | Rampamuhvi              | M3X10X6             | [[https://www.ruuvikeskus.fi/?tuote=315-7-0310061][Ruuvikeskus 315-7-0310061]]               |   4 |    0.41 |  1.64 |
+| K       | Asennuskehys/näyttö     | [[file:cad/laseroinnit/LaserointiNäyttöKehys.pdf][NäyttöKehys.pdf]]     | Laserleikkaus                           |   1 |       0 |     0 |
+| K       | Pultti/näyttö           | M3x12mm, musta      | [[https://www.aliexpress.com/item/1005003640558992.html][A-xpress 1005003640558992 M3,50pcs,12mm]] |   4 |    0.06 |  0.24 |
+|---------+-------------------------+---------------------+-----------------------------------------+-----+---------+-------|
+| T       | Keystone panelisovitin  | [[file:bom/KAPMAmc_eng_tds.pdf][KAPMA#20]]            | [[https://www.distrelec.nl/en/panel-mount-adaptor-metal-pack-of-20-pieces-tuk-limited-kapma-20/p/30134977][Elfa 301-34-977]]                         |   2 |    1.66 |  3.32 |
+| T       | Keystone UBC-C          |                     | [[https://www.aliexpress.com/item/1005007356362854.html][Axpress 1005007356362854 White,5pcs]]     |   1 |    1.56 |  1.56 |
+| T       | Keystone UBC-A          |                     | [[https://www.aliexpress.com/item/1005005600484996.html][Axpress 1005005600484996 White,5PCS]]     |   1 |    1.32 |  1.32 |
+| T       | Rampamuhvi              | M4x8mmx12mm         | Helakauppa                              |   6 |     1.4 |   8.4 |
+| T       | Pultti                  | M4x30mm,A4,upotus   | [[https://www.aliexpress.com/item/1005007838338973.html][Axpress 1005007838338973 M4,30mm]]        |   6 |    0.14 |  0.84 |
+| TR      | Keystone panelisovitin  | [[file:bom/KAPMAmc_eng_tds.pdf][KAPMA#20]]            | [[https://www.distrelec.nl/en/panel-mount-adaptor-metal-pack-of-20-pieces-tuk-limited-kapma-20/p/30134977][Elfa 301-34-977]]                         |   2 |    1.66 |  3.32 |
+| TR      | Liukukytkin             | SPDT,15mm           | [[https://www.partco.fi/fi/saehkoemekaniikka/kytkimet/liukukytkimet/7283-kyt-liu15.html][Partco KYT LIU15]]                        |   1 |     0.5 |   0.5 |
+| TR      | Liukukytkin sovitin     |                     | 3D tulostus                             |   1 |     0.5 |   0.5 |
+| TR      | Keystonone RCA          |                     |                                         |     |         |     0 |
+|---------+-------------------------+---------------------+-----------------------------------------+-----+---------+-------|
+| P       | Kumitassu               | \phi5mm/22x13mm     | [[https://www.partco.fi/fi/mekaniikka/kotelointi/kotelotarvikkeet/21895-kot-g050.html][Partco KOT G050]]                         |   4 |    0.36 |  1.44 |
+| P       | Pultti/tassu            | M4x30mm             |                                         |   4 |    0.05 |   0.2 |
+| P       | Mutteri                 | M4                  |                                         |   4 |    0.05 |   0.2 |
+| P       | Aluslevy                | M4                  |                                         |   8 |    0.02 |  0.16 |
+|---------+-------------------------+---------------------+-----------------------------------------+-----+---------+-------|
+|         | *YHTEENSÄ*              |                     |                                         |     |         | 85.78 |
+#+TBLFM: $7=$5*$6::@>$7=vsum(@I..@IIIII)
+
+[fn:S] E=Etusivu, K=katto, T=takasivu, TR=takasivu RC variantti, P=pohja
+
+* Fin                                                              :noexport:
+
+
+** Emacs variables
+
+#+RESULTS:
+
+# Local Variables:
+# time-stamp-line-limit: -8
+# time-stamp-start: "Modified:"
+# time-stamp-format: "%:y-%02m-%02d.%02H:%02M"
+# time-stamp-time-zone: nil
+# time-stamp-end: "; # time-stamp"
+# eval: (add-hook 'before-save-hook 'time-stamp)
+# org-confirm-babel-evaluate: nil
+# End:
+#
+# Muuta
+# org-cdlatex-mode: t
+# eval: (cdlatex-mode)
+#
+# Local ebib:
+# org-ref-default-bibliography: "./jrr-bom.bib"
+# org-ref-bibliography-notes: "./jrr-bom-notes.org"
+# org-ref-pdf-directory: "./pdf/"
+# org-ref-notes-directory: "."
+# bibtex-completion-notes-path: "./jrr-bom-notes.org"
+# ebib-preload-bib-files: ("./jrr-bom.bib")
+# ebib-notes-file: ("./jrr-bom-notes.org")
+# reftex-default-bibliography: ("./jrr-bom.bib")
+
+
+Modified:2025-07-18.13:22; # time-stamp
