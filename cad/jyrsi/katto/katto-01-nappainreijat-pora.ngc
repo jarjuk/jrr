@@ -1,0 +1,36 @@
+(Exported by FreeCAD)
+(Post Processor: script_module)
+(Output Time:2025-07-20 15:49:40.335462)
+(begin preamble)
+G17 G54 G40 G49 G80 G90
+G21
+(begin operation: Fixture)
+(machine units: mm/min)
+G54 
+(finish operation: Fixture)
+(begin operation: TC: 4.2mm Drill)
+(machine units: mm/min)
+(TC: 4.2mm Drill) 
+M5
+M6 T4 
+G43 H4 
+(finish operation: TC: 4.2mm Drill)
+(begin operation: pora-nappain-4.2mm)
+(machine units: mm/min)
+(pora-nappain-4.2mm) 
+(Begin Drilling) 
+G0 Z5.000 
+G90 
+G98 
+G0 X-54.945 Y-8.000 
+G83 X-54.945 Y-8.000 Z-19.000 F30.000 Q3.150 R3.000 
+G0 X-54.945 Y8.000 
+G83 X-54.945 Y8.000 Z-19.000 F30.000 Q3.150 R3.000 
+G80 
+G0 Z3.000 
+G0 Z5.000 
+(finish operation: pora-nappain-4.2mm)
+(begin postamble)
+M05
+G17 G54 G90 G80 G40
+M2

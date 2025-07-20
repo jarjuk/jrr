@@ -33,8 +33,10 @@ Leikkaussuunnitelma 600 mm x 800 mm levylle:
 
 - Origo: xy, keskelle aihiota, z=0 aihion yläpinnalle
 - Jyrsintä:
+  - 3.2mm poraterällä:
+    - katto-01-nappainreijat-pora.ngc
   - 4mm x 20mm terällä:
-    - katto-01-nappainreijat-04mm.ngc
+    - +katto-01-nappainreijat-04mm.ngc+
     - katto-02-liitin-04mm.ngc
   - 6mm x 20mm terällä
     - katto-03-naytto-06mm.ngc
@@ -51,7 +53,6 @@ Leikkaussuunnitelma 600 mm x 800 mm levylle:
     - etu-pls-upotus.ngc
     - etu-pls-reunat.ngc
   
-
 *** Takaseinän aukkojen jyrsintä
 
 
@@ -106,20 +107,54 @@ ls cad/sabluunat
 * Issues
 
 #+ATTR_LATEX: :font \tiny
-   |-----------+-----------+---------------------------------+------------+----------------------------------------+-----------------|
-   | #         |      Date | Ref                             | Fixed date | As-is                                  | Tobe            |
-   |-----------+-----------+---------------------------------+------------+----------------------------------------+-----------------|
-   | JRR-CAD-1 | 15.7.2025 | katto-03-naytto-06mm.ngc        |            | Step down 3+3+0.5+1                    | 3.5 + 3.5 + 0.5 |
-   | JRR-CAD-2 | 15.7.2025 | katto-03-liitin-reunat-04mm.ngc |  16.5.2025 | Step down 2.0                          | 3.5             |
-   | JRR-CAD-3 | 15.7.2025 | katto-03-liitin-reunat-04mm.ngc |            | Separate from katto-02-liitin-04mm.ngc | Combine         |
-   | JRR-CAD-4 | 15.7.2025 | Katto*                          |  16.5.2025 | Safe height < 30mm, Clearance < 10>    | 30/10mm         |
-   | JRR-CAD-5 | 15.7.2025 | cad                             |  16.5.2025 | Automate copy to USB                   |                 |
-   | JRR-CAD-6 | 15.7.2025 | Katto*                          |  16.5.2025 | Too much to the right                  | -43 mm          |
-   | JRR-CAD-7 | 16.5.2025 | Katto                           |  16.5.2025 | Origin lower-right                     | Center block    |
-   |-----------+-----------+---------------------------------+------------+----------------------------------------+-----------------|
+   |-----------+-----------+---------------------------------+------------+----------------------------------------+--------------------|
+   | #         |      Date | Ref                             | Fixed date | As-is                                  | Tobe               |
+   |-----------+-----------+---------------------------------+------------+----------------------------------------+--------------------|
+   | JRR-CAD-1 | 15.7.2025 | katto-03-naytto-06mm.ngc        |            | Step down 3+3+0.5+1                    | 3.5 + 3.5 + 0.5    |
+   | JRR-CAD-2 | 15.7.2025 | katto-03-liitin-reunat-04mm.ngc |  16.5.2025 | Step down 2.0                          | 3.5                |
+   | JRR-CAD-3 | 15.7.2025 | katto-03-liitin-reunat-04mm.ngc |            | Separate from katto-02-liitin-04mm.ngc | Combine            |
+   | JRR-CAD-4 | 15.7.2025 | Katto*                          |  16.5.2025 | Safe height < 30mm, Clearance < 10>    | 30/10mm            |
+   | JRR-CAD-5 | 15.7.2025 | cad                             |  16.5.2025 | Automate copy to USB                   |                    |
+   | JRR-CAD-6 | 15.7.2025 | Katto*                          |  16.5.2025 | Too much to the right                  | -43 mm             |
+   | JRR-CAD-7 | 16.7.2025 | Katto                           |  16.5.2025 | Origin lower-right                     | Center block       |
+   | JRR-CAD-8 | 20.7.2025 | Katto                           |  20.7.2025 | Drill button holes                     | nappainreijat-pora |
+   |-----------+-----------+---------------------------------+------------+----------------------------------------+--------------------|
 
 * Deploy                                                           :noexport:
+** Deploy to simutor
 
+#+BEGIN_SRC bash :eval no-export :results output
+  echo "Running in $(pwd) host '$(hostname)' on $(date)"
+  ROOT_DIR=/home/jj/work/jrr/cad/jyrsi
+  FROM_DIRS="$ROOT_DIR/etu $ROOT_DIR/katto $ROOT_DIR/taka"
+  TO_DIR=/home/jj/Documents/etool/02-ngc
+  for d in $FROM_DIRS; do
+      (set -x; cp $d/* $TO_DIR)
+  done
+
+  ls -ltr $TO_DIR
+  	 
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Running in /home/jj/work/jrr host 'eero' on su 20.7.2025 15.50.25 +0300
+total 55
+-rw-rw-r-- 1 jj jj 9374 heinä  20 15:50 etu-pls-upotus.ngc
+-rw-r--r-- 1 jj jj 1514 heinä  20 15:50 etu-pls-reunat.ngc
+-rw-r--r-- 1 jj jj 9575 heinä  20 15:50 etu-pls-läpi.ngc
+-rw-r--r-- 1 jj jj 1941 heinä  20 15:50 etu-kytkin.ngc
+-rw-rw-r-- 1 jj jj 2520 heinä  20 15:50 katto-01-nappainreijat-04mm.ngc
+-rw-rw-r-- 1 jj jj 5902 heinä  20 15:50 katto-03-naytto-06mm.ngc
+-rw-rw-r-- 1 jj jj 7361 heinä  20 15:50 katto-02-liitin-04mm.ngc
+-rw-rw-r-- 1 jj jj  736 heinä  20 15:50 katto-01-nappainreijat-pora.ngc
+-rw-rw-r-- 1 jj jj 2559 heinä  20 15:50 taka-kytkin.ngc
+-rw-r--r-- 1 jj jj 6195 heinä  20 15:50 taka-keystone-vasen.ngc
+-rw-rw-r-- 1 jj jj 7689 heinä  20 15:50 taka-keystone-oikea.ngc
+#+end_example
+
+
+** Deploy to USB stic
 #+call: sync-info()
 
 #+RESULTS:
@@ -315,4 +350,4 @@ drwxr-xr-x 5 jj jj      5 heinä   8 14:03 jyrsi
 # reftex-default-bibliography: ("./jrr-cad.bib")
 
 
-Modified:2025-07-18.08:57; # time-stamp
+Modified:2025-07-20.15:54; # time-stamp
