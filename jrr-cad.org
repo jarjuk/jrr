@@ -1,7 +1,7 @@
 #+PROPERTY: header-args+ :var  MEM_STICK="/media/jj/jj"
 
 
-* Kotelon osat
+* MDF osat
 
 ** Osien leikkaus MDF levystä
 
@@ -24,19 +24,12 @@ Leikkaussuunnitelma 600 mm x 800 mm levylle:
 | Yhteensä < 800mm          |         790 |         638 |          600 |
 #+TBLFM: @>$2=vsum(@I..@II)::@>$3=vsum(@I..@II)::@>$4=vsum(@I..@II)
 
-** Katto
+** Kotelon aukotus
+*** Katon aukkojen jyrsintä
+
 
 [[file:cad/pages/katto.pdf]]
 
-** Takaseinä
-
-[[file:cad/pages/takaseinä.pdf]]
-
-** Etuseinä
-[[file:cad/pages/etuseinä.pdf]]
-
-* Jyrsinnät
-** Katon jyrsintä
 
 - Origo: xy, keskelle aihiota, z=0 aihion yläpinnalle
 - Jyrsintä:
@@ -46,7 +39,9 @@ Leikkaussuunnitelma 600 mm x 800 mm levylle:
   - 6mm x 20mm terällä
     - katto-03-naytto-06mm.ngc
 
-** Etuseinän jyrsint
+*** Etuseinän aukkojen jyrsintä
+
+[[file:cad/pages/etuseinä.pdf]]
 
 - Origo: xy, keskelle aihiota, z=0 aihion yläpinnalle
 - Jyrsintä:
@@ -57,7 +52,11 @@ Leikkaussuunnitelma 600 mm x 800 mm levylle:
     - etu-pls-reunat.ngc
   
 
-** Takaseinän jyrsintä
+*** Takaseinän aukkojen jyrsintä
+
+
+[[file:cad/pages/takaseinä.pdf]]
+
 
 - Origo: xy, keskelle aihiota, z=0 aihion yläpinnalle
 - Jyrsintä:
@@ -65,6 +64,44 @@ Leikkaussuunnitelma 600 mm x 800 mm levylle:
     - taka-kytkin.ngc
     - taka-keystone-vasen.ngc
     - taka-keystone-oikea.ngc (mikäli kalustetaan RC input:lle)
+
+
+* Akryyliosat
+
+** Näytön asennuskehys
+
+[[file:cad/laseroinnit/LaserointiNäyttöKehys.pdf]]
+
+** Kaiuttimen asennuskehys
+
+[[file:cad/laseroinnit/LaseroiKaiutinRengas.pdf]]
+
+
+* 3D tulostus
+
+** Liukukytkimen keystone -sovitin
+
+[[file:cad/3D/keystone-liukukytkin-v10.stl]]
+
+* Maalaus
+
+** Maalaussabluunat
+
+Hakemistossa [[file:cad/sabluunat]] olevat maalaussabluunat
+
+#+BEGIN_SRC bash :eval no-export :results output :exports results
+ls cad/sabluunat
+#+END_SRC
+
+#+RESULTS:
+: JussiSalmiakki.dxf
+: JussiSalmiakki.jpg
+: JussiSalmiakki.pdf
+: JussiSalmiakki.svg
+
+
+#+CAPTION: JussiSalmiakki
+[[file:cad/sabluunat/JussiSalmiakki.pdf]]
 
 * Issues
 
@@ -80,7 +117,6 @@ Leikkaussuunnitelma 600 mm x 800 mm levylle:
    | JRR-CAD-6 | 15.7.2025 | Katto*                          |  16.5.2025 | Too much to the right                  | -43 mm          |
    | JRR-CAD-7 | 16.5.2025 | Katto                           |  16.5.2025 | Origin lower-right                     | Center block    |
    |-----------+-----------+---------------------------------+------------+----------------------------------------+-----------------|
-
 
 * Deploy                                                           :noexport:
 
@@ -279,4 +315,4 @@ drwxr-xr-x 5 jj jj      5 heinä   8 14:03 jyrsi
 # reftex-default-bibliography: ("./jrr-cad.bib")
 
 
-Modified:2025-07-16.12:02; # time-stamp
+Modified:2025-07-18.08:57; # time-stamp

@@ -111,7 +111,6 @@ https://www.ranecommercial.com/legacy/note110.html
     [[file:pics/jrr5.pdf]]
 
 ** Kotelon suunnittelu
-
 *** Piirilevyn mitoitus
 
 [[file:pics-keep/jrr5-front.png]]
@@ -300,6 +299,7 @@ Done OK
    | JRR-9  | D      | E         |         | Silkscreen text              | Using macros                 |
    | JRR-10 | D      | E         | SW{1,2} | Push buttons to left 15 mm   |                              |
    | JRR-11 | E      |           | D1, D2  | pads too small               | +0.5 mm w, +.0.5 extend out  |
+   | JRR-12 | E      |           | H{1-6}  | Hole diameter 2.5mm          | --> 3.5mm                    |
    |--------+--------+-----------+---------+------------------------------+------------------------------|
 
 *** Deploy ~DATA_SHEET_DIR/DOC-RELEASE.pdf~                        :noexport:
@@ -547,4 +547,4 @@ echo Done OK
 # reftex-default-bibliography: ("./jrr5-pcb.bib")
 
 
-Modified:2025-07-08.10:38; # time-stamp
+Modified:2025-07-16.13:57; # time-stamp

@@ -1786,7 +1786,6 @@ cnf/icons/YLE-SUOMI.png - created
 cnf/icons/järviradio.png - created
 #+end_example
 
-
 * App  install and config to ROOT_DIR -target
 :PROPERTIES:
 :header-args+: :var  ROOT_DIR="/ssh:jrr5:"
@@ -6456,4 +6455,4 @@ sine-gen.sh alsa-devices
 # reftex-default-bibliography: ("./raspberry.bib")
 
 
-Modified:2025-07-08.11:38; # time-stamp
+Modified:2025-07-16.13:57; # time-stamp
