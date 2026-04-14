@@ -119,13 +119,19 @@ async def _streamer_run(url: str):
 
 
     global streamer_proc
+    # params = [
+    #     APP_CONTEXT.STREAMER_SCRIPT,
+    #     "--mono",
+    #     "--file", url,
+    #     # "--gain", "2",
+    #     "play",
+    # ]
     params = [
         APP_CONTEXT.STREAMER_SCRIPT,
-        "--mono",
         "--file", url,
-        "--gain", "2",
-        "play",
+        "stream",
     ]
+    
     # runner_proc = await asyncio.create_subprocess_shell(
     #     script)
     logger.info("create_subprocess: param='%s'", ' '.join([ str(p) for p in params]))

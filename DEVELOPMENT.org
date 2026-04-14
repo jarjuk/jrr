@@ -162,6 +162,7 @@ total size is 13.948.496  speedup is 333,47
 :header-args+: :dir  /ssh:jrr5:
 :END:
 
+*** Debug during dev
 Terminal commands
 
 #+BEGIN_SRC bash :eval no-export :results output
@@ -225,11 +226,97 @@ killall ffmpeg ; .venv/bin/python ./jrr.py -v -v  radio |   tee tmp/apu.log
 
 #+RESULTS:
 
+*** manual streaming
+
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+./jrr_streamer.sh -v -v -v --file https://icecast.live.yle.fi/radio/YleRadio1/icecast.audio stream
+
+#+END_SRC
+
+*** Chrip from command line
+
+#+begin_example
+jrr.sh stop
+jrr.sh status
+#+end_example
+
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+jrr.sh status
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi host 'jrr5' on Tue Apr 14 14:51:06 EEST 2026
+: jrr.sh: status=0/pi           414       1  0 14:34 ?        00:00:00 /bin/bash /home/pi/jrr/bin/jrr.sh daemon
+: jrr.py: status=0/pi           527     414  6 14:34 ?        00:01:01 .venv/bin/python ./jrr.py radio
+: ffmpeg: status=0/pi          2549    2548  5 14:47 ?        00:00:11 ffmpeg -hide_banner -nostdin -i https://jarviradio.radiotaajuus.fi:9000/jr -filter_complex [0:a]volume=volume=2,pan=mono|c0=0.5*c0+0.5*c1,alimiter[aout] -map [aout] -ac 2 -f alsa hw:CARD=Audio,DEV=0
+
+Stop jrr-service
+
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+jrr.sh stop
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi host 'jrr5' on Tue Apr 14 14:51:20 EEST 2026
+
+Create chipr
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+cd jrr/src
+./jrr_streamer.sh -v -v  --duration 10 --start-freq 10  --end-freq 5000 chirp
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi host 'jrr5' on Tue Apr 14 14:53:45 EEST 2026
+: Using FILE=/home/pi/tmp/chrip-10-5000-10s.wav
+: Running in host 'jrr5' on Tue Apr 14 14:53:46 EEST 2026
+: START_FREQ=10, END_FREQ=5000, FILE=/home/pi/tmp/chrip-10-5000-10s.wav, DURATION=10
+: -rw-r--r-- 1 pi pi 1764078 Apr 14 14:53 
+
+Play chirp
+#+BEGIN_SRC bash :eval no-export :results output :var CHIRP="/home/pi/tmp/chrip-10-5000-10s.wav"
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+echo "CHIRP=$CHIRP"
+cd jrr/src
+./jrr_streamer.sh --file "$CHIRP" stream  2>&1
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Running in /home/pi host 'jrr5' on Tue Apr 14 15:04:05 EEST 2026
+CHIRP=/home/pi/tmp/chrip-10-5000-10s.wav
+20260414-15:04:05: ./jrr_streamer.sh|set_alsa_volume: card=Audio, volume=95%
+Simple mixer control 'Headphone',0
+  Capabilities: pvolume pswitch pswitch-joined
+  Playback channels: Front Left - Front Right
+  Limits: Playback 0 - 175
+  Mono:
+  Front Left: Playback 166 [95%] [-3.38dB] [on]
+  Front Right: Playback 166 [95%] [-3.38dB] [on]
+Running in host 'jrr5' on Tue Apr 14 15:04:05 EEST 2026
+20260414-15:04:05: ./jrr_streamer.sh|AUDIO_OUT=hw:CARD=Audio,DEV=0, URL=/home/pi/tmp/chrip-10-5000-10s.wav, GAIN=2
++ ffmpeg -hide_banner -nostdin -nostats -loglevel error -i /home/pi/tmp/chrip-10-5000-10s.wav -filter_complex '[0:a]volume=volume=2,pan=mono|c0=0.5*c0+0.5*c1,alimiter[aout]' -map '[aout]' -ac 2 -f alsa hw:CARD=Audio,DEV=0
+#+end_example
+
+
+Other commands 
+
+#+begin_example
+./jrr_streamer.sh --duration 10 --end-freq 5000 chirp
+./jrr_streamer.sh play /home/pi/tmp/chrip-100-5000-10s.wav
+#+end_example
+
+
+
 ** Check version
+
 
 #+call: python-version()
 
-#+RESULTS:
+
 : hello world
 : sys.version=3.11.11 | packaged by conda-forge | (main, Mar  3 2025, 20:43:55) [GCC 13.3.0]
 : Conda environment=pyyton3
@@ -375,6 +462,159 @@ if git diff-tree --no-commit-id --name-only -r HEAD | grep -q '^src/VERSION$'; t
     fi
 fi
 #+END_SRC
+
+
+
+* Issues
+
+** DONE JRR-DEV-001: Alsa volume limit
+:PROPERTIES:
+:header-args+:  :dir  /ssh:jrr5:
+:END:
+
+
+#+BEGIN_SRC bash :eval no-export :results output 
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+amixer -c 2 scontents
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi host 'jrr5' on Tue Apr 14 12:33:26 EEST 2026
+: Simple mixer control 'Headphone',0
+:   Capabilities: pvolume pswitch pswitch-joined
+:   Playback channels: Front Left - Front Right
+:   Limits: Playback 0 - 175
+:   Mono:
+:   Front Left: Playback 175 [100%] [0.00dB] [on]
+:   Front Right: Playback 175 [100%] [0.00dB] [on]
+
+
+Fixed:
+#+begin_example
+amixer -c 2 sset Headphone 100%
+#+end_example
+
+To map device name to  device number
+
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+aplay -l
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Running in /home/pi host 'jrr5' on Tue Apr 14 12:38:27 EEST 2026
+,**** List of PLAYBACK Hardware Devices ****
+card 0: Headphones [bcm2835 Headphones], device 0: bcm2835 Headphones [bcm2835 Headphones]
+  Subdevices: 8/8
+  Subdevice #0: subdevice #0
+  Subdevice #1: subdevice #1
+  Subdevice #2: subdevice #2
+  Subdevice #3: subdevice #3
+  Subdevice #4: subdevice #4
+  Subdevice #5: subdevice #5
+  Subdevice #6: subdevice #6
+  Subdevice #7: subdevice #7
+card 1: vc4hdmi [vc4-hdmi], device 0: MAI PCM i2s-hifi-0 [MAI PCM i2s-hifi-0]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+card 2: Audio [Realtek USB2.0 Audio], device 0: USB Audio [USB Audio]
+  Subdevices: 0/1
+  Subdevice #0: subdevice #0
+#+end_example
+
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+cat /proc/asound/cards
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi host 'jrr5' on Tue Apr 14 12:39:10 EEST 2026
+:  0 [Headphones     ]: bcm2835_headpho - bcm2835 Headphones
+:                       bcm2835 Headphones
+:  1 [vc4hdmi        ]: vc4-hdmi - vc4-hdmi
+:                       vc4-hdmi
+:  2 [Audio          ]: USB-Audio - Realtek USB2.0 Audio
+:                       TTGK Realtek USB2.0 Audio at usb-3f980000.usb-1.5, high speed
+
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+cat /proc/asound/Audio/id
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi host 'jrr5' on Tue Apr 14 12:46:32 EEST 2026
+: Audio
+
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+# grep -n "USB" /proc/asound/cards
+# grep -E "\[ *Audio *\]" /proc/asound/cards 
+awk '/\[ *Audio *\]/ {print $1}' /proc/asound/cards
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi host 'jrr5' on Tue Apr 14 12:53:15 EEST 2026
+: 2
+
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+cardnum() {
+  awk '/\[ *Audio *\]/ {print $1}' /proc/asound/cards
+}
+
+echo cardnum=$(cardnum) 
+amixer -c $(cardnum) scontents
+
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi host 'jrr5' on Tue Apr 14 12:53:44 EEST 2026
+: cardnum=2
+: Simple mixer control 'Headphone',0
+:   Capabilities: pvolume pswitch pswitch-joined
+:   Playback channels: Front Left - Front Right
+:   Limits: Playback 0 - 175
+:   Mono:
+
+:   Front Left: Playback 175 [100%] [0.00dB] [on]
+:   Front Right: Playback 175 [100%] [0.00dB] [on]
+
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+cardnum() {
+  awk '/\[ *Audio *\]/ {print $1}' /proc/asound/cards
+}
+echo cardnum=$(cardnum)
+amixer -c $(cardnum) sset Headphone 100%
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi host 'jrr5' on Tue Apr 14 13:00:07 EEST 2026
+: cardnum=2
+: Simple mixer control 'Headphone',0
+:   Capabilities: pvolume pswitch pswitch-joined
+:   Playback channels: Front Left - Front Right
+:   Limits: Playback 0 - 175
+:   Mono:
+:   Front Left: Playback 175 [100%] [0.00dB] [on]
+:   Front Right: Playback 175 [100%] [0.00dB] [on]
+
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+amixer -c Audio scontents
+
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi host 'jrr5' on Tue Apr 14 12:59:41 EEST 2026
+: Simple mixer control 'Headphone',0
+:   Capabilities: pvolume pswitch pswitch-joined
+:   Playback channels: Front Left - Front Right
+:   Limits: Playback 0 - 175
+:   Mono:
+:   Front Left: Playback 175 [100%] [0.00dB] [on]
+:   Front Right: Playback 175 [100%] [0.00dB] [on]
 
 
 * Admin
@@ -1901,7 +2141,6 @@ BOOTLOADER: up to date
     LATEST: 000138c0
 #+end_example
 
-
 *** ~create-dir~
 
 #+name: create-dir
@@ -1911,6 +2150,132 @@ echo "Create DIR=$DIR in host='$(hostname)' on $(date)"
 ( [ ! -d $DIR ] && mkdir $DIR  && echo Directory $DIR created ) || echo Directory $DIR already exists 
 #+END_SRC
 
+
+** jrr-admin
+:PROPERTIES:
+:header-args+: :dir  /ssh:jrr5:
+:END:
+
+*** ~jrr-where~: Expect to run on :dir
+
+#+name: jrr-where
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+#+END_SRC
+
+#+RESULTS: jrr-where
+: Running in /home/pi host 'jrr5' on Tue Apr 14 15:06:57 EEST 2026
+
+*** ~jrr-start~: start ~jrr~ - service
+
+#+name: jrr-start
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+jrr.sh start 2>&1
+#+END_SRC
+
+#+RESULTS: jrr-start
+: Running in /home/pi host 'jrr5' on Tue Apr 14 15:07:30 EEST 2026
+: 'pi' runs '/home/pi/jrr/bin/jrr.sh start' on 'jrr5:/home/pi'
+
+*** ~jrr-status~: status ~jrr~ - service
+
+#+name: jrr-status
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+jrr.sh status 2>&1
+#+END_SRC
+
+#+RESULTS: jrr-status
+: Running in /home/pi host 'jrr5' on Tue Apr 14 15:08:09 EEST 2026
+: 'pi' runs '/home/pi/jrr/bin/jrr.sh status' on 'jrr5:/home/pi'
+: jrr.sh: status=0/pi          4044       1  0 15:07 ?        00:00:00 /bin/bash /home/pi/jrr/bin/jrr.sh daemon
+: jrr.py: status=0/pi          4057    4044 10 15:07 ?        00:00:06 .venv/bin/python ./jrr.py radio
+: ffmpeg: status=0/pi          4091    4090  6 15:07 ?        00:00:03 ffmpeg -hide_banner -nostdin -nostats -loglevel error -i https://jarviradio.radiotaajuus.fi:9000/jr -filter_complex [0:a]volume=volume=2,pan=mono|c0=0.5*c0+0.5*c1,alimiter[aout] -map [aout] -ac 2 -f alsa hw:CARD=Audio,DEV=0
+
+
+Success
+
+: Running in /home/pi host 'jrr5' on Tue Apr 14 15:08:02 EEST 2026
+: 'pi' runs '/home/pi/jrr/bin/jrr.sh status' on 'jrr5:/home/pi'
+: jrr.sh: status=0/pi          4044       1  0 15:07 ?        00:00:00 /bin/bash /home/pi/jrr/bin/jrr.sh daemon
+: jrr.py: status=0/pi          4057    4044 11 15:07 ?        00:00:06 .venv/bin/python ./jrr.py radio
+: ffmpeg: status=0/pi          4091    4090  7 15:07 ?        00:00:03 ffmpeg -hide_banner -nostdin -nostats -loglevel error -i https://jarviradio.radiotaajuus.fi:9000/jr -filter_complex [0:a]volume=volume=2,pan=mono|c0=0.5*c0+0.5*c1,alimiter[aout] -map [aout] -ac 2 -f alsa hw:CARD=Audio,DEV=0
+
+#+RESULTS: jrr-start
+
+
+* Notes                                                            :noexport:
+
+** Chirp
+
+#+BEGIN_SRC octave :eval no-export :results output :session *Octave* :exports both
+pico = 10^-12;
+nano = 10^-9;
+micro = 10^-6;
+milli = 10^-3;
+kilo = 10^3;
+mega = 10^6;
+giga = 10^9;
+
+
+#+END_SRC   
+
+** Code snippet
+
+#+NAME: fig-figname
+#+BEGIN_SRC octave :eval no-export :results file :session *Octave* :exports results :var image="pics/chirp.png"
+%% Code snippet
+% Image "pics/fig-figname.png";
+if exist('OCTAVE_VERSION', 'builtin') ~= 0
+  graphics_toolkit gnuplot
+  octaveTaiMatlab="Octave";
+  handle= figure( "visible", "off" );
+else
+  octaveTaiMatlab="Matlab";
+end
+
+                                % Create 'image'
+
+fs = 44100;          % Sampling frequency (Hz)
+t = 0:1/fs:2;        % Time vector (2 seconds)
+
+
+f0 = 200;            % Start frequency (Hz)
+f1 = 4000;           % End frequency (Hz)
+
+k = (f1 - f0) / max(t);   % Rate of frequency increase
+
+% Chirp signal using only sin
+y = sin(2*pi*(f0*t + 0.5*k*t.^2));
+
+% Play sound
+% sound(y, fs);
+
+% Plot
+% f_inst = f0 + k*t;
+% plot( t, f_inst);
+step = 100
+plot(t(1:step:end), y(1:step:end));
+label('Time (s)');
+ylabel('Amplitude');
+title('Linear Chirp using sin()');
+
+
+if exist('OCTAVE_VERSION', 'builtin') ~= 0
+                           % print  "pics/$Code snippet.$fig-figname";
+  print(handle, "-dpng",  image);
+  sprintf( "%s", image )
+end
+#+END_SRC
+
+#+RESULTS: fig-figname
+[[file:pics/chirp.png]]
+
+
+#+CAPTION: Code snippet
+#+LABEL: fig:fig-figname
+#+RESULTS: fig-figname.png
 
 
 * Fin                                                              :noexport:
@@ -1945,4 +2310,4 @@ echo "Create DIR=$DIR in host='$(hostname)' on $(date)"
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2025-07-03.11:53; # time-stamp
+Modified:2026-04-14.15:09; # time-stamp

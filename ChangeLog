@@ -1,3 +1,23 @@
+2026-04-14  jj  <jj@Leo>
+
+	* src/jrr_streamer.sh (set_alsa_volume): Added w. ALSA_CARD and ALSA_VOLUME
+	(stream): -nostats -loglevel error, 2>&1, alimiter added, pan-mono
+	removed paremeter
+	
+	* src/streamer_coro.py (_streamer_run): Using jrr_streamer.sh
+	stream -command (not play)
+
+	* DEVELOPMENT.org (jrr-admin): Added
+	(Some dev commands): Clafied
+
+	* DEVELOPMENT.org (JRR-DEV-001: Alsa volume limit): added, DONE
+
+2026-04-01  jj  <jj@Leo>
+
+	* jrr-cad.org (+Deploy to USB stick - REPLACED Sync SUB_FOLDERS+):
+	not used any mode
+	(Sync SUB_FOLDERS to MEM_STICK/PROJECT in two ways): added
+
 2025-07-20  jj  <jj@eero>
 
 	* jrr-cad.org (Issues): JRR-CAD-8: katto-01-nappainreijat-pora.ngc

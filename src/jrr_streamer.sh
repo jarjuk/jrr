@@ -53,12 +53,18 @@ MONO_OR_STEREO_CMD=""
 # Left and Right channel gains
 RGAIN=1.0
 LGAIN=1.0
-GAIN=4.0
+GAIN=1.5
+# GAIN=5.0
 
 # Firmware update configs
 LOCAL_REPO=$HOME/jrr/
 PENDING_LINK=$LOCAL_REPO/src.next
 
+# parameter for amixer -c ALSA_CARD
+ALSA_CARD="Audio"
+
+# default volume on ALSA_CARD
+ALSA_VOLUME="95%"
 
 # ------------------------------------------------------------------
 # Subrus
@@ -90,11 +96,15 @@ usage() {
     echo "--sh_trace"
     echo "--version             : print out version number && exit 0"
     echo "--mono                : pan stereo streams to one mono stream"
+    echo "--filter FILTER       : manyally set FILTER"
     echo "--stereo              : streo streams (default)"
     echo "--device AUDIO_OUT    : Set audio AUDIO_OUT one from 'list-devices', defaults $AUDIO_OUT"
     echo "--gain GAIN           : Volume gain, default $GAIN"
     echo "--rgain RGAIN         : Volume on right channel, default $RGAIN"
     echo "--lgain LGAIN         : Volume on left channel, default $LGAIN"
+    echo "--start-freq FREQ     : Set START_FREQ"
+    echo "--end-freq FREQ       : Set END_FREQ"
+    echo "--left FREQ           : Set left ch frequency, default $LEFT_FREQ"
     echo "--left FREQ           : Set left ch frequency, default $LEFT_FREQ"
     echo "--right FREQ          : Set right ch frequency, default $RIGHT_FREQ"
     echo "--volume VOLUME       : Set output VOLUME"
@@ -108,8 +118,9 @@ usage() {
     echo "list-devices          : list audio devices"
     echo "gen                   : sine signal generator RIGHT=$RIGHT_FREQ Hz, LEFT=$LEFT_FREQ Hz, GAIN=$GAIN DURATION=$DURATION s"
     echo "sine                  : generate 'sine FILE'"
-    echo "play                  : play FILE"
-    echo "stream URL            : stream URL"
+    echo "chirp                 : generate 'chirp START_FREQ END_FREQ to  FILE'"    
+    echo "play FILE             : play FILE"
+    echo "stream URL            : stream URL with GAIN (action from jrr.py)"
     echo "dmsg MSG              : send MSG to kernel /dev/kmsg"
     echo "wifi-setup SSID PASSWD: configure wifi SSID and PASSWORD"
     echo "fw-download U         : Download firmware from url U to LOCAL_REPO=$LOCAL_REPO"
@@ -152,6 +163,13 @@ init_audio_out() {
     fi
     log 2 "init_audio_out: done AUDIO_OUT='$AUDIO_OUT'"
 
+}
+
+set_alsa_volume() {
+    local card="$1"; shift
+    local volume="$1"; shift
+    log 1 "set_alsa_volume: card=$card, volume=$volume"
+    amixer -c $card sset Headphone $volume
 }
 
 wget_o() {
@@ -267,6 +285,12 @@ do
 	    MONO_OR_STEREO_CMD=",pan=mono|c0=0.5*c0+0.5*c1"
 	    ;;
     
+	--filter)
+	    shift
+	    FILTER_CMD="$1"; shift
+        log 1 "FILTER_CMD=$FILTER_CMD"
+	    ;;
+    
 	--stereo)
 	    shift
 	    MONO_OR_STEREO_CMD=""
@@ -288,6 +312,16 @@ do
         log 2 "Opiotion --device $AUDIO_OUT"
 	    ;;
 
+	--start-freq)
+	    shift
+	    START_FREQ=$(($1+0)); shift
+	    ;;
+    
+	--end-freq)
+	    shift
+	    END_FREQ=$(($1+0)); shift
+	    ;;
+    
 	--left)
 	    shift
 	    # LEFT_FREQ=$1; shift
@@ -341,9 +375,6 @@ if [ -z "$AUDIO_OUT" -o  "$AUDIO_OUT" = "-" ]; then
 fi    
 log 2 "Using AUDIO_OUT=$AUDIO_OUT"
 
-if  [ -z "$FILE" ]; then
-    FILE=$SOUND_DIR/sine-${LEFT_FREQ}l-${RIGHT_FREQ}r-${DURATION}s.wav
-fi
 
 # ------------------------------------------------------------------
 # actions
@@ -417,35 +448,43 @@ do
         
 
         play)
-            log 1 "Playing '$(hostname)' on $(date) AUDIO_OUT=$AUDIO_OUT FILE=$FILE"
-            # MONO_OR_STEREO_CMD=", pan=mono|c0=0.5*c0+0.5*c1"
+            [[ -z "$FILE" ]] && (FILE="$1"; shift)
+            log 1 "Playing '$(hostname)' on $(date) AUDIO_OUT=$AUDIO_OUT FILE=$FILE, GAIN=$GAIN, FILTER_CMD=$FILTER_CMD"
+            # FILTER_CDM=MONO_OR_STEREO_CMD=", pan=mono|c0=0.5*c0+0.5*c1"
              (set -x;
                   ffmpeg \
                  -hide_banner -nostdin \
                  -i $FILE \
-                 -filter_complex "[0:a]volume=volume=$GAIN ${MONO_OR_STEREO_CMD}[aout]" \
+                 -filter_complex "[0:a]volume=volume=$GAIN ${FILTER_CMD}[aout]" \
                  -map "[aout]" -ac 2 \
                  -f alsa $AUDIO_OUT \
             ) >/dev/null  2>&1
             ;;
 
         stream)
+            #  Set volume  on ALSA device
+            set_alsa_volume $ALSA_CARD $ALSA_VOLUME
             echo "Running in host '$(hostname)' on $(date)"
-            URL=$1
-            shift
-            log 1 "AUDIO_OUT=$AUDIO_OUT, URL=$URL"
+            [[ -z "$FILE" ]] && (FILE="$1"; shift)
+            URL=$FILE
+            log 1 "AUDIO_OUT=$AUDIO_OUT, URL=$URL, GAIN=$GAIN"
+            # -filter_complex "[0:a]volume=volume=$GAIN ${MONO_OR_STEREO_CMD}[aout]" \
             (set -x;
                   ffmpeg \
-                 -hide_banner -nostdin \
+                 -hide_banner -nostdin -nostats -loglevel error \
                  -i $URL \
-                 -filter_complex "[0:a]volume=volume=$GAIN ${MONO_OR_STEREO_CMD}[aout]" \
+                 -filter_complex "[0:a]volume=volume=$GAIN,pan=mono|c0=0.5*c0+0.5*c1,alimiter[aout]" \
                  -map "[aout]" -ac 2 \
                  -f alsa $AUDIO_OUT \
-            )
+            ) 2>&1
             ;;
         
 	    
         fplay)
+            if  [ -z "$FILE" ]; then
+                FILE=$SOUND_DIR/sine-${LEFT_FREQ}l-${RIGHT_FREQ}r-${DURATION}s.wav
+            fi
+            
             echo "Running in host '$(hostname)' on $(date)"
             echo "FILE=$FILE"
             echo "AUDIO_OUT=$AUDIO_OUT"
@@ -456,6 +495,10 @@ do
 
 
         gen2)
+            if  [ -z "$FILE" ]; then
+                FILE=$SOUND_DIR/sine-${LEFT_FREQ}l-${RIGHT_FREQ}r-${DURATION}s.wav
+            fi
+            
             echo "Running in host '$(hostname)' on $(date)"
             echo "LEFT_FREQ=$LEFT_FREQ, RIGHT_FREQ=$RIGHT_FREQ, FILE=$FILE"            
             echo "AUDIO_OUT=$AUDIO_OUT"
@@ -471,6 +514,10 @@ do
             ;;
 
         gen)
+            if  [ -z "$FILE" ]; then
+                FILE=$SOUND_DIR/sine-${LEFT_FREQ}l-${RIGHT_FREQ}r-${DURATION}s.wav
+            fi
+            
             # Config command
             echo "DURATION_CMD=$DURATION_CMD"
             echo "LEFT_FREQ=$LEFT_FREQ, RIGHT_FREQ=$RIGHT_FREQ"            
@@ -488,10 +535,29 @@ do
             ;;
 	    
         sine)
+            if  [ -z "$FILE" ]; then
+                FILE=$SOUND_DIR/sine-${LEFT_FREQ}l-${RIGHT_FREQ}r-${DURATION}s.wav
+            fi
+            
             echo "Running in host '$(hostname)' on $(date)"
             echo "LEFT_FREQ=$LEFT_FREQ, RIGHT_FREQ=$RIGHT_FREQ, FILE=$FILE"
             (set -x; ffmpeg -nostdin -y \
                     -filter_complex "aevalsrc=exprs=sin(2*PI*$LEFT_FREQ*t)|sin(2*PI*$RIGHT_FREQ*t):s=44100:d=$DURATION" \
+                    -ac 2 \
+                    $FILE)
+            ls -ltr $FILE
+            ;;
+	    
+        chirp)
+            [[ -z "$START_FREQ" ]] && START_FREQ=100 && echo "Using START_FREQ=$START_FREQ" 
+            [[ -z "$END_FREQ" ]] && END_FREQ=2000 && echo "Using END_FREQ=$END_FREQ" 
+            [[ -z "$FILE" ]] && FILE="$SOUND_DIR/chrip-$START_FREQ-$END_FREQ-${DURATION}s.wav" && echo "Using FILE=$FILE"
+            
+            # ffmpeg -f lavfi -i "aevalsrc=sin(2*PI*(100*t + (1000-100)/(2*5)*t*t)):d=5:s=44100" chirp.wav
+            echo "Running in host '$(hostname)' on $(date)"
+            echo "START_FREQ=$START_FREQ, END_FREQ=$END_FREQ, FILE=$FILE, DURATION=$DURATION"
+            (set -x; ffmpeg -nostdin -y \
+                    -filter_complex "aevalsrc=sin(2*PI*($START_FREQ*t + ($END_FREQ-$START_FREQ)/(2*$DURATION)*t*t)):s=44100:d=$DURATION" \
                     -ac 2 \
                     $FILE)
             ls -ltr $FILE
