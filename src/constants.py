@@ -115,6 +115,7 @@ class TOPICS:
         SPRITE = "sprite"                          # Status icons on sprite
         BUTTON_TXT = "button"                      # button text
         MSG_INFO = "info"                          # info message to user
+        REORIGIN = "reorigin"                      # Reset Origin on 'ILI9486'
         # Alternatives
         STREAM_ICON = "msg-stream-icon"            # stream icon image to screen
         CONFIG_TITLE = "title-subtitle"            # bold title, sub-title
@@ -260,7 +261,7 @@ class APP_CONTEXT:
         # Common
         NEXT = "Seuraava"
         BROWSE_FWD = "Eteen"
-        BROWSE_BACK = "Taakse"        
+        BROWSE_BACK = "Taakse"
         PREV = "Edellinen"
         RADIO = "Radio"
         NO_ACTION = ""                      # No menu action
@@ -284,6 +285,9 @@ class APP_CONTEXT:
         MENU_SUCCESS = "Onnistui"           # Operation success
         MENU_FAILURE = "Virhe"              # Operation Failure
 
+        VOLUME_NOT_ON = "Ääni pois päältä"
+        VOLUME_TURN_ON = "Käännä nuppi auki"
+
         KB_NOK = "Näppäimistövirhe"
         KB_ACT = """
         Kytke USB näppäimistö ja
@@ -304,6 +308,7 @@ class APP_CONTEXT:
         CONFIG_PREV = PREV
 
         MENU_CONFIG_WIFI = "Wifi"
+        MENU_CONFIG_REORIGIN = "Näytön kierto"
         MENU_FIRMWARE_VERSION = "Ohjelmaversio"
         MENU_MAYBE_CONFIG_WIFI = "Valintaanko Wifi?"
         MENU_DO_CONFIG_WIFI = "Wifin aktivointi"
@@ -312,6 +317,7 @@ class APP_CONTEXT:
         MENU_CHANNELS_SETUP = "Kanavat"
         MENU_REBOOT = "Reboot"
         MENU_CHANNELS_ORIGIN = "Hakemisto"
+        MENU_REORIGIN = "Näyttö"
         MENU_CHANNELS_DELETE = "poista"
         MENU_IP = "Verkkoyhteys"
         MENU_CHANNELS_ADD = "Lisää"

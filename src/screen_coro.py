@@ -1,7 +1,7 @@
 """Coroutine mananing e-paper display"""
 
 from typing import (cast, Any, Dict, Callable)
-from dataclasses import asdict, fields
+from dataclasses import asdict
 import os
 import time
 import logging
@@ -16,11 +16,12 @@ from .constants import RPI
 from .utils import delegates
 
 
-from .constants import (TOPICS, COROS, APP_CONTEXT, DSCREEN)
+from .constants import (TOPICS, COROS, APP_CONTEXT)
 from .messages import (is_message_type, message_props, MsgScreenUpdate,
                        MsgScreenIcon, MsgScreenText, MsgClockUpdate, MsgRoot,
                        MsgDelay, MsgScreenButtons, MsgDScreen, MsgExit,
                        message_create, message_halt_ack, message_panik,
+                       MsgScreenReorigin,
                        )
 
 from .screen import Screen, overlay_names
@@ -184,16 +185,21 @@ async def _screen_action(msg: Any, hub: Hub):
     """Async actions to work on receiving 'msg' from 'topic'."""
     logger.debug("_screen_action: start-msg: %s", msg)
 
-    global screen_driver
-    if screen_driver is None:
-        size = (APP_CONTEXT.SCREEN.WIDTH,
-                APP_CONTEXT.SCREEN.HEIGHT)
-        logger.info("_screen_action: init screen: size='%s'", size)
+    def _init_display_driver() -> TFT_DRIVER:
+        """Construct ILI9486 driver"""
         display_driver = TFT_DRIVER(
             dc=RPI.ILI9486.DC_PIN,
             spi_bus=RPI.ILI9486.SPI_BUS,
             spi_device=RPI.ILI9486.SPI_DEVICE,
             rst=RPI.ILI9486.RST_PIN, )
+        return display_driver
+
+    global screen_driver
+    if screen_driver is None:
+        size = (APP_CONTEXT.SCREEN.WIDTH,
+                APP_CONTEXT.SCREEN.HEIGHT)
+        logger.info("_screen_action: init screen: size='%s'", size)
+        display_driver = _init_display_driver()
         screen_driver = ScreenDriver(
             screen=Screen(size=size),
             driver=display_driver
@@ -303,6 +309,10 @@ async def _screen_action(msg: Any, hub: Hub):
             logger.info("_screen_action: msg_button='%s' - updated",
                         msg_button)
             await screen_driver.update(mode=MsgScreenUpdate.MODE_FULL)
+    elif is_message_type(msg, TOPICS.SCREEN_MESSAGES.REORIGIN):
+        msg_reorigin = cast(MsgScreenReorigin, msg)
+        logger.info("TOPICS.SCREEN_MESSAGES.REORIGIN: origin='%s'",
+                    msg_reorigin.origin)
 
     elif is_message_type(msg, TOPICS.SCREEN_MESSAGES.SPRITE):
 
@@ -542,10 +552,13 @@ async def _screen_action(msg: Any, hub: Hub):
         goon = False
 
     elif is_message_type(msg, TOPICS.COMMON_MESSAGES.PING):
-        # # Application init - reply PING to CONTROL topic
-        # await screen.update(mode=MsgScreenUpdate.MODE_FULL)
+        # Application init - reply PING to CONTROL topic
 
-        # Application init - reply PING to CONTROL topic (assume that
+        # We are pinged if volume knob is not opened. Wait for 1s
+        # for the knob to turn on before waking control coro
+        await asyncio.sleep(1)
+
+        # Reply PING to CONTROL topic (assume that
         # screen content all there)
         hub.publish(
             topic=TOPICS.CONTROL,

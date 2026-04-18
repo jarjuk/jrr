@@ -99,7 +99,8 @@ class ILI9486:
         """Returns the display dimensions in portrait mode, no matter what mode is used"""
         return LCD_WIDTH, LCD_HEIGHT
 
-    def __init__(self, spi: SpiDev, dc: int, rst: int = None, *, origin: Origin = Origin.UPPER_LEFT):
+    def __init__(self, spi: SpiDev, dc: int, rst: int = None, *, origin: Origin = Origin.LOWER_RIGHT,):
+        # def __init__(self, spi: SpiDev, dc: int, rst: int = None, *, origin: Origin = Origin.UPPER_LEFT):
         """Creates an instance of the display using the given SPI connection. Must provide the SPI driver and the GPIO
         pin number for the DC pin. Can optionally provide the GPIO pin number for the reset pin. Optionally the origin
         can be set. The default is UPPER_LEFT, which is landscape mode this the bottom of the image located at the
@@ -123,7 +124,8 @@ class ILI9486:
         # swap width and height if selected origin is landscape mode by checking if third bit is 1
         if self.__origin.value & 0x20:
             self.__width, self.__height = self.__height, self.__width
-        self.__buffer = Image.new('RGB', (self.__width, self.__height), (0, 0, 0))
+        self.__buffer = Image.new(
+            'RGB', (self.__width, self.__height), (0, 0, 0))
 
     def dimensions(self) -> tuple:
         """Returns the current display dimensions"""
@@ -159,9 +161,11 @@ class ILI9486:
             GPIO.output(self.__rst, GPIO.HIGH)
             time.sleep(.001)  # wait a bit to make sure the output was HIGH
             GPIO.output(self.__rst, GPIO.LOW)
-            time.sleep(.000100)  # wait 100 µs to trigger the reset (should be 10 µs, but the OS is not precise enough)
+            # wait 100 µs to trigger the reset (should be 10 µs, but the OS is not precise enough)
+            time.sleep(.000100)
             GPIO.output(self.__rst, GPIO.HIGH)
-            time.sleep(.120)  # wait 120 ms for finishing blanking and resetting
+            # wait 120 ms for finishing blanking and resetting
+            time.sleep(.120)
             self.__inverted = False
             self.__idle = False
         return self
@@ -177,7 +181,8 @@ class ILI9486:
 
         self.command(CMD_PWRCTLNOR).command(0x44)
 
-        self.command(CMD_VCOMCTL).send([0x00, 0x00, 0x00, 0x00], True, chunk_size=1)
+        self.command(CMD_VCOMCTL).send(
+            [0x00, 0x00, 0x00, 0x00], True, chunk_size=1)
 
         self.command(CMD_PGAMCTL)\
             .send([0x0F, 0x1F, 0x1C, 0x0C, 0x0F, 0x08, 0x48, 0x98, 0x37, 0x0A, 0x13, 0x04, 0x11, 0x0D, 0x00], True,
@@ -187,7 +192,8 @@ class ILI9486:
             .send([0x0F, 0x32, 0x2E, 0x0B, 0x0D, 0x05, 0x47, 0x75, 0x37, 0x06, 0x10, 0x03, 0x24, 0x20, 0x00], True,
                   chunk_size=1)  # values must be sent one by one, thus setting chunk size to 1
 
-        self.command(CMD_MADCTL).data(self.__origin.value)  # memory address control
+        self.command(CMD_MADCTL).data(
+            self.__origin.value)  # memory address control
 
         self.command(CMD_SLPOUT)
         self.command(CMD_DISPON)
@@ -215,7 +221,7 @@ class ILI9486:
         self.data(y1 & 0xFF)
         return self
 
-    def display(self, image=None, x0 = 0, y0 = 0):
+    def display(self, image=None, x0=0, y0=0):
         """Writes the display buffer or provided image to the display. If no
         image is provided the display buffer will be written to the display.
         If an image is provided, it should be in RGB format and the same

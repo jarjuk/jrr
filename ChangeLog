@@ -1,9 +1,23 @@
+2026-04-18  jj  <jj@Leo>
+
+	* src/jrr_radio.py (f_init_enter.f_init_done): wait for init_GPIO_shutdown to success
+
+2026-04-17  jj  <jj@Leo>
+
+	* src/screen_coro.py (_screen_action): msg TOPICS.SCREEN_MESSAGES.REORIGIN processed
+
+	* src/jrr_radio.py (ctrl_menu_setup_with_keyboard._setup_reorigin): added button action
+
+	* src/constants.py (TOPICS.SCREEN_MESSAGES): added REORIGIN
+
+	* src/gpio_coro.py (init_GPIO_shutdown): shutdown only on falling edge
+
 2026-04-14  jj  <jj@Leo>
 
 	* src/jrr_streamer.sh (set_alsa_volume): Added w. ALSA_CARD and ALSA_VOLUME
 	(stream): -nostats -loglevel error, 2>&1, alimiter added, pan-mono
 	removed paremeter
-	
+
 	* src/streamer_coro.py (_streamer_run): Using jrr_streamer.sh
 	stream -command (not play)
 

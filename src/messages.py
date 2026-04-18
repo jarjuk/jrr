@@ -222,6 +222,12 @@ class MsgScreenFirmware(MsgScreen):
 
 
 @dataclass
+class MsgScreenReorigin(MsgScreen):
+    """Reset origin (for flipping around)"""
+    origin: int        # hex value to set origin
+
+
+@dataclass
 class MsgScreenNetworkInfo(MsgScreen):
     """Show 'error' and """
     title: str
@@ -312,6 +318,7 @@ message_constructors = {
     # Firmware w. release notes
     TOPICS.SCREEN_MESSAGES.FIRMAWRE: MsgScreenFirmware,
     TOPICS.SCREEN_MESSAGES.NETWORK_INFO: MsgScreenNetworkInfo,  # Wifi info
+    TOPICS.SCREEN_MESSAGES.REORIGIN: MsgScreenReorigin,         # Flip display
 }
 
 
@@ -735,6 +742,16 @@ def message_firmware(title: str, version_tag: str, notes: str) -> MsgScreenFirmw
     )
     msg_firmware = cast(MsgScreenFirmware, msg)
     return msg_firmware
+
+
+def message_reorigin(origin: int) -> MsgScreenReorigin:
+    """Flip screen in screen_coro"""
+    msg = message_create(
+        message_type=TOPICS.SCREEN_MESSAGES.REORIGIN,
+        d={"origin": origin}
+    )
+    msg_reorigin = cast(MsgScreenReorigin, msg)
+    return msg_reorigin
 
 
 def message_network_info(

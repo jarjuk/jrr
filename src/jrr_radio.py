@@ -45,7 +45,7 @@ from .messages import (MsgRoot,
                        message_exit,
                        message_screen_update, message_screen_sleep,
                        message_screen_stream_icon,
-                       message_screen_refresh,
+                       message_screen_refresh, message_reorigin,
                        message_status_icons,
                        message_info,
                        message_panik,
@@ -449,6 +449,15 @@ def ctrl_act_screen_info_txt(hub: Hub, message: str):
     hub.publish(topic=TOPICS.SCREEN, message=message_info(message))
 
 
+def ctrl_act_error(hub: Hub, error: str, instructions: str):
+    """Send error message to screen."""
+    hub.publish(
+        topic=TOPICS.SCREEN,
+        message=message_error(
+            error=error,
+            instructions=instructions))
+
+
 def ctrl_act_reboot(hub: Hub):
     """Send 'shutdown' -message to CTRL.
 
@@ -619,7 +628,7 @@ def ctrl_act_do_load_channels(hub: Hub) -> bool:
     :return:
 
     """
-    raise NotImplemented("Should be fixed")
+    raise NotImplementedError("Should be fixed")
     # Keyboard entry is the url we are reading
     url = controller_state.keyboard_entry
     logger.info("ctrl_act_do_load_channels: url='%s'", url)
@@ -957,13 +966,16 @@ def ctrl_menu_setup_with_keyboard(hub: Hub, step_resume: int | None = None):
 
     def _my_entry_action(hub: Hub, menu_name: str, ):
         """Publish title/sub_title, possibly icon"""
+        logger.debug("_my_entry_action: menu_name='%s'", menu_name)
         menu_name_2_title = {
             APP_CONTEXT.MENU.MENU_CONFIG_WIFI: "Wifi verkon",
             APP_CONTEXT.MENU.MENU_CHANNELS_ORIGIN: "Radiokanava-",
+            APP_CONTEXT.MENU.MENU_REORIGIN: "Näytön kierrätys",
         }
         menu_name_2_sub_title = {
             APP_CONTEXT.MENU.MENU_CONFIG_WIFI: "valinta",
             APP_CONTEXT.MENU.MENU_CHANNELS_ORIGIN: "hakemiston asetus",
+            APP_CONTEXT.MENU.MENU_REORIGIN: "",
         }
 
         hub.publish(
@@ -985,13 +997,21 @@ def ctrl_menu_setup_with_keyboard(hub: Hub, step_resume: int | None = None):
         logger.error("_setup_channel_origin: TODO")
         return None
 
+    def _setup_reorigin(hub: Hub):
+        """Reorigin (=flip dipsplay)"""
+        hub.publish(
+            topic=TOPICS.SCREEN,
+            message=message_reorigin(origin=0xE4)
+        )
+        return None
+
     # See f_config_enter for documentation
     menu = {
         APP_CONTEXT.MENU.MENU_CONFIG_WIFI: {
             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
                 APP_CONTEXT.MENU.MENU_CHANNELS_ORIGIN,  # bt1-short
                 APP_CONTEXT.MENU.CHOOSE,                # bt1-long
-                APP_CONTEXT.MENU.MENU_CHANNELS_ORIGIN,  # bt2-short
+                APP_CONTEXT.MENU.MENU_CONFIG_REORIGIN,  # bt2-short
                 APP_CONTEXT.MENU.CONFIG_RETURN,         # bt2-long
             ],
             APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _my_entry_action,
@@ -1002,7 +1022,7 @@ def ctrl_menu_setup_with_keyboard(hub: Hub, step_resume: int | None = None):
 
         APP_CONTEXT.MENU.MENU_CHANNELS_ORIGIN: {
             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
-                APP_CONTEXT.MENU.MENU_CONFIG_WIFI,        # bt1-short
+                APP_CONTEXT.MENU.MENU_CONFIG_REORIGIN,    # bt1-short
                 APP_CONTEXT.MENU.CHOOSE,                  # bt1-long
                 APP_CONTEXT.MENU.MENU_CONFIG_WIFI,        # bt2-short
                 APP_CONTEXT.MENU.CONFIG_RETURN,           # bt2-long
@@ -1014,6 +1034,24 @@ def ctrl_menu_setup_with_keyboard(hub: Hub, step_resume: int | None = None):
             APP_CONTEXT.MENU.ACTS.BTN2_LONG: _resume_setup,
             APP_CONTEXT.MENU.ACTS.KEYBOARD: ctr_act_none,
         },  # channel origin setup
+
+
+        APP_CONTEXT.MENU.MENU_REORIGIN: {
+            APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
+                APP_CONTEXT.MENU.MENU_CONFIG_WIFI,        # bt1-short
+                APP_CONTEXT.MENU.CHOOSE,                  # bt1-long
+                APP_CONTEXT.MENU.MENU_CHANNELS_ORIGIN,    # bt2-short
+                APP_CONTEXT.MENU.CONFIG_RETURN,           # bt2-long
+            ],
+            APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _my_entry_action,
+            APP_CONTEXT.MENU.ACTS.BTN1_SHORT: None,
+            APP_CONTEXT.MENU.ACTS.BTN1_LONG: _setup_reorigin,
+            APP_CONTEXT.MENU.ACTS.BTN2_SHORT: None,
+            APP_CONTEXT.MENU.ACTS.BTN2_LONG: _resume_setup,
+            APP_CONTEXT.MENU.ACTS.KEYBOARD: ctr_act_none,
+        },  # channel origin setup
+
+
     }  # menu
 
     f_config_enter(hub, menu, step_resume=step_resume)
@@ -2385,8 +2423,25 @@ def f_init_enter(hub: Hub):
     ]
 
     def f_init_done(msg: str | MsgRoot, hub: Hub) -> bool:
-        """Any message changes to f_radio_enter."""
+        """Any message changes (particularly COMMON_MESSAGES.PING fron
+        screen) to f_radio_enter."""
         logger.info("f_init_done: msg: %s", msg)
+
+        # Try to init shutdown knob
+        loop = asyncio.get_event_loop()
+        shutdown_rdy = init_GPIO_shutdown(button=RPI.BUTTON_SHUTDOWN, hub=hub,
+                                          topic=TOPICS.CONTROL, loop=loop)
+        if not shutdown_rdy:
+            # Volume knob not on - resend PING
+            ctrl_act_error(hub=hub,
+                           error=APP_CONTEXT.MENU.VOLUME_NOT_ON,
+                           instructions=APP_CONTEXT.MENU.VOLUME_TURN_ON)
+            hub.publish(topic=TOPICS.SCREEN,
+                        message=message_create(
+                            message_type=TOPICS.COMMON_MESSAGES.PING))
+            return True
+
+        # Volume knob on - start radio
         f_radio_enter(hub)
         logger.debug("f_init_done: returning")
         return True
@@ -2825,9 +2880,9 @@ def radio_main(parsed):
     loop = asyncio.get_event_loop()
     init_GPIO_buttons(buttons=RPI.BUTTON_GPIOS, hub=hub,
                       topic=TOPICS.CONTROL, loop=loop)
-    # send halt message on 'RPI.BUTTON_SHUTDOWN'
-    init_GPIO_shutdown(button=RPI.BUTTON_SHUTDOWN, hub=hub,
-                       topic=TOPICS.CONTROL, loop=loop)
+    # # send halt message on 'RPI.BUTTON_SHUTDOWN'
+    # init_GPIO_shutdown(button=RPI.BUTTON_SHUTDOWN, hub=hub,
+    #                    topic=TOPICS.CONTROL, loop=loop)
 
     enable_SIGTERM(hub=hub)
 

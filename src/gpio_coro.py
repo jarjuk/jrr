@@ -81,7 +81,7 @@ def _shutdown_input_handler(button, hub: Hub, topic, loop):
 
     button_state = GPIO.input(button)
 
-    logger.warning("_button_shutdown: button='%s', button_state: %s",
+    logger.warning("_shutdown_input_handler: button='%s', button_state: %s",
                    button, button_state)
     send_dmesg(f"{__file__}: Shudown starting")
     hub.publish(
@@ -137,16 +137,27 @@ def init_GPIO_buttons(buttons: List, hub: Hub, topic: str, loop
 
 
 def init_GPIO_shutdown(button: int, hub: Hub, topic: str, loop):
-    """Init shutdown action shutdown 'button' (=volume knob)."""
+    """Init shutdown action shutdown 'button' (=volume knob).
+
+    :return: true if  succesfull
+    """
+    logger.info("init_GPIO_shutdown: button='%s'", button)
+    GPIO.setup(button, GPIO.IN)
+
+    button_state = GPIO.input(button)
+    if button_state:
+        logger.warning(
+            "init_GPIO_shutdown: button='%s' - expect volume knob opened && GPIO False, got %s ",
+            button, button_state)
+        return False
+
     button_callback = partial(
         _shutdown_input_handler, hub=hub, topic=topic, loop=loop)
 
-    logger.info("init_GPIO_shutdown: button='%s'", button)
-    GPIO.setup(button, GPIO.IN)
     GPIO.add_event_detect(
-        button, GPIO.BOTH,
-        callback=button_callback, bouncetime=50)
-
+        button, GPIO.RISING,
+        callback=button_callback, bouncetime=500)
+    return True
 
 def gpio_close():
     logger.info("Close GPIO_buttons")
