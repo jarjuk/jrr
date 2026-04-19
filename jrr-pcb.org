@@ -156,7 +156,26 @@ https://www.ranecommercial.com/legacy/note110.html
 #+ATTR_LATEX: :float sideways :placement [H]
 #+ATTR_LATEX: :font \tiny
 #+HEADER: :exports results :results table latex :colnames yes
-#+RESULTS:
+| Reference                    | Value                     | Footprint                                                  | QUANTITY |
+|------------------------------+---------------------------+------------------------------------------------------------+----------|
+| CONN1                        | 3.5m_TRS                  |                                                            |        1 |
+| CONNN1                       | CONN-KSTONE-USBAfmxUSBAfm |                                                            |        1 |
+| CONNN2                       | CONN-KSTONE-USBCfmxUSBCfm |                                                            |        1 |
+| D1,D2                        | Schottky,15mA             | PCM_JLCPCB:D_SOD-323                                       |        2 |
+| J2                           | Raspberry_Pi_2_3_GPIO     | Connector_PinHeader_2.54mm:PinHeader_2x20_P2.54mm_Vertical |        1 |
+| J4                           | USB-Afm,THT               | Connector_USB:USB_A_Molex_67643_Horizontal                 |        1 |
+| J11,J13,J19,J21,J24,J28,J101 | Wafer,1x2,m               | jj-foot:Wafer_1x02_P2.54mm_Vertical_male                   |        7 |
+| J18,J26                      | Wafer,1x3,m               | jj-foot:Wafer_1x03_P2.54mm_Vertical_male                   |        2 |
+| J107,J110                    | Wafer,1x2,fm              | Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical |        2 |
+| J109                         | Wafer,1x3,fm              |                                                            |        1 |
+| Q1                           | BSS138                    | Package_TO_SOT_SMD:SOT-23                                  |        1 |
+| R1,R2                        | 10k                       | Resistor_SMD:R_0805_2012Metric                             |        2 |
+| R3,R4                        | 5k1                       | Resistor_SMD:R_0805_2012Metric                             |        2 |
+| SW1,SW2                      | SW_PUSH_THT_6mm           | Button_Switch_THT:SW_PUSH_6mm                              |        2 |
+
+
+
+
 | Reference                    | Value                     | Footprint                                                  | QUANTITY |
 |------------------------------+---------------------------+------------------------------------------------------------+----------|
 | CONN1                        | 3.5m_TRS                  |                                                            |        1 |
@@ -282,25 +301,27 @@ Done OK
    | 19.2.2025 | D   | JRR-{1,2,3,4,5} | X   |
    |-----------+-----+-----------------+-----|
 
-*** Issues
+*** Release Issues
 
 #+ATTR_LATEX: :font \tiny
-   |--------+--------+-----------+---------+------------------------------+------------------------------|
-   | #      | In Rel | Fixed rel | Ref     | As-is                        | Tobe                         |
-   |--------+--------+-----------+---------+------------------------------+------------------------------|
-   | JRR-1  | C      | D         | F1      | 1.5A                         | 1.1A,SMD,polyfuse            |
-   | JRR-2  | C      | D         | F1      |                              | 1812 footprint               |
-   | JRR-3  | C      | D         | Q1      | drain 3 = GND, source 2= out | source 2 = GND, drain 3= out |
-   | JRR-4  | C      | D         | Conn    | footprint pinhder            | wafer pinheader              |
-   | JRR-5  | C      | D         | Edgecut | to righ                      | to left                      |
-   | JRR-6  | D      |           | Q1      | BSS138->DMN3042L-7           |                              |
-   | JRR-7  | D      | E         | Q1      |                              | schottky x 2                 |
-   | JRR-8  | D      |           |         | +Mounting holes placement+   |                              |
-   | JRR-9  | D      | E         |         | Silkscreen text              | Using macros                 |
-   | JRR-10 | D      | E         | SW{1,2} | Push buttons to left 15 mm   |                              |
-   | JRR-11 | E      |           | D1, D2  | pads too small               | +0.5 mm w, +.0.5 extend out  |
-   | JRR-12 | E      |           | H{1-6}  | Hole diameter 2.5mm          | --> 3.5mm                    |
-   |--------+--------+-----------+---------+------------------------------+------------------------------|
+   |--------+--------------+-----------+---------+------------------------------+------------------------------|
+   | #      | In Rel       | Fixed rel | Ref     | As-is                        | Tobe                         |
+   |--------+--------------+-----------+---------+------------------------------+------------------------------|
+   | JRR-1  | C            | D         | F1      | 1.5A                         | 1.1A,SMD,polyfuse            |
+   | JRR-2  | C            | D         | F1      |                              | 1812 footprint               |
+   | JRR-3  | C            | D         | Q1      | drain 3 = GND, source 2= out | source 2 = GND, drain 3= out |
+   | JRR-4  | C            | D         | Conn    | footprint pinhder            | wafer pinheader              |
+   | JRR-5  | C            | D         | Edgecut | to righ                      | to left                      |
+   | JRR-6  | D            |           | Q1      | BSS138->DMN3042L-7           |                              |
+   | JRR-7  | D            | E         | Q1      |                              | schottky x 2                 |
+   | JRR-8  | D            |           |         | +Mounting holes placement+   |                              |
+   | JRR-9  | D            | E         |         | Silkscreen text              | Using macros                 |
+   | JRR-10 | D            | E         | SW{1,2} | Push buttons to left 15 mm   |                              |
+   | JRR-11 | E            |           | D1, D2  | pads too small               | +0.5 mm w, +.0.5 extend out  |
+   | JRR-12 | E            |           | H{1-6}  | Hole diameter 2.5mm          | --> 3.5mm                    |
+   | JRR-13 | 23.3./2026/E |           |         | Mounting holes too small     | M3?                          |
+   | JRR-14 | E            | F         | R1,R2   | 100k                         | 10k                          |
+   |--------+--------------+-----------+---------+------------------------------+------------------------------|
 
 *** Deploy ~DATA_SHEET_DIR/DOC-RELEASE.pdf~                        :noexport:
   #+BEGIN_SRC bash :eval no-export :results output
@@ -547,4 +568,4 @@ echo Done OK
 # reftex-default-bibliography: ("./jrr5-pcb.bib")
 
 
-Modified:2025-07-16.13:57; # time-stamp
+Modified:2026-04-19.17:34; # time-stamp
