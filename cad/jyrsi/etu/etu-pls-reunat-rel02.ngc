@@ -1,0 +1,51 @@
+(Exported by FreeCAD)
+(Post Processor: linuxcnc_post)
+(Output Time:2026-04-19 10:06:45.923734)
+(begin preamble)
+G17 G54 G40 G49 G80 G90
+G21
+(begin operation: Fixture)
+(machine units: mm/min)
+G54 
+(finish operation: Fixture)
+(begin operation: TC: Endmill_6mm)
+(machine units: mm/min)
+(TC: Endmill_6mm) 
+M5
+M6 T2 
+G43 H2 
+(finish operation: TC: Endmill_6mm)
+(begin operation: etu-pls-reunat)
+(machine units: mm/min)
+(etu-pls-reunat) 
+(Compensated Tool Path. Diameter: 6.0) 
+G0 Z30.000 
+G0 X33.390 Y33.290 
+G0 Z3.000 
+G1 X33.390 Y33.290 Z-3.000 F60.000 
+G2 X36.350 Y26.094 Z-3.000 I-7.146 J-7.146 F120.000 
+G1 X36.350 Y-26.094 Z-3.000 F120.000 
+G2 X26.194 Y-36.250 Z-3.000 I-10.105 J-0.051 F120.000 
+G1 X-25.994 Y-36.250 Z-3.000 F120.000 
+G2 X-36.150 Y-26.094 Z-3.000 I-0.051 J10.105 F120.000 
+G1 X-36.150 Y26.094 Z-3.000 F120.000 
+G2 X-25.994 Y36.250 Z-3.000 I10.105 J0.051 F120.000 
+G1 X26.194 Y36.250 Z-3.000 F120.000 
+G2 X33.390 Y33.290 Z-3.000 I0.051 J-10.105 F120.000 
+G1 X33.390 Y33.290 Z-5.000 F60.000 
+G2 X36.350 Y26.094 Z-5.000 I-7.146 J-7.146 F120.000 
+G1 X36.350 Y-26.094 Z-5.000 F120.000 
+G2 X26.194 Y-36.250 Z-5.000 I-10.105 J-0.051 F120.000 
+G1 X-25.994 Y-36.250 Z-5.000 F120.000 
+G2 X-36.150 Y-26.094 Z-5.000 I-0.051 J10.105 F120.000 
+G1 X-36.150 Y26.094 Z-5.000 F120.000 
+G2 X-25.994 Y36.250 Z-5.000 I10.105 J0.051 F120.000 
+G1 X26.194 Y36.250 Z-5.000 F120.000 
+G2 X33.390 Y33.290 Z-5.000 I0.051 J-10.105 F120.000 
+G0 Z30.000 
+G0 Z30.000 
+(finish operation: etu-pls-reunat)
+(begin postamble)
+M05
+G17 G54 G90 G80 G40
+M2
