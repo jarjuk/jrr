@@ -51,22 +51,25 @@ Jyrsintätiedostot [[file:cad/jyrsi/katto]]
 - Origo: xy, keskelle aihiota, z=0 aihion yläpinnalle
 - Jyrsintä:
   - 6mm x 20mm terällä
-    - etu-kytkin.ngc
-    - etu-pls-läpi.ngc
-    - etu-pls-upotus.ngc
+    - etukytkin-helix-6mm-rev01.ngc
+    - etu-pls-upotus-millface-6mm-rel02.ngc 
     - etu-pls-reunat.ngc
+    - etu-pls-läpi-18mm-6mm-rel02.ngc
   
 ** Takaseinän aukkojen jyrsintä
 
 [[file:cad/pages/takaseinä.pdf]]
 
 
-- Origo: xy, keskelle aihiota, z=0 aihion yläpinnalle
+- Origo: xy, vasen alareuna
+  - 6mm terä ja 3mm pora -> touch off (x,y,z) = (-6, -6, 3)
 - Jyrsintä:
   - 6mm x 20mm terällä
-    - taka-kytkin.ngc
-    - taka-keystone-vasen.ngc
-    - taka-keystone-oikea.ngc (mikäli kalustetaan RC input:lle)
+    - Zigzag jyrsin: [[file:cad/jyrsi/taka/taka-keystone-vasen-6mm-rev2.ngc]]
+    - Reunojen siivous: [[file:cad/jyrsi/taka/taka-keystone-vasen-6mm-profile-rev2.ngc]]
+    - Kytkin helix -jyrsintä:  [[file:cad/jyrsi/taka/taka-kytkin-vasen-helix-6mm-rev2.ngc]] 
+- TBD: origo ??
+    - TBDtaka-keystone-oikea.ngc (mikäli kalustetaan RC input:lle)
 
 ** +Lattian kaiverrus+
 :PROPERTIES:
@@ -290,14 +293,15 @@ cp $ETOOLGERBERS/../02-ngc/$GERB.ngc cad/jyrsi/lattia/.
   - ulkohalkaisija 6mm, syvyys 6mm
   - 5mm pilotreikä syvyys 10mm
 
-
 ** Katto
 
-- PCB  M3mm rampmuhvi x 5kpl
+- Piirilevelyn asennus
+  - Reikäsabluuna: [[file:cad/sabluunat/raspberry-hat-mask.pdf]]
+- PCB  M3mm rampmuhvi x 5kpl [[file:bom/Manufacturing facility overview and pre-drilling instructions - B.pdf]]
   - ulkohalkaisija 6mm, syvyys 6mm
   - 5mm pilotreikä syvyys 10mm
 
-- PCB, reikä liittimen vieressää
+- PCB, reikä liittimen vieressä
   - phi 2.5mm, syvyys 10mm
 
 * Laseroinnit
@@ -471,7 +475,6 @@ total 55
 -rw-rw-r-- 1 jj jj 7689 heinä  20 15:50 taka-keystone-oikea.ngc
 #+end_example
 
-
 ** Sync SUB_FOLDERS to MEM_STICK/PROJECT in two ways
 :PROPERTIES:
 :header-args+: :var  SUB_FOLDERS='("pics" "pics-keep" "cad")
@@ -481,15 +484,72 @@ total 55
 #+call: lob-sync-doc()
 
 #+RESULTS:
-: lob-sync-doc: in /home/jj/work/jrr host 'Leo' on ke 1.4.2026 13.47.20 +0300
+: lob-sync-doc: in /home/jj/work/jrr host 'Leo' on ma 20.4.2026 08.55.11 +0300
 : MEM_STICK=/media/jj/jj
 : PROJECT=jrr
 : SUB_FOLDERS[@]=pics pics-keep cad
 
 
+
 #+call: lob-sync-two-ways()
 
 #+RESULTS:
+#+begin_example
+Running in /home/jj/work/jrr host 'Leo' on ke 22.4.2026 11.43.15 +0300
+DRY_RUN=0
+sync SUB_FOLDER=pics
+sending incremental file list
+
+sent 383 bytes  received 28 bytes  822,00 bytes/sec
+total size is 740.523  speedup is 1.801,76
+sending incremental file list
+
+sent 321 bytes  received 12 bytes  666,00 bytes/sec
+total size is 740.523  speedup is 2.223,79
+744K	/media/jj/jj/jrr/pics
+744K	pics
+sync SUB_FOLDER=pics-keep
+sending incremental file list
+
+sent 197 bytes  received 19 bytes  432,00 bytes/sec
+total size is 373.965  speedup is 1.731,32
+sending incremental file list
+
+sent 180 bytes  received 12 bytes  384,00 bytes/sec
+total size is 373.965  speedup is 1.947,73
+376K	/media/jj/jj/jrr/pics-keep
+376K	pics-keep
+sync SUB_FOLDER=cad
+sending incremental file list
+jrr5.nc
+jyrsi/etu/
+jyrsi/etu/etu-pls-läpi-18mm-6mm-rel02.ngc
+jyrsi/etu/etu-pls-reunat-rel02.ngc
+jyrsi/etu/etu-pls-upotus-millface-6mm-rel02.ngc
+jyrsi/etu/etukytkin-helix-6mm-rev01.ngc
+
+sent 14.233 bytes  received 218 bytes  28.902,00 bytes/sec
+total size is 2.080.603  speedup is 143,98
+sending incremental file list
+jyrsi/etu/
+
+sent 3.772 bytes  received 33 bytes  7.610,00 bytes/sec
+total size is 2.080.603  speedup is 546,81
+20K	/media/jj/jj/jrr/cad/3D
+228K	/media/jj/jj/jrr/cad/jyrsi
+312K	/media/jj/jj/jrr/cad/laseroinnit
+816K	/media/jj/jj/jrr/cad/pages
+260K	/media/jj/jj/jrr/cad/sabluunat
+2,3M	/media/jj/jj/jrr/cad
+228K	cad/jyrsi
+260K	cad/sabluunat
+20K	cad/3D
+816K	cad/pages
+312K	cad/laseroinnit
+2,3M	cad
+#+end_example
+
+
 #+begin_example
 Running in /home/jj/work/jrr host 'Leo' on ke 1.4.2026 13.46.48 +0300
 DRY_RUN=0
@@ -637,7 +697,6 @@ total size is 2.144.322  speedup is 699,16
 312K	cad/laseroinnit
 2,3M	cad
 #+end_example
-
 
 ** +Deploy to USB stick - REPLACED Sync SUB_FOLDERS+
 #+call: sync-info()
@@ -893,4 +952,4 @@ drwxr-xr-x 5 jj jj      5 heinä   8 14:03 jyrsi
 # reftex-default-bibliography: ("./jrr-cad.bib")
 
 
-Modified:2026-04-19.10:32; # time-stamp
+Modified:2026-04-22.11:43; # time-stamp

@@ -1,6 +1,6 @@
 (Exported by FreeCAD)
 (Post Processor: linuxcnc_post)
-(Output Time:2026-04-19 10:06:45.923734)
+(Output Time:2026-04-22 11:42:16.921289)
 (begin preamble)
 G17 G54 G40 G49 G80 G90
 G21
@@ -19,7 +19,7 @@ G43 H2
 (machine units: mm/min)
 (etu-pls-reunat) 
 (Compensated Tool Path. Diameter: 6.0) 
-G0 Z30.000 
+G0 Z10.000 
 G0 X33.390 Y33.290 
 G0 Z3.000 
 G1 X33.390 Y33.290 Z-3.000 F60.000 
@@ -42,8 +42,8 @@ G1 X-36.150 Y26.094 Z-5.000 F120.000
 G2 X-25.994 Y36.250 Z-5.000 I10.105 J0.051 F120.000 
 G1 X26.194 Y36.250 Z-5.000 F120.000 
 G2 X33.390 Y33.290 Z-5.000 I0.051 J-10.105 F120.000 
-G0 Z30.000 
-G0 Z30.000 
+G0 Z10.000 
+G0 Z10.000 
 (finish operation: etu-pls-reunat)
 (begin postamble)
 M05
