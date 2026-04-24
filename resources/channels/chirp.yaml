@@ -1,5 +1,5 @@
 - type: ChirpConfig
-  icon: chirp.png
+  icon: icons/chirp.png
   name: Chirp 20-20k@10s
   start_freq: 20
   end_freq: 20000
