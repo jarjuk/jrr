@@ -6,6 +6,7 @@ import os
 import time
 import logging
 import asyncio
+from functools import partial
 # from PIL import Image, ImageFont, ImageDraw
 
 
@@ -14,12 +15,12 @@ from .reader_coro import reader_coro
 from .config import app_config
 from .constants import RPI
 from .utils import delegates
-
+from .Python_ILI9486.ILI9486 import Origin
 
 from .constants import (TOPICS, COROS, APP_CONTEXT)
 from .messages import (is_message_type, message_props, MsgScreenUpdate,
                        MsgScreenIcon, MsgScreenText, MsgClockUpdate, MsgRoot,
-                       MsgDelay, MsgScreenButtons, MsgDScreen, MsgExit,
+                       MsgScreenButtons, MsgDScreen, MsgExit,
                        message_create, message_halt_ack, message_panik,
                        MsgScreenReorigin,
                        )
@@ -45,9 +46,14 @@ class ScreenDriver():
     def __init__(self, screen: Screen, driver: TFT_DRIVER):
         """Set screen and set driver -delegages."""
         self.screen = screen
-        self.driver = driver
+        # self.driver = driver
+        self.setDriver(driver)
         self.awake = False         # display blank/not started
         self._nro = 0
+
+    def setDriver(self, driver: TFT_DRIVER):
+        """Setter """
+        self.driver = driver
 
     # # screen + driver delegates
     # def remove_entry(self, name: str):
@@ -181,25 +187,53 @@ screen_driver: ScreenDriver | None = None
 # pylint: disable=too-many-statements
 
 
-async def _screen_action(msg: Any, hub: Hub):
+async def _screen_action(msg: Any, hub: Hub, screen_orientation: int):
     """Async actions to work on receiving 'msg' from 'topic'."""
     logger.debug("_screen_action: start-msg: %s", msg)
 
-    def _init_display_driver() -> TFT_DRIVER:
+    def _new_display_driver(origin=None) -> TFT_DRIVER:
         """Construct ILI9486 driver"""
         display_driver = TFT_DRIVER(
             dc=RPI.ILI9486.DC_PIN,
             spi_bus=RPI.ILI9486.SPI_BUS,
             spi_device=RPI.ILI9486.SPI_DEVICE,
-            rst=RPI.ILI9486.RST_PIN, )
+            rst=RPI.ILI9486.RST_PIN,
+            origin=origin,
+        )
         return display_driver
+    
+    def screen_orientation2origin(screen_orientation: int) -> Origin:
+        """Map 'screen_orientation' to 'Origin' understood by 'TFT_DRIVER'"""
+        return (Origin.LOWER_RIGHT
+                if screen_orientation == APP_CONTEXT.SCREEN.SCREEN_ORIENTATION_FLIPPED
+                else Origin.UPPER_LEFT)
 
     global screen_driver
+
+    # Set global 'screen_driver'
+    def _reset_display_driver(
+            screen_orientation: int = APP_CONTEXT.SCREEN.SCREEN_ORIENTATION_DEFAULT
+    ):
+        """Reset 'display_driver' in 'screen_driver' in 'screen_oriantation'
+
+        :screen_orientation: SCREEN_ORIENTATION_DEFAULT,
+                            SCREEN_ORIENTATION_FLIPPED
+
+        """
+        display_driver = _new_display_driver(
+            origin=screen_orientation2origin(screen_orientation))
+        if screen_driver is not None:
+            screen_driver.setDriver(display_driver)
+
+    # Init scree_driver in 'screen_orientation'
     if screen_driver is None:
         size = (APP_CONTEXT.SCREEN.WIDTH,
                 APP_CONTEXT.SCREEN.HEIGHT)
-        logger.info("_screen_action: init screen: size='%s'", size)
-        display_driver = _init_display_driver()
+        logger.info(
+            "_screen_action: init: size='%s', initial screen_orientation=%s",
+            size, screen_orientation)
+        display_driver = _new_display_driver(
+            origin=screen_orientation2origin(screen_orientation))
         screen_driver = ScreenDriver(
             screen=Screen(size=size),
             driver=display_driver
@@ -312,7 +346,9 @@ async def _screen_action(msg: Any, hub: Hub):
     elif is_message_type(msg, TOPICS.SCREEN_MESSAGES.REORIGIN):
         msg_reorigin = cast(MsgScreenReorigin, msg)
         logger.info("TOPICS.SCREEN_MESSAGES.REORIGIN: origin='%s'",
-                    msg_reorigin.origin)
+                    msg_reorigin.screen_orientation)
+        _reset_display_driver(
+            screen_orientation=msg_reorigin.screen_orientation)
 
     elif is_message_type(msg, TOPICS.SCREEN_MESSAGES.SPRITE):
 
@@ -578,12 +614,21 @@ async def screen_coro(
         name: str,
         hub: Hub,
         topic: str,
+        screen_orientation: int
 ):
-    """Co-routine for managing  epaper display."""
+    """Co-routine for managing  epaper display.
+
+    :screen_orientation: initial screen orientation
+                         (SCREEN_ORIENTATION_DEFAULT,
+                         SCREEN_ORIENTATION_FLIPPED)
+
+    """
     logger.info(
         "screen_coro: start name='%s', listen to topic '%s'", name, topic)
     try:
-        await reader_coro(name=name, hub=hub, topic=topic, action=_screen_action)
+        action = partial(
+            _screen_action, screen_orientation=screen_orientation)
+        await reader_coro(name=name, hub=hub, topic=topic, action=action)
     except Exception as ex:
         logger.error(f"{ex}")
         logger.exception(f"screen_coro got exception {ex}")

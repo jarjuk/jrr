@@ -249,6 +249,9 @@ class APP_CONTEXT:
 
         VALUE_FIELD_WIDTH = 40             # longer lines split into multiple lines
 
+        SCREEN_ORIENTATION_DEFAULT = 0     # mapped to Origin.UPPER_LEFT
+        SCREEN_ORIENTATION_FLIPPED = 1     # mapped to Origin.LOWER_RIGHT
+
     class EXTENSION_HOOK:
         """Extension configuration"""
 
@@ -317,7 +320,7 @@ class APP_CONTEXT:
         MENU_CHANNELS_SETUP = "Kanavat"
         MENU_REBOOT = "Reboot"
         MENU_CHANNELS_ORIGIN = "Hakemisto"
-        MENU_REORIGIN = "Näyttö"
+        MENU_REORIGIN = "Näytön kierto"
         MENU_CHANNELS_DELETE = "poista"
         MENU_IP = "Verkkoyhteys"
         MENU_CHANNELS_ADD = "Lisää"

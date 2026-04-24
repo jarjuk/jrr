@@ -224,7 +224,7 @@ class MsgScreenFirmware(MsgScreen):
 @dataclass
 class MsgScreenReorigin(MsgScreen):
     """Reset origin (for flipping around)"""
-    origin: int        # hex value to set origin
+    screen_orientation: int        # hex value to set origin
 
 
 @dataclass
@@ -744,11 +744,15 @@ def message_firmware(title: str, version_tag: str, notes: str) -> MsgScreenFirmw
     return msg_firmware
 
 
-def message_reorigin(origin: int) -> MsgScreenReorigin:
-    """Flip screen in screen_coro"""
+def message_reorigin(screen_orientation: int) -> MsgScreenReorigin:
+    """Flip screen in screen_coro.
+
+    screen_orientation: SCREEN_ORIENTATION_DEFAULT, SCREEN_ORIENTATION_FLIPPED
+
+    """
     msg = message_create(
         message_type=TOPICS.SCREEN_MESSAGES.REORIGIN,
-        d={"origin": origin}
+        d={"screen_orientation": screen_orientation}
     )
     msg_reorigin = cast(MsgScreenReorigin, msg)
     return msg_reorigin

@@ -71,7 +71,8 @@ from .messages import (MsgRoot,
 class ControllerState:
     """Collect controller state"""
 
-    PERSISTENT_FIELDS = ["current_stream", ]
+    # controller fields saved/restored in/from 'state_config' -YAML
+    PERSISTENT_FIELDS = ["current_stream", "screen_orientation", ]
 
     # state machine executuing e.g. f_config, f_radio,
     state_machine: Callable[str | MsgRoot, Hub]
@@ -103,6 +104,8 @@ class ControllerState:
 
     jrr_version: str = "jrr-1.2.3"
 
+    screen_orientation: int = 0                  # None/0=default, 1=rotated
+    
     def __init__(self):
         self.state_machine = None
         self.menu_step = 0
@@ -122,6 +125,16 @@ class ControllerState:
 
     def set_network_status(self, status: bool):
         self.network_status = status
+
+    # ------------------------------------------------------------------
+    # Screen oriantation
+
+    def flip_screen_orientation(self):
+        """Flip screen_orientation between SCREEN_ORIENTATION_DEFAULT, SCREEN_ORIENTATION_FLIPPED."""
+        self.screen_orientation = (
+            APP_CONTEXT.SCREEN.SCREEN_ORIENTATION_FLIPPED if self.screen_orientation == APP_CONTEXT.SCREEN.SCREEN_ORIENTATION_DEFAULT
+            else APP_CONTEXT.SCREEN.SCREEN_ORIENTATION_DEFAULT)
+        return self.screen_orientation
 
     # ------------------------------------------------------------------
     # Stepping state machine
@@ -970,7 +983,7 @@ def ctrl_menu_setup_with_keyboard(hub: Hub, step_resume: int | None = None):
         menu_name_2_title = {
             APP_CONTEXT.MENU.MENU_CONFIG_WIFI: "Wifi verkon",
             APP_CONTEXT.MENU.MENU_CHANNELS_ORIGIN: "Radiokanava-",
-            APP_CONTEXT.MENU.MENU_REORIGIN: "Näytön kierrätys",
+            APP_CONTEXT.MENU.MENU_REORIGIN: "Näytön kierto",
         }
         menu_name_2_sub_title = {
             APP_CONTEXT.MENU.MENU_CONFIG_WIFI: "valinta",
@@ -998,10 +1011,11 @@ def ctrl_menu_setup_with_keyboard(hub: Hub, step_resume: int | None = None):
         return None
 
     def _setup_reorigin(hub: Hub):
-        """Reorigin (=flip dipsplay)"""
+        """Send message to flip display (=reorigin)"""
         hub.publish(
             topic=TOPICS.SCREEN,
-            message=message_reorigin(origin=0xE4)
+            message=message_reorigin(
+                screen_orientation=controller_state.flip_screen_orientation())
         )
         return None
 
@@ -2761,6 +2775,7 @@ async def runner(hub: Hub):
                     name=COROS.SCREEN,
                     hub=hub,
                     topic=TOPICS.SCREEN,
+                    screen_orientation=controller_state.screen_orientation,
                 ), name=COROS.SCREEN))
             # Streamer
             managed_tasks.append(tg.create_task(

@@ -11,7 +11,7 @@ import logging
 try:
     from .Python_ILI9486 import ILI9486 as LCD
 except ImportError:
-    from Python_ILI9486 import ILI9486 as LCD
+    from .Python_ILI9486 import ILI9486 as LCD
 
 try:
     from spidev import SpiDev
@@ -31,7 +31,8 @@ logger = logging.getLogger(__name__)
 class TFT_DRIVER:
     """Async driver for ILI9486."""
 
-    def __init__(self, dc: int, spi_bus: int, spi_device: int, rst: int = None, ):
+    def __init__(self, dc: int, spi_bus: int, spi_device: int,
+                 rst: int|None = None, origin: LCD.Origin | None = None):
         logger.info("Display.init: dc='%s', rst='%s'", dc, rst)
         # GPIO.setmode(GPIO.BCM)
         # self.spi = SpiDev(RPI.ILI9486.SPI_BUS, RPI.ILI9486.SPI_DEVICE)
@@ -40,7 +41,11 @@ class TFT_DRIVER:
         # default value
         # spi.lsbfirst = False  # set to MSB_FIRST / most significant bit first
         self.spi.max_speed_hz = 64000000
-        self.lcd = LCD.ILI9486(dc=dc, rst=rst, spi=self.spi).begin()
+        self.lcd = LCD.ILI9486(
+            dc=dc
+            , rst=rst
+            , spi=self.spi
+            , origin=origin if origin is not None else LCD.Origin.LOWER_RIGHT).begin()
         self.width = SCREEN_WIDTH
         self.height = SCREEN_HEIGHT
 
