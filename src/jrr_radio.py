@@ -105,7 +105,7 @@ class ControllerState:
     jrr_version: str = "jrr-1.2.3"
 
     screen_orientation: int = 0                  # None/0=default, 1=rotated
-    
+
     def __init__(self):
         self.state_machine = None
         self.menu_step = 0
@@ -781,7 +781,7 @@ def ctrl_act_set_stream(hub: Hub, stream_adv: int = 0) -> int:
     # Change url for STREAM
     hub.publish(
         topic=TOPICS.STREAMER,
-        message=message_streamer_start(url=stream_config.url)
+        message=message_streamer_start(stream_config=stream_config)
     )
     return controller_state.current_stream
 

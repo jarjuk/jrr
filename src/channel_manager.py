@@ -30,7 +30,7 @@ channel configurations
 - accepting an entry from 'index.yaml' to the set of streamable/active
   channel configurations,
   - adds StreamConfig to the list in CLI.FACTORY_STREAM_YAML
-  - resizes icon referenced in index.yaml entry 
+  - resizes icon referenced in index.yaml entry
   - and saves the resized icon to 'CLI.DEFAULT_ICON_DIR'
   - updates StreamConfig.icon with icon name
 
@@ -61,10 +61,24 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class StreamConfig:
-    """Data object for stream."""
+    """Abstract stream configuration."""
+    type: str        # Base class 'NetworkStreamConfig', 'ChirpConfig', ??
+    icon: str        # Stream icon name OR url to icon (on display)
     name: str        # Stream name
-    icon: str        # Stream icon name OR url to icon
-    url: str         # Stream url
+
+
+@dataclass
+class NetworkStreamConfig(StreamConfig):
+    """Data object for network stream."""
+    url: str         # Network url to stream
+
+
+@dataclass
+class ChirpConfig(StreamConfig):
+    """Chrip configuration  network stream."""
+    start_freq: int    # Sweep start freq
+    end_freq: int      # Sweep end freq
+    duration: str      # Duration of chirp sweep
 
 
 # ------------------------------------------------------------------
@@ -150,15 +164,35 @@ def add_channel_icons(channels: List[StreamConfig], yaml_url: str):
 def parse_channels(channel_str) -> List[StreamConfig]:
     channels = []
     logger.debug("parse_channels: channel_str='%s'", channel_str)
+
+    # Map stream config type to configuration class
+    mapper = {
+        "NetworkStreamConfig": NetworkStreamConfig,
+        "ChirpConfig": ChirpConfig,
+
+    }
     if channel_str is not None:
-        channels = [StreamConfig(**s) for s in yaml.safe_load(channel_str)]
+        try:
+            # Default constructs 'NetworkStreamConfig' else expect 'type' to be in
+            channels = [
+                mapper[s["type"]](
+                    **s) if "type" in s else mapper["NetworkStreamConfig"](**(s | {"type": "NetworkStreamConfig"}))
+                for s in yaml.safe_load(channel_str)
+            ]
+        except KeyError as e:
+            msg = (f"Unsupported stream config {e}, support only "
+                   "for {[k for k in mapper.keys()]}")
+            logger.error("parse_channels: msg='%s'", msg)
+            e.add_note(msg)
+            raise
+
     return channels
 
 
 def update_channel_configurations(
         streams: List[StreamConfig],
-        deleted_streams: List[StreamConfig] = [],
-        added_streams: List[StreamConfig] = []
+        deleted_streams: List[StreamConfig]=[],
+        added_streams: List[StreamConfig]=[]
 ) -> List[StreamConfig]:
     """Update (=delete, keep) channel/stream configuration in
     yaml-configuration.
@@ -208,7 +242,7 @@ def _factory_reset_channels():
                              )
 
 
-def init_streams(url: str | None = None) -> Tuple[List[StreamConfig] | None, bool]:
+def init_streams(url: str | None=None) -> Tuple[List[StreamConfig] | None, bool]:
     """Read channel YAML from 'url' and parse list of StreamConfig's.
 
     If 'url' not found use 'factory_reset_channels' to init channels.
@@ -255,7 +289,7 @@ def channel_activation_list(activation_url: str) -> List[StreamConfig]:
 
     :raises: FileNotFoundError
 
-    :return: list of channel configurations for activation 
+    :return: list of channel configurations for activation
 
     """
 
@@ -319,7 +353,7 @@ def channel_icon_image(channel: StreamConfig, yaml_url: str) -> str:
 
     Icon image may be:
     - real url in 'channel.icon'
-    - realative to 'yaml_url' in 'channel.icon' 
+    - realative to 'yaml_url' in 'channel.icon'
 
     """
     parsed_icon_url = urlparse(channel.icon)

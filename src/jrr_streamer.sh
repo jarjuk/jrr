@@ -118,8 +118,9 @@ usage() {
     echo "list-devices          : list audio devices"
     echo "gen                   : sine signal generator RIGHT=$RIGHT_FREQ Hz, LEFT=$LEFT_FREQ Hz, GAIN=$GAIN DURATION=$DURATION s"
     echo "sine                  : generate 'sine FILE'"
-    echo "chirp                 : generate 'chirp START_FREQ END_FREQ to  FILE'"    
+    echo "chirp-file            : generate 'chirp START_FREQ END_FREQ to FILE'"    
     echo "play FILE             : play FILE"
+    echo "chirp                 : stream chirp START_FREQ END_FREQ  with GAIN to alsa $AUDIO_OUT"
     echo "stream URL            : stream URL with GAIN (action from jrr.py)"
     echo "dmsg MSG              : send MSG to kernel /dev/kmsg"
     echo "wifi-setup SSID PASSWD: configure wifi SSID and PASSWORD"
@@ -459,6 +460,19 @@ do
                  -map "[aout]" -ac 2 \
                  -f alsa $AUDIO_OUT \
             ) >/dev/null  2>&1
+             ;;
+
+        chirp)
+            [[ -z "$START_FREQ" ]] && START_FREQ=100 && echo "Using START_FREQ=$START_FREQ" 
+            [[ -z "$END_FREQ" ]] && END_FREQ=2000 && echo "Using END_FREQ=$END_FREQ" 
+
+            (set -x; 
+             ffmpeg \
+                 -hide_banner -nostdin -nostats -loglevel error \
+                 -filter_complex "aevalsrc=sin(2*PI*($START_FREQ*t + ($END_FREQ-$START_FREQ)/(2*$DURATION)*t*t)):s=44100:d=$DURATION,aloop=loop=-1:size=$((44100*$DURATION)),pan=stereo|c0=c0|c1=c0,alimiter[aout]" \
+                   -map "[aout]" -ac 2 \
+                   -f alsa "$AUDIO_OUT" \
+                 ) 2>&1
             ;;
 
         stream)
@@ -548,7 +562,7 @@ do
             ls -ltr $FILE
             ;;
 	    
-        chirp)
+        chirp-file)
             [[ -z "$START_FREQ" ]] && START_FREQ=100 && echo "Using START_FREQ=$START_FREQ" 
             [[ -z "$END_FREQ" ]] && END_FREQ=2000 && echo "Using END_FREQ=$END_FREQ" 
             [[ -z "$FILE" ]] && FILE="$SOUND_DIR/chrip-$START_FREQ-$END_FREQ-${DURATION}s.wav" && echo "Using FILE=$FILE"

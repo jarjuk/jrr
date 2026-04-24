@@ -22,7 +22,6 @@ runner_task: asyncio.Task | None = None
 
 # Os-process streaming audio - running within 'runner_task'
 streamer_proc: asyncio.subprocess.Process | None = None
-
 # ------------------------------------------------------------------
 # Module actions managing asyncio task and os-process
 
@@ -38,9 +37,9 @@ async def _streamer_stop(name: str):
 
     Can be called even if no stream running.
 
-    :name: name to coro where called from 
+    :name: name to coro where called from
     """
-    logger.debug("_streamer_stop starting")
+    logger.debug("_streamer_stop starting name: %s", name)
     global streamer_proc
 
     if streamer_proc is not None:
@@ -87,7 +86,7 @@ async def _streamer_stop(name: str):
                 "%s: cancellling runner_task: %s", name, runner_task)
             await cancel_and_wait(
                 runner_task, msg=f"cancel_and_wait 'runner_task' in streamer_coro {name}")
-            logger.debug( "Return from cancel_and_wait")
+            logger.debug("Return from cancel_and_wait")
         else:
             logger.warning(
                 "No task to cancel - nothing done")
@@ -97,13 +96,14 @@ async def _streamer_stop(name: str):
         runner_task = None
 
 
-async def _streamer_run(url: str):
+async def _streamer_run(msg: MsgStreamerStart):
     """
     Start sub-process and wait for its returns.
 
     Details
     ----
-    Ref: https://superfastpython.com/asyncio-subprocess/#Create_Process_with_create_subprocess_shell
+    #Create_Process_with_create_subprocess_shell
+    Ref: https://superfastpython.com/asyncio-subprocess/
 
     Launches shell script 'APP_CONTEXT.STREAMER_SCRIPT'
 
@@ -111,30 +111,39 @@ async def _streamer_run(url: str):
 
     Parameters
     ----
-    :url: to stream
+
+    :msg.stream_type: 'stream' or 'chirp' (command for STREAMER_SCRIPT)
+
+    :msg.url: to stream (for network)
 
     Return
     -----
     """
-
-
     global streamer_proc
-    # params = [
-    #     APP_CONTEXT.STREAMER_SCRIPT,
-    #     "--mono",
-    #     "--file", url,
-    #     # "--gain", "2",
-    #     "play",
-    # ]
-    params = [
-        APP_CONTEXT.STREAMER_SCRIPT,
-        "--file", url,
-        "stream",
-    ]
-    
+
+    # Dispatch cli command 'jrr_stream.sh options* cmd'
+    # 
+    mapper = {
+        TOPICS.STREAMER_MESSAGES.STREAM_TYPE_NETWORK: [
+            APP_CONTEXT.STREAMER_SCRIPT, 
+            "--file",  msg.url,
+            "stream",
+        ],
+        TOPICS.STREAMER_MESSAGES.STREAM_TYPE_CHIRP: [
+            APP_CONTEXT.STREAMER_SCRIPT,
+            "--start-freq", f"{msg.start_freq}",
+            "--end-freq", f"{msg.end_freq}",
+            "--duration", f"{msg.duration}",
+            "chirp"
+        ]
+    }
+
+    params = mapper[msg.stream_type]
+
     # runner_proc = await asyncio.create_subprocess_shell(
     #     script)
-    logger.info("create_subprocess: param='%s'", ' '.join([ str(p) for p in params]))
+    logger.info("create_subprocess: param='%s'",
+                ' '.join([str(p) for p in params]))
     streamer_proc = await asyncio.create_subprocess_exec(
         *params,
         stdout=asyncio.subprocess.PIPE,
@@ -162,7 +171,7 @@ async def _streamer_run(url: str):
     # await runner_proc.wait()
     istat = streamer_proc.returncode
     logger.info(
-        "_streamer_runner:  url: %s, streamer_proc.returncode: %s", url, istat)
+        "_streamer_runner:  params: %s, streamer_proc.returncode: %s", params, istat)
     return istat
 
 
@@ -242,9 +251,9 @@ async def streamer_coro(
                 # START - streaming
                 msg_start = cast(MsgStreamerStart, msg)
                 logger.info(
-                    "streamer_coro: start streaming from url '%s'", msg_start.url)
+                    "streamer_coro: start streaming from url '%s'", msg_start)
                 runner_task = asyncio.create_task(
-                    _streamer_run(url=msg_start.url))
+                    _streamer_run(msg=msg_start))
 
             elif is_message_type(msg, TOPICS.STREAMER_MESSAGES.STATUS_QUERY):
                 # STATUS_QUERY

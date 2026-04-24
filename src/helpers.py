@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 async def cancel_and_wait(task, msg=None):
     """cancel task and wait for it to complete."""
     # https://superfastpython.com/asyncio-cancel-task-and-wait/
-    logger.debug("cancel task msg: '%s'", msg)
+    logger.info("cancel task %s msg: '%s'", task, msg)
     task.cancel(msg)
     try:
         # wait for the task to be done

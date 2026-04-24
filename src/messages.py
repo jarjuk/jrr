@@ -5,6 +5,7 @@ from typing import (Dict, List, cast, Optional, Iterable)
 from dataclasses import (dataclass, field, fields, asdict)
 import logging
 
+from .channel_manager import StreamConfig, NetworkStreamConfig, ChirpConfig
 from .constants import TOPICS, COROS, APP_CONTEXT, DSCREEN
 
 logger = logging.getLogger(__name__)
@@ -94,7 +95,13 @@ class MsgStreamer(MsgRoot):
 @dataclass
 class MsgStreamerStart(MsgStreamer):
     """Start streaming"""
-    url: str                      # Url to start streaming from
+    stream_type: str               # command to jrr_stream.sh
+    # Network stream
+    url: str | None = None         # Url to start streaming from
+    # Chrip
+    start_freq: int | None = None  # Sweep start freq
+    end_freq: int | None = None    # Sweep end freq
+    duration: int | None = None    # Sweep duration
 
 
 @dataclass
@@ -442,17 +449,39 @@ def message_screen_sleep() -> MsgRoot | str:
     return msg
 
 
-def message_streamer_start(url: str) -> MsgStreamerStart:
-    """Message to start streaming.
+def message_streamer_start(stream_config: StreamConfig) -> MsgStreamerStart:
+    """Message to start streaming/start chirip
 
-    :url: url to start streaming to
+    :stream_config: ChirpConfig or NetworkStreamConfig
 
     """
+    # config dispatchers stream_config ->NetworkStreamConfig, ChirpConfig
+    def network_config_d(stream_config: StreamConfig):
+        network_stream_config = cast(NetworkStreamConfig, stream_config)
+        return {
+            "stream_type": TOPICS.STREAMER_MESSAGES.STREAM_TYPE_NETWORK,
+            "url": network_stream_config.url,
+        }
+
+    def chirp_config_d(stream_config: StreamConfig):
+        chirp_config = cast(ChirpConfig, stream_config)
+        return {
+            "stream_type": TOPICS.STREAMER_MESSAGES.STREAM_TYPE_CHIRP,
+            "start_freq": chirp_config.start_freq,
+            "end_freq": chirp_config.end_freq,
+            "duration": chirp_config.duration,
+        }
+    mapper = {
+        NetworkStreamConfig.__name__: network_config_d,
+        ChirpConfig.__name__: chirp_config_d,
+    }
+
+    # Activate dispathcers
+    d = mapper[stream_config.__class__.__name__](stream_config)
+
     msg = message_create(
         message_type=TOPICS.STREAMER_MESSAGES.START,
-        d={
-            "url": url,
-        }
+        d=d
     )
     msg_streamer = cast(MsgStreamerStart, msg)
     return msg_streamer

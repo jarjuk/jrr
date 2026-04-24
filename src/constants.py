@@ -102,6 +102,9 @@ class TOPICS:
         # query stream (runner) status
         STATUS_QUERY = "status_stream"
 
+        STREAM_TYPE_NETWORK = "stream"             # jrr_streamer.sh command stream
+        STREAM_TYPE_CHIRP = "chirp"                # jrr_streamer.sh command chrip
+
     class SCREEN_MESSAGES:
         """Messages in SCREEN -topic"""
         INIT = "init"                              # init (should be called first)

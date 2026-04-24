@@ -2782,12 +2782,51 @@ drwxr-xr-x 2 pi pi  4096 Dec 13 12:52 v2
 #+end_example
 
 Help on conversion
-#+BEGIN_SRC bash :eval no-export :results output
+#+BEGIN_SRC bash :eval no-export :results output 
 echo "Running in $(pwd) host '$(hostname)' on $(date)"
-python3 jrr.py --help
+cd jrr
+.venv/bin/python jrr.py --help
 #+END_SRC
 
 #+RESULTS:
+#+begin_example
+Running in /home/pi host 'jrr5' on Fri Apr 24 12:59:08 EEST 2026
+usage: jrr.py [-v] [--disable_existing_loggers] [--help] {radio,convert} ...
+
+positional arguments:
+  {radio,convert}       Commands
+    radio               Run radio daemon
+    convert             Convert icons
+
+options:
+  -v, --verbose
+  --disable_existing_loggers
+                        Default True (=imported loggers disabled)
+  --help                help for help if you need some help
+Command 'radio'
+usage: jrr.py radio [-h] [--all-lines]
+
+options:
+  -h, --help   show this help message and exit
+  --all-lines  Output all journalctl lines to console (default no)
+
+Command 'convert'
+usage: jrr.py convert [-h] [--icons-from ICONS_FROM] [--icons-to ICONS_TO]
+                      [--width WIDTH] [--height HEIGHT] [--yes] [--bw]
+
+options:
+  -h, --help            show this help message and exit
+  --icons-from ICONS_FROM
+                        Icon images from '/home/pi/.icons')
+  --icons-to ICONS_TO   Icon images to '/home/pi/cnf/icons')
+  --width WIDTH         Display width '200')
+  --height HEIGHT       Display height '200')
+  --yes, -y             Override '(default = False')
+  --bw                  Black and white '(default = False = color')
+
+#+end_example
+
+
 #+begin_example
 Running in /home/pi host 'jrr5' on Mon Jan 13 14:17:58 EET 2025
 usage: jrr.py [-v] [--disable_existing_loggers] [--help] {radio,convert} ...
@@ -2828,11 +2867,33 @@ Convert iconns
 
 #+BEGIN_SRC bash :eval no-export :results output
 echo "Running in $(pwd) host '$(hostname)' on $(date)"
-python3 test.py convert  --yes
+#python3 test.py convert  --yes
+cd jrr
+.venv/bin/python jrr.py convert --yes
 #+END_SRC
 
-
 #+RESULTS:
+#+begin_example
+Running in /home/pi host 'jrr5' on Fri Apr 24 13:02:01 EEST 2026
+/home/pi/cnf/icons/jrr.png - created
+/home/pi/cnf/icons/jrr-help.png - created
+/home/pi/cnf/icons/jrr-stop.png - created
+/home/pi/cnf/icons/järviradio.png - created
+/home/pi/cnf/icons/JÄRVIRADIO.png - created
+/home/pi/cnf/icons/yle-radio-1.png - created
+/home/pi/cnf/icons/yle-1.jpeg - created
+/home/pi/cnf/icons/järviratio.png - created
+/home/pi/cnf/icons/classic.png - created
+/home/pi/cnf/icons/yle-puhe.png - created
+/home/pi/cnf/icons/YLE-SUOMI.png - created
+/home/pi/cnf/icons/rondo.png - created
+/home/pi/cnf/icons/radio-suomi.png - created
+/home/pi/cnf/icons/chirp.png - created
+/home/pi/cnf/icons/YLE-1.png - created
+#+end_example
+
+
+
 #+begin_example
 Running in /home/pi host 'jrr5' on Mon Jan 13 14:35:36 EET 2025
 /home/pi/.icons/v2/jrr.png - created
@@ -2851,7 +2912,7 @@ Running in /home/pi host 'jrr5' on Mon Jan 13 14:35:36 EET 2025
 /home/pi/.icons/v2/YLE-1.png - created
 #+end_example
 
-** Deploy app
+** Deploy app source
 #+BEGIN_SRC bash :eval no-export :results output
 echo "Running in $(pwd) host '$(hostname)' on $(date)"
 echo "var=$var"
@@ -2891,70 +2952,74 @@ total size is 7.804  speedup is 6,07
 
 #+RESULTS:
 #+begin_example
-Rsync SDIR=src/ from host=eero to jrr5.local:jrr/src.init/ on to 3.7.2025 13.33.17 +0300
+Rsync SDIR=src/ from host=Leo to jrr5.local:jrr/src.init/ on pe 17.4.2026 16.09.28 +0300
 rsync -a --delete --update --verbose --checksum --recursive src/ jrr5:jrr/src.init/
-total 364
--rw-rw-r-- 1 jj jj  6032 joulu   9  2024 epd2in13b_V3.py
--rw-rw-r-- 1 jj jj  5904 joulu   9  2024 epd2in13bc.py
-drwxrwxr-x 3 jj jj     3 joulu   9  2024 lib
--rw-rw-r-- 1 jj jj 12641 joulu   9  2024 epd2in13d.py
--rw-rw-r-- 1 jj jj   108 joulu  11  2024 pushbutton_coro.py
--rw-rw-r-- 1 jj jj 13797 joulu  13  2024 epd2in13d_async.py
--rw-rw-r-- 1 jj jj   230 joulu  13  2024 convert.py
--rw-rw-r-- 1 jj jj    86 joulu  14  2024 exceptions.py
--rw-rw-r-- 1 jj jj  7577 joulu  16  2024 epd2in13b_V3_async.py
--rw-rw-r-- 1 jj jj  6818 joulu  16  2024 epd2in13bc_async.py
--rw-rw-r-- 1 jj jj 10812 joulu  18  2024 epdconfig_async.py
--rw-rw-r-- 1 jj jj  7585 joulu  18  2024 epd2in7b_V2_async.py
-drwxrwxr-x 2 jj jj    21 joulu  19  2024 pic
--rw-rw-r-- 1 jj jj  2886 joulu  29  2024 spriter.py
--rw-rw-r-- 1 jj jj  1097 joulu  29  2024 clock_coro.py
-drwxrwxr-x 2 jj jj     7 joulu  30  2024 examples
--rw-rw-r-- 1 jj jj 20517 joulu  30  2024 epd2in7_V2_async.py
--rw-rw-r-- 1 jj jj  6388 tammi   9 19:12 test_image.py
--rw-rw-r-- 1 jj jj  1594 tammi  11 11:44 publish_subsrcibe.py
--rwxr-xr-x 1 jj jj  4459 tammi  15 10:30 demo_keyboard.py
--rw-rw-r-- 1 jj jj  8960 tammi  17 12:41 streamer_coro.py
--rw-rw-r-- 1 jj jj  2309 maalis 14 14:02 reader_coro.py
--rw-rw-r-- 1 jj jj   343 maalis 16 19:21 jrr_streams.yaml
--rw-rw-r-- 1 jj jj 17170 touko   8 12:05 dscreen.py
--rw-rw-r-- 1 jj jj   833 touko   8 15:47 helpers.py
--rw-rw-r-- 1 jj jj  5420 touko   8 15:57 kb_coro.py
--rw-rw-r-- 1 jj jj  3226 touko   9 20:35 tft_ili9486.py
--rwxrwxr-x 1 jj jj     0 touko   9 20:37 __init__.py
--rw-rw-r-- 1 jj jj  4399 touko  16 10:54 gpio_coro.py
--rw-rw-r-- 1 jj jj  3063 touko  16 12:31 stdin_coro.py
-drwxrwxr-x 3 jj jj    28 touko  16 12:31 debug
--rwxr-xr-x 1 jj jj 13966 touko  21 12:21 demo_ili9486.py
-drwxrwxr-x 4 jj jj    12 touko  22 10:55 Python_ILI9486
--rw-rw-r-- 1 jj jj  6477 touko  22 11:01 console.py
--rw-rw-r-- 1 jj jj  4910 touko  28 09:08 jrr.py
--rw-rw-r-- 1 jj jj  9210 touko  30 10:00 kb.py
-drwxrwxr-x 2 jj jj     5 kesä    2 10:50 resources
--rw-rw-r-- 1 jj jj   839 kesä    6 08:46 wifi.py
--rw-rw-r-- 1 jj jj  2064 kesä    6 14:10 network_coro.py
--rw-rw-r-- 1 jj jj 10151 kesä    9 09:55 channel_manager.py
-drwxrwxr-x 3 jj jj     4 kesä    9 13:35 cnf
--rw-rw-r-- 1 jj jj  4142 kesä   10 09:59 jrr_converter.py
--rw-rw-r-- 1 jj jj  1767 kesä   27 10:51 apu.py
--rw-rw-r-- 1 jj jj  1393 heinä   2 11:01 github.py
--rw-rw-r-- 1 jj jj  8156 heinä   2 11:03 utils.py
--rw-rw-r-- 1 jj jj 19170 heinä   2 14:38 messages.py
--rw-rw-r-- 1 jj jj 20034 heinä   2 14:46 screen_coro.py
--rw-rw-r-- 1 jj jj 12436 heinä   2 15:54 firmware.py
--rw-rw-r-- 1 jj jj  4997 heinä   2 15:59 config.py
--rw-rw-r-- 1 jj jj  1578 heinä   3 08:52 jrr_dapp.py
--rw-rw-r-- 1 jj jj 15666 heinä   3 09:03 constants.py
--rw-rw-r-- 1 jj jj 43070 heinä   3 09:07 screen.py
-drwxrwxr-x 2 jj jj    60 heinä   3 09:07 __pycache__
--rw-rw-r-- 1 jj jj    10 heinä   3 11:55 VERSION
--rwxr-xr-x 1 jj jj 14396 heinä   3 12:29 jrr_streamer.sh
--rw-rw-r-- 1 jj jj 96556 heinä   3 13:31 jrr_radio.py
+total 596
+-rw-rw-r-- 1 jj jj   6032 joulu   9  2024 epd2in13b_V3.py
+-rw-rw-r-- 1 jj jj   5904 joulu   9  2024 epd2in13bc.py
+drwxrwxr-x 3 jj jj   4096 joulu   9  2024 lib
+-rw-rw-r-- 1 jj jj  12641 joulu   9  2024 epd2in13d.py
+-rw-rw-r-- 1 jj jj    108 joulu  11  2024 pushbutton_coro.py
+-rw-rw-r-- 1 jj jj  13797 joulu  13  2024 epd2in13d_async.py
+-rw-rw-r-- 1 jj jj    230 joulu  13  2024 convert.py
+-rw-rw-r-- 1 jj jj     86 joulu  14  2024 exceptions.py
+-rw-rw-r-- 1 jj jj   7577 joulu  16  2024 epd2in13b_V3_async.py
+-rw-rw-r-- 1 jj jj   6818 joulu  16  2024 epd2in13bc_async.py
+-rw-rw-r-- 1 jj jj  10812 joulu  18  2024 epdconfig_async.py
+-rw-rw-r-- 1 jj jj   7585 joulu  18  2024 epd2in7b_V2_async.py
+drwxrwxr-x 2 jj jj   4096 joulu  19  2024 pic
+-rw-rw-r-- 1 jj jj   2886 joulu  29  2024 spriter.py
+-rw-rw-r-- 1 jj jj   1097 joulu  29  2024 clock_coro.py
+drwxrwxr-x 2 jj jj   4096 joulu  30  2024 examples
+-rw-rw-r-- 1 jj jj  20517 joulu  30  2024 epd2in7_V2_async.py
+-rw-rw-r-- 1 jj jj   6388 tammi   9  2025 test_image.py
+-rw-rw-r-- 1 jj jj   1594 tammi  11  2025 publish_subsrcibe.py
+-rwxr-xr-x 1 jj jj   4459 tammi  15  2025 demo_keyboard.py
+-rw-rw-r-- 1 jj jj   2309 maalis 14  2025 reader_coro.py
+-rw-rw-r-- 1 jj jj    343 maalis 16  2025 jrr_streams.yaml
+-rw-rw-r-- 1 jj jj  17170 touko   8  2025 dscreen.py
+-rw-rw-r-- 1 jj jj    833 touko   8  2025 helpers.py
+-rw-rw-r-- 1 jj jj   5420 touko   8  2025 kb_coro.py
+-rw-rw-r-- 1 jj jj   3226 touko   9  2025 tft_ili9486.py
+-rwxrwxr-x 1 jj jj      0 touko   9  2025 __init__.py
+-rw-rw-r-- 1 jj jj   3063 touko  16  2025 stdin_coro.py
+drwxrwxr-x 3 jj jj   4096 touko  16  2025 debug
+-rwxr-xr-x 1 jj jj  13966 touko  21  2025 demo_ili9486.py
+-rw-rw-r-- 1 jj jj   6477 touko  22  2025 console.py
+-rw-rw-r-- 1 jj jj   4910 touko  28  2025 jrr.py
+-rw-rw-r-- 1 jj jj   9210 touko  30  2025 kb.py
+drwxrwxr-x 2 jj jj   4096 kesä    2  2025 resources
+-rw-rw-r-- 1 jj jj    839 kesä    6  2025 wifi.py
+-rw-rw-r-- 1 jj jj   2064 kesä    6  2025 network_coro.py
+drwxrwxr-x 3 jj jj   4096 kesä    9  2025 cnf
+-rw-rw-r-- 1 jj jj   4142 kesä   10  2025 jrr_converter.py
+-rw-rw-r-- 1 jj jj   1393 heinä   2  2025 github.py
+-rw-rw-r-- 1 jj jj   4997 heinä   2  2025 config.py
+-rw-rw-r-- 1 jj jj   1852 heinä   6  2025 jrr_dapp.py
+-rw-rw-r-- 1 jj jj   9056 heinä   7  2025 utils.py
+-rw-rw-r-- 1 jj jj  14390 heinä   7  2025 firmware.py
+-rw-rw-r-- 1 jj jj  43922 heinä   7  2025 screen.py
+-rw-rw-r-- 1 jj jj    310 heinä   7  2025 RELEASES
+-rw-rw-r-- 1 jj jj  10235 heinä   7  2025 channel_manager.py
+drwxrwxr-x 2 jj jj   4096 heinä   7  2025 __pycache__
+-rwxr-xr-x 1 jj jj  17441 huhti  14 15:28 jrr_streamer.sh
+-rw-rw-r-- 1 jj jj   9080 huhti  14 15:28 streamer_coro.py
+-rw-rw-r-- 1 jj jj  20369 huhti  17 09:28 messages.py
+drwxrwxr-x 4 jj jj   4096 huhti  17 09:52 Python_ILI9486
+-rw-rw-r-- 1 jj jj  16380 huhti  17 10:06 constants.py
+-rw-rw-r-- 1 jj jj 101489 huhti  17 10:21 jrr_radio.py
+-rw-rw-r-- 1 jj jj  20937 huhti  17 10:35 screen_coro.py
+-rw-rw-r-- 1 jj jj   4409 huhti  17 16:07 gpio_coro.py
+-rw-rw-r-- 1 jj jj     13 huhti  17 16:09 VERSION
 sending incremental file list
+./
+VERSION
 
-sent 14.743 bytes  received 37 bytes  9.853,33 bytes/sec
-total size is 13.989.900  speedup is 946,54
+sent 14.878 bytes  received 69 bytes  1.195,76 bytes/sec
+total size is 14.009.809  speedup is 937,30
 #+end_example
+
+
 
 Create symlink ~src~ pointing to ~src.init~ show ~src/VERSION~
 #+name: src-init
@@ -2964,12 +3029,15 @@ cd jrr
 rm -f src
 ln -s src.init src
 # ls -latr
+
 cat src/VERSION
 #+END_SRC
 
 #+RESULTS: src-init
-: Running in /home/pi host 'jrr5' on Thu Jul  3 14:46:26 EEST 2025
-: 0.0.3-beta2
+: Running in /home/pi host 'jrr5' on Fri Apr 17 16:09:49 EEST 2026
+: 0.0.5-alpha06
+
+Edit [[file:src/VERSION]]
 
 #+BEGIN_SRC bash :eval no-export :results output :dir .
 echo "Running in $(pwd) host '$(hostname)' on $(date)"
@@ -2977,8 +3045,21 @@ cat src/VERSION
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/jj/work/jrr host 'eero' on to 3.7.2025 14.46.51 +0300
-: 0.0.4-alpha1
+: Running in /home/jj/work/jrr host 'Leo' on pe 17.4.2026 15.47.19 +0300
+: 0.0.5-alpha05
+
+Restore back to ~src.prev~
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+cd jrr
+rm -f src
+ln -s jrr-0.0.4-rc05 src
+cat src/VERSION
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi host 'jrr5' on Fri Apr 17 09:12:05 EEST 2026
+: 0.0.4-rc05
 
 
 ** Create ~.venv~ with python installs
@@ -4145,43 +4226,46 @@ echo "JRR5_IP=$JRR5_IP"
 #+END_SRC
 
 #+RESULTS:
-: Running in host 'eero' on ke 30.4.2025 08.58.38 +0300
-: JRR5_IP=192.168.1.241
+: Running in host 'Leo' on ma 13.4.2026 16.26.12 +0300
+: JRR5_IP=jrr5.local
 
 
 #+call: ping-ip[:dir "."]()
 
 #+RESULTS:
-: Ping JRR5_IP=192.168.1.241 on ke 30.4.2025 08.58.41 +0300
-: PING 192.168.1.241 (192.168.1.241) 56(84) bytes of data.
-: 64 bytes from 192.168.1.241: icmp_seq=1 ttl=64 time=5.36 ms
-: 64 bytes from 192.168.1.241: icmp_seq=2 ttl=64 time=5.46 ms
-: 64 bytes from 192.168.1.241: icmp_seq=3 ttl=64 time=3.04 ms
+: Ping JRR5_IP=jrr5.local on ma 13.4.2026 16.26.15 +0300
+: PING jrr5.local (192.168.1.241) 56(84) bytes of data.
+: 64 bytes from jrr5.local (192.168.1.241): icmp_seq=1 ttl=64 time=5.99 ms
+: 64 bytes from jrr5.local (192.168.1.241): icmp_seq=2 ttl=64 time=5.52 ms
+: 64 bytes from jrr5.local (192.168.1.241): icmp_seq=3 ttl=64 time=2.28 ms
 : 
-: --- 192.168.1.241 ping statistics ---
-: 3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-: rtt min/avg/max/mdev = 3.035/4.618/5.463/1.120 ms
+: --- jrr5.local ping statistics ---
+: 3 packets transmitted, 3 received, 0% packet loss, time 2004ms
+: rtt min/avg/max/mdev = 2.281/4.595/5.985/1.647 ms
 
 *** Ping jrr5.local
 
 #+call: ping-ip[:dir "."](JRR5_IP="jrr5.local")
 
 #+RESULTS:
-: Ping JRR5_IP=jrr5.local on ke 30.4.2025 08.58.46 +0300
+: Ping JRR5_IP=jrr5.local on ma 13.4.2026 16.26.25 +0300
 : PING jrr5.local (192.168.1.241) 56(84) bytes of data.
-: 64 bytes from jrr5.local (192.168.1.241): icmp_seq=1 ttl=64 time=2.65 ms
-: 64 bytes from jrr5.local (192.168.1.241): icmp_seq=2 ttl=64 time=6.13 ms
-: 64 bytes from jrr5.local (192.168.1.241): icmp_seq=3 ttl=64 time=5.84 ms
+: 64 bytes from jrr5.local (192.168.1.241): icmp_seq=1 ttl=64 time=1.84 ms
+: 64 bytes from jrr5.local (192.168.1.241): icmp_seq=2 ttl=64 time=2.27 ms
+: 64 bytes from jrr5.local (192.168.1.241): icmp_seq=3 ttl=64 time=2.54 ms
 : 
 : --- jrr5.local ping statistics ---
-: 3 packets transmitted, 3 received, 0% packet loss, time 2004ms
-: rtt min/avg/max/mdev = 2.650/4.871/6.125/1.575 ms
+: 3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+: rtt min/avg/max/mdev = 1.841/2.219/2.543/0.289 ms
 
 *** ssh connection
 
 #+call: greet-tramp()
 
 #+RESULTS:
+: Greet Mon Apr 13 16:26:39 EEST 2026 from host 'jrr5' (using eshell tramp)
+
+
 : Greet Wed Apr 30 08:58:59 EEST 2025 from host 'jrr5' (using eshell tramp)
 
 *** +Run Waveshare epaper demo in demo directory+
@@ -6173,6 +6257,31 @@ sending incremental file list
 sent 3.098 bytes  received 17 bytes  6.230,00 bytes/sec
 total size is 5.472.656  speedup is 1.756,87
 #+end_example
+*** ~src-version~
+
+#+name: src-version
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+cd jrr
+ls -ltr
+cat src/VERSION
+#+END_SRC
+
+#+RESULTS: src-version
+#+begin_example
+Running in /home/pi host 'jrr5' on Fri Apr 17 09:09:59 EEST 2026
+total 28
+-rwxr-xr-x  1 pi pi  128 Jan 14  2025 jrr.py
+drwxr-xr-x  3 pi pi 4096 Jul  2  2025 cnf
+drwxrwxr-x  2 pi pi 4096 Jul  4  2025 bin
+lrwxrwxrwx  1 pi pi   28 Jul  4  2025 src -> /home/pi/jrr//jrr-0.0.4-rc04
+drwxrwxr-x 10 pi pi 4096 Jul  7  2025 jrr-0.0.4-rc04
+drwxr-xr-x  2 pi pi 4096 Apr 14 20:01 tmp
+drwxr-xr-x 10 pi pi 4096 Apr 16 13:22 jrr-0.0.4-rc05
+drwxrwxr-x 10 pi pi 4096 Apr 17 09:04 src.init
+lrwxrwxrwx  1 pi pi    8 Apr 17 09:05 src.new -> src.init
+0.0.4-rc06
+#+end_example
 
 
 ** 3.5inch TFT demo
@@ -6455,4 +6564,4 @@ sine-gen.sh alsa-devices
 # reftex-default-bibliography: ("./raspberry.bib")
 
 
-Modified:2025-07-16.13:57; # time-stamp
+Modified:2026-04-24.13:02; # time-stamp
