@@ -455,13 +455,13 @@ fi
 
 * Issues
 
-** TODO JRR-DEV-004: Support chirp streams
+** DONE JRR-DEV-004: Support chirp streams
 
 
 - [-] Chirp stream
   - [X] Added ~src/jrr_streamer.sh --end-freq 20000 --duration 10 chirp~
     - [X] Renamed src/jrr_streamer.sh --end-freq 20000 --duration 10 chirp-gen
-  - [ ] Differentiate chirp stream from network stream
+  - [X] Differentiate chirp stream from network stream
 
 
 ** DONE JRR-DEV-003: Configurable TFT orientation
@@ -2336,4 +2336,4 @@ end
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2026-04-24.10:43; # time-stamp
+Modified:2026-04-25.11:10; # time-stamp

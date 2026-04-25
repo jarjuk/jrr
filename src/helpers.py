@@ -20,7 +20,7 @@ async def cancel_and_wait(task, msg=None):
         logger.debug("await for cancel done: %s", msg)
     except asyncio.CancelledError as e:
         # the target was canceled, perhaps log
-        logger.warning(
+        logger.info(
             f"cancel_and_wait: CancelledError='%s', msg='%s'", e, msg)
     except OSError as e:
         logger.warning(f"cancel_and_wait: OSError: '%s', msg='%s", e, msg)

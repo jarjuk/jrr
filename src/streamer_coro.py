@@ -88,7 +88,7 @@ async def _streamer_stop(name: str):
                 runner_task, msg=f"cancel_and_wait 'runner_task' in streamer_coro {name}")
             logger.debug("Return from cancel_and_wait")
         else:
-            logger.warning(
+            logger.info(
                 "No task to cancel - nothing done")
     except UnboundLocalError as e:
         logger.warning(f"Excpetion '{e}' when accessing 'runner_task'")

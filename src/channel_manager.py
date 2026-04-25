@@ -100,7 +100,10 @@ def read_file(url: str, encoding="utf-8") -> Tuple[str, bool]:
         http = urllib3.PoolManager()
         try:
             response = http.request("GET", url)
-            return response.data.decode(encoding), True
+            if 200 <= response.status < 300:
+                return response.data.decode(encoding), True
+            else:
+                return f"HTTP {response.status}", False
         except HTTPError as e:
             return f"HTTP Error: {e}", False
         except Exception as e:
@@ -276,8 +279,9 @@ def init_streams(url: str | None=None) -> Tuple[List[StreamConfig] | None, bool]
 
 
 def channel_activation_index(activation_url: str) -> str:
-    """Return yaml-file (index.yaml) in 'activation_url' -path."""
-    return f"{activation_url}/index.yaml"
+    """Return yaml-file in 'activation_url' -path."""
+    # return f"{activation_url}/index.yaml"
+    return f"{activation_url}"
 
 
 def channel_activation_list(activation_url: str) -> List[StreamConfig]:

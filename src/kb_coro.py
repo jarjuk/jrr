@@ -101,7 +101,7 @@ async def _keyboard_stop(name: str):
                 keyboard_task, msg=f"cancel_and_wait 'keyboard_task' in kb_coro {name}")
             logger.debug("Return from cancel_and_wait")
         else:
-            logger.warning(
+            logger.info(
                 "No task to cancel - nothing done")
     except UnboundLocalError as e:
         logger.warning(f"Excpetion '{e}' when accessing 'keyboard_task'")

@@ -72,7 +72,8 @@ class ControllerState:
     """Collect controller state"""
 
     # controller fields saved/restored in/from 'state_config' -YAML
-    PERSISTENT_FIELDS = ["current_stream", "screen_orientation", ]
+    PERSISTENT_FIELDS = ["current_stream",
+                         "screen_orientation", "current_activation_url"]
 
     # state machine executuing e.g. f_config, f_radio,
     state_machine: Callable[str | MsgRoot, Hub]
@@ -104,7 +105,12 @@ class ControllerState:
 
     jrr_version: str = "jrr-1.2.3"
 
-    screen_orientation: int = 0                  # None/0=default, 1=rotated
+    # None/0=default, 1=rotated, persistent field
+    screen_orientation: int = 0
+
+    # Url for loading channels, default to fixed config, last user
+    # action persisted
+    current_activation_url: str = app_config.channel_activation_url
 
     def __init__(self):
         self.state_machine = None
@@ -758,7 +764,7 @@ def ctrl_act_set_stream(hub: Hub, stream_adv: int = 0) -> int:
 
     # dataclass StreamConfig
     stream_config = controller_state.set_and_get_stream(stream_adv=stream_adv)
-    logger.info("ctrl_act_set_stream: stream_config: %s", stream_config)
+    logger.warning("ctrl_act_set_stream: stream_config: %s", stream_config)
 
     # streamer/ASIS='not running', streamer/TOBE=True
     controller_state.set_streamer_status(
@@ -786,7 +792,12 @@ def ctrl_act_set_stream(hub: Hub, stream_adv: int = 0) -> int:
     return controller_state.current_stream
 
 
-def ctr_act_none(hub: Hub):
+def ctr_act_none(hub: Hub, key=None):
+    return None
+
+
+def ctr_act_todo(hub: Hub, key=None):
+    logger.error("TODO")
     return None
 
 
@@ -848,6 +859,130 @@ def ctrl_act_key_to_dscreen(hub: Hub, key: str) -> int | None:
 
 # ------------------------------------------------------------------
 # Menu entreess
+def ctrl_menu_channel_origin_setup(
+        hub: Hub,
+        ctrl_menu_resume: Callable,
+        caller_menu_step: int,
+        step_resume: int = 0,
+):
+    """
+    Show/change channel origin url
+    """
+    current__activation_base = os.path.dirname(
+        controller_state.current_activation_url)
+    current__activation_yaml = os.path.basename(
+        controller_state.current_activation_url)
+    logger.info(
+        ("ctrl_menu_channel_origin_setup: current channel"
+         ", base-url='%s'"
+         ", yaml-file='%s'"
+         ", kb: '%s'"),
+        current__activation_base,
+        current__activation_yaml,
+        controller_state.get_keyboard_status)
+
+    def _enter_channel_origin_setup(hub: Hub, menu_name: str):
+        """Publish SCREEN -message to display channel origin overlay."""
+        logger.debug("_enter_channel_origin_setup: menu_name='%s'", menu_name)
+        # flag no wifi
+        ctrl_act_update_status(hub, network_status=False)
+
+        controller_state.config_screens.activateScreen(
+            DSCREEN.SCREEN_OVERLAYS.URL_LOAD,
+            init_values=[(
+                DSCREEN.URL_LOAD_OVERLAY.URL_BASE, current__activation_base),
+                (DSCREEN.URL_LOAD_OVERLAY.YAML_FILE, current__activation_yaml)
+            ])
+        overlay_msg = controller_state.config_screens.message()
+        hub.publish(topic=TOPICS.SCREEN, message=overlay_msg)
+
+    def _resume_channel_origin_setup(hub: Hub):
+        ctrl_menu_resume(
+            hub=hub,
+            step_resume=caller_menu_step,
+        )
+
+    def _config_channel_origin(hub: Hub):
+        """User has accepted url base and yaml file. Read screen
+        content and change/reset current_activation_url.
+
+        """
+        # read message from current/active dscreen
+        overlay_msg = controller_state.config_screens.message()
+        logger.debug("ctrl_act_config_wifi: overlay_msg='%s'", overlay_msg)
+
+        if overlay_msg is not None:
+            base_url = overlay_msg.fieldStrValue(
+                DSCREEN.URL_LOAD_OVERLAY.URL_BASE)
+            yaml_file = overlay_msg.fieldStrValue(
+                DSCREEN.URL_LOAD_OVERLAY.YAML_FILE)
+            if base_url and yaml_file:
+                # call script to set ssid password
+                candidate_url = os.path.join(
+                    base_url, yaml_file)
+                instructions, istat = read_file(candidate_url)
+                if istat:
+                    # Success - accept
+                    logger.info("ctrl_menu_channel_origin_setup: accept candidate_url='%s'",
+                                candidate_url)
+                    controller_state.current_activation_url = candidate_url
+                    _resume_channel_origin_setup(hub)
+                else:
+                    logger.warning(
+                        "ctrl_menu_channel_origin_setup: invalid url %s",
+                        candidate_url)
+                    error = f"Virheellinen osoite {candidate_url}"
+                    # resume back from error reporting
+                    _error_resume = partial(ctrl_menu_channel_origin_setup,
+                                            ctrl_menu_resume=ctrl_menu_resume,
+                                            caller_menu_step=caller_menu_step,
+                                            )
+                    _resume_step = 0
+                    ctrl_menu_error_confirm(
+                        hub, error, _error_resume, _resume_step,
+                        instructions)
+
+            else:
+                # Reset to factory default
+                controller_state.current_activation_url = app_config.channel_activation_url
+                logging.log(
+                    logging.WARN,
+                    ("ctrl_menu_channel_origin_setup:"
+                     " current_activation_url='%s'"
+                     " for base_url = %s"
+                     " yaml_file = %s"
+                     " msg %s - reset"),
+                    controller_state.current_activation_url,
+                    base_url, yaml_file,
+                    overlay_msg,
+                )
+                _resume_channel_origin_setup(hub)
+
+        else:
+            logging.log(
+                logging.ERROR, "ctrl_menu_channel_origin_setup: no overlay_msg - no action")
+
+    menu = {
+        "channel-setup": {
+            APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
+                APP_CONTEXT.MENU.UN_USED,               # bt1-short
+                APP_CONTEXT.MENU.ACTIVATE,              # bt1-long
+                APP_CONTEXT.MENU.UN_USED,               # bt2-short
+                APP_CONTEXT.MENU.RESUME,                # bt2-long
+            ],
+            APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _enter_channel_origin_setup,
+            APP_CONTEXT.MENU.ACTS.KEYBOARD: ctrl_act_key_to_dscreen,
+            APP_CONTEXT.MENU.ACTS.BTN1_SHORT: ctr_act_none,
+            APP_CONTEXT.MENU.ACTS.BTN1_LONG: _config_channel_origin,
+            APP_CONTEXT.MENU.ACTS.BTN2_SHORT: ctr_act_none,
+            APP_CONTEXT.MENU.ACTS.BTN2_LONG: _resume_channel_origin_setup
+        },  # kb-ok - MENU_INDEX_KB_OK
+
+    }  # menu
+
+    # Only one menu
+    f_config_enter(hub, menu=menu, step_resume=0)
+
 
 def ctrl_menu_wifi_ssid_setup(
         hub: Hub,
@@ -1007,10 +1142,13 @@ def ctrl_menu_setup_with_keyboard(hub: Hub, step_resume: int | None = None):
         return None
 
     def _setup_channel_origin(hub: Hub):
-        logger.error("_setup_channel_origin: TODO")
+        ctrl_menu_channel_origin_setup(
+            hub=hub,
+            ctrl_menu_resume=ctrl_menu_setup_with_keyboard,
+            caller_menu_step=controller_state.menu_step)
         return None
 
-    def _setup_reorigin(hub: Hub):
+    def _setup_display_flip(hub: Hub):
         """Send message to flip display (=reorigin)"""
         hub.publish(
             topic=TOPICS.SCREEN,
@@ -1059,7 +1197,7 @@ def ctrl_menu_setup_with_keyboard(hub: Hub, step_resume: int | None = None):
             ],
             APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _my_entry_action,
             APP_CONTEXT.MENU.ACTS.BTN1_SHORT: None,
-            APP_CONTEXT.MENU.ACTS.BTN1_LONG: _setup_reorigin,
+            APP_CONTEXT.MENU.ACTS.BTN1_LONG: _setup_display_flip,
             APP_CONTEXT.MENU.ACTS.BTN2_SHORT: None,
             APP_CONTEXT.MENU.ACTS.BTN2_LONG: _resume_setup,
             APP_CONTEXT.MENU.ACTS.KEYBOARD: ctr_act_none,
@@ -1519,7 +1657,8 @@ def ctrl_menu_activate_channels(hub: Hub, step_resume: int | None = None):
         ctrl_menu_setup_main(hub, step_resume=caller_menu_step)
         return None
 
-    activation_url = app_config.channel_activation_url
+    # activation_url = app_config.channel_activation_url
+    activation_url = controller_state.current_activation_url
     logger.info("ctrl_menu_activate_channels: yaml_url='%s'", activation_url)
     try:
         active_streams = [
@@ -2225,7 +2364,7 @@ def f_config_enter(hub: Hub,
 
     """
 
-    logger.info("**f_config_enter - starting**, step_resume='%s'",
+    logger.warning("**f_config_enter - starting**, step_resume='%s'",
                 step_resume)
 
     # optionall flash info message on screeen
@@ -2358,7 +2497,7 @@ def f_radio_enter(hub: Hub, step_resume: int | None = None):
 
     """
 
-    logger.info("**f_radio_enter - starting**")
+    logger.warning("**f_radio_enter - starting**")
     # info message
     ctrl_act_screen_info_txt(hub, message="Radio")
 

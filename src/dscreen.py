@@ -41,7 +41,7 @@ class Keyboard:
         if len(dataIn) != 1:
             return True
 
-        if dataIn in [KEYBOARD.TAB]:
+        if dataIn in [KEYBOARD.TAB, KEYBOARD.TAB2]:
             return True
 
         # Normal
@@ -286,6 +286,14 @@ class Cursor:
 
         """
 
+        def move_1st() -> Tuple[bool, str | None]:
+            self.fieldPos = 0
+            return True, None
+
+        def move_last() -> Tuple[bool, str | None]:
+            self.fieldPos = len(self.currentField.value)
+            return True, None
+
         def move_left() -> Tuple[bool, str | None]:
             self.fieldPos = self.fieldPos - 1 if self.fieldPos > 0 else 0
             return True, None
@@ -312,10 +320,15 @@ class Cursor:
             return True, None
 
         actions = {
+            KEYBOARD.HOME: move_1st,
+            KEYBOARD.END: move_last,
             KEYBOARD.LEFT: move_left,
+            KEYBOARD.LEFT2: move_left,
             KEYBOARD.RIGHT: move_right,
+            KEYBOARD.RIGHT2: move_right,
             KEYBOARD.BACKSPACE: backspace,
             KEYBOARD.TAB: partial(tab_field, direction=1),
+            KEYBOARD.TAB2: partial(tab_field, direction=1),
             KEYBOARD.STAB: partial(tab_field, direction=-1),
         }
         if dataIn in actions:
@@ -462,6 +475,12 @@ class DScreen:
 
         cursorField = self.cursor.currentField
 
+        # Convert some special cases single chars
+        control_to_char = {
+            KEYBOARD.DOT: "."
+        }
+        dataIn = control_to_char.get(dataIn, dataIn)
+
         if Keyboard.is_control(dataIn=dataIn):
             # control/edit input
             stat, msg = self.cursor.control(dataIn)
@@ -538,7 +557,7 @@ class DApp:
                     self.screens.keys())
             )
             return False
-        self.currentScreen:DScreen = self.screens[self.currentScreenName]
+        self.currentScreen: DScreen = self.screens[self.currentScreenName]
 
         for init_value in init_values:
             try:

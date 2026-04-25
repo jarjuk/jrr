@@ -1238,7 +1238,7 @@ _layout_url_load = {
         ScreenEntryTxt,
         {"x": 0, "y": 0, "text_len": 30,
          "font_size": 20,
-         "text": APP_CONTEXT.MENU.WIFI_SETUP, "stroke_width": 1}],
+         "text": APP_CONTEXT.MENU.CHANNEL_SETUP, "stroke_width": 1}],
     DSCREEN.URL_LOAD_OVERLAY.URL_BASE+"-prompt":  [
         ScreenEntryTxt,
         {"x": 0, "y": LINE_SPACING, "text_len": 20,

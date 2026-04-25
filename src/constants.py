@@ -301,6 +301,7 @@ class APP_CONTEXT:
         """
 
         WIFI_SETUP = "Wifi valinta"
+        CHANNEL_SETUP = "Kanavahakemisto"        
 
         # Radio Streamer
         RADIO_NEXT_CHANNEL = NEXT           # Stream next channel
@@ -337,7 +338,7 @@ class APP_CONTEXT:
             PROMP = "Gimme URL"
             # DEFAULT_URL = "file:///home/pi/resources/channels"
             # DEFAULT_URL = "https://github.com/jarjuk/jrr/blob/main/resources/channels"
-            DEFAULT_URL = "https://raw.githubusercontent.com/jarjuk/jrr/refs/heads/main/resources/channels"
+            DEFAULT_URL = "https://raw.githubusercontent.com/jarjuk/jrr/refs/heads/main/resources/channels/index.yaml"
             YAML = "rondo.yaml"
 
         class WIFI_SETUP_SCREEN:
@@ -371,9 +372,15 @@ class KEYBOARD:
     BACKSPACE = "<BACKSPACE>"
     DEL = "DEL"
     LEFT = "LEFT"
+    LEFT2 = "<LEFT>"
     RIGHT = "RIGHT"
-    TAB = "	"      # 'normal' tab
+    RIGHT2 = "<RIGHT>"
+    TAB = "	"        # 'normal' tab
+    TAB2 = "<TAB>"       # 'normal' tab    
     STAB = "STAB"        # shift tab
+    HOME = "<HOME>"
+    END = "<END>"
+    DOT = "<DOT>"
 
 
 class DSCREEN:
