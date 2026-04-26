@@ -4,7 +4,7 @@
 
 - name: JR-Puhe
   url: https://jarviradio.radiotaajuus.fi:9000/jrpuhe
-  icon: JRPUHE-300x300.png
+  icon: icons/JRPUHE-300x300.png
 
 - name: Rondo
   url: https://iradio.fi/klasupro.flac
