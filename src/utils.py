@@ -247,7 +247,7 @@ def set_wifi_password(ssid: str, password: str):
     """
     script = APP_CONTEXT.STREAMER_SCRIPT
     script_command = APP_CONTEXT.STREAMER_COMMANDS.WIFI_SETUP
-    os_command = f"{script} {script_command} {ssid} {password}"
+    os_command = f'{script} {script_command} "{ssid}" "{password}"'
     status = _run_os_command(os_command)
     if not status:
         logger.error("set_wifi_password: error in running='%s'", os_command)

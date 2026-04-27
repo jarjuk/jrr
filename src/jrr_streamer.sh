@@ -584,18 +584,18 @@ do
             ;;
         
         wifi-setup)
-            SSID=$1; shift
+            SSID="$1"; shift
             PASSI=""
             if [  $# -ge 1 ]; then
-                PASSI=$1; shift
+                PASSI="$1"; shift
             fi
             
             if [ -z "$PASSI" ]; then
                 log 1 "Setup wifi SSID=$SSID"
-                sudo nmcli dev wifi connect $SSID
+                sudo nmcli dev wifi connect "$SSID"
             else
                 log 1 "Setup wifi SSID=$SSID and PASSI=$PASSI"
-                sudo raspi-config nonint do_wifi_ssid_passphrase $SSID $PASSI
+                sudo raspi-config nonint do_wifi_ssid_passphrase "$SSID" "$PASSI"
             fi
             ;;
 

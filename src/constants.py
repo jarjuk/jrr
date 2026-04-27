@@ -164,6 +164,7 @@ class COROS:
         ENTRY_CONFIG = "config-ovlay"
         ENTRY_CONFIG_TITLE = "conf-menu-ovlay"
         ENTRY_WIFI_OVL = "wifi-ovlay"
+        ENTRY_CHOOSE_WIFI_OVL = "wifi-choose-ovlay" 
         ENTRY_URL_LOAD_OVL = "url-load-ovlay"
         ENTRY_FIRMWARE1_OVL = "firmware1-ovlay"
         ENTRY_FIRMWARE2_OVL = "firmware2-ovlay"
@@ -276,14 +277,15 @@ class APP_CONTEXT:
         UN_USED = ""                        # Not in use
         CHOOSE = "Valitse"
         ACTIVATE = "Aktivoi"
+        DO_ADD = "Lisää"
         MAY_SETUP = "Asetetaanko"
         DO_LOAD = "Lataa"
         DELETE = "Poista"
         DELETE_CONFIRM = "Poistetaan"
-        ACTIVATE_CONFIRM = "Aktivoidaan"
+        ACTIVATE_CONFIRM = "Lisätään"
         MAY_DELETE = "Poistaanko"
-        MAY_ACTIVATE = "Aktivoidaanko"
-        MAY_UPDATE = "Päivitetäänkö"
+        MAY_ACTIVATE = "Lisätäänkö?"
+        MAY_UPDATE = "Päivitetäänkö?"
         MAY_REBOOT_TITLE = "Käynnistetäänkö"
         MAY_REBOOT_SUBTITLE = "uudelleen?"
         RESUME = "Takaisin"
@@ -317,15 +319,17 @@ class APP_CONTEXT:
         MENU_CONFIG_WIFI = "Wifi"
         MENU_CONFIG_REORIGIN = "Näytön kierto"
         MENU_FIRMWARE_VERSION = "Ohjelmaversio"
-        MENU_MAYBE_CONFIG_WIFI = "Valintaanko Wifi?"
-        MENU_DO_CONFIG_WIFI = "Wifin aktivointi"
+        MENU_MAYBE_CONFIG_WIFI = "Asetetaanko Wifi?"
+        MENU_MAYBE_CHOOSE_WIFI = "Valitaanko Wifi?"
+        MENU_DO_CONFIG_WIFI = "Wifin konfigurointi"
+        MENU_DO_CHOOSE_WIFI = "Aktivoi Wifi"
         MENU_CONFIG_SETUP = "Asetukset"
         MENU_CONFIG_KEYBOARD = "Näppis"
         MENU_CHANNELS_SETUP = "Kanavat"
         MENU_REBOOT = "Reboot"
         MENU_CHANNELS_ORIGIN = "Hakemisto"
         MENU_REORIGIN = "Näytön kierto"
-        MENU_CHANNELS_DELETE = "poista"
+        MENU_CHANNELS_DELETE = "Poista"
         MENU_IP = "Verkkoyhteys"
         MENU_CHANNELS_ADD = "Lisää"
         MENU_ACTIVATE_CHANNELS = "Lisää kanavia"
@@ -409,6 +413,7 @@ class DSCREEN:
     class SCREEN_OVERLAYS:
         """Overlays for configuration displays."""
         WIFI_SETUP = COROS.Screen.ENTRY_WIFI_OVL
+        WIFI_CHOOSE = COROS.Screen.ENTRY_CHOOSE_WIFI_OVL
         URL_LOAD = COROS.Screen.ENTRY_URL_LOAD_OVL
         FIRMWARE1 = COROS.Screen.ENTRY_FIRMWARE1_OVL
         FIRMWARE2 = COROS.Screen.ENTRY_FIRMWARE2_OVL
@@ -421,6 +426,14 @@ class DSCREEN:
         HEADER = "header"
         SSID = "ssid"
         PASSWORD = "password"
+
+    class WIFI_CHOOSE_OVERLAY:
+        """Layout names for Screen overlays, names of FieldValue
+        in Dscreen.
+
+        """
+        HEADER = "header"
+        SSID = "ssid"
 
     class URL_LOAD_OVERLAY:
         """Field names for url-loader.

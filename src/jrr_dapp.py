@@ -19,6 +19,7 @@ type_no_input = dscreen.ReadonlyType()
 
 # Field types
 ft_ssid = dscreen.FieldType(DSCREEN.WIFI_OVERLAY.SSID, type_no_input)
+ft_ssid_input = dscreen.FieldType(DSCREEN.WIFI_OVERLAY.SSID, type_alphanum)
 ft_password = dscreen.FieldType(DSCREEN.WIFI_OVERLAY.PASSWORD, type_alphanum)
 ft_title = dscreen.FieldType(DSCREEN.URL_LOAD_OVERLAY.TITLE, type_no_input)
 ft_url_base = dscreen.FieldType(
@@ -33,6 +34,8 @@ ft_firmware_notes = dscreen.FieldType(
 
 # Screen
 wifi_screen = dscreen.DScreen(fieldTypes=[ft_ssid, ft_password,])
+# Notice: assume no keyboard connected normally
+wifi_screen_choose = dscreen.DScreen(fieldTypes=[ft_ssid_input,])
 url_load_screen = dscreen.DScreen(
     fieldTypes=[ft_title, ft_url_base, ft_yaml_file])
 
@@ -45,6 +48,8 @@ firmware_screen2 = dscreen.DScreen(
 # Screen collections (zero or one screen is active/current)
 screen_ovrlays = dscreen.DApp()
 screen_ovrlays.addScreen(DSCREEN.SCREEN_OVERLAYS.WIFI_SETUP, wifi_screen)
+screen_ovrlays.addScreen(DSCREEN.SCREEN_OVERLAYS.WIFI_CHOOSE,
+                         wifi_screen_choose)
 screen_ovrlays.addScreen(DSCREEN.SCREEN_OVERLAYS.URL_LOAD, url_load_screen)
 screen_ovrlays.addScreen(DSCREEN.SCREEN_OVERLAYS.FIRMWARE1, firmware_screen1)
 screen_ovrlays.addScreen(DSCREEN.SCREEN_OVERLAYS.FIRMWARE2, firmware_screen2)

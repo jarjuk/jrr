@@ -988,15 +988,16 @@ def ctrl_menu_channel_origin_setup(
     f_config_enter(hub, menu=menu, step_resume=0)
 
 
-def ctrl_menu_wifi_ssid_setup(
+def ctrl_menu_wifi_ssid_setup_or_choose(
         hub: Hub,
         wifi_ssid: str,
         ctrl_menu_resume: Callable,
         caller_menu_step: int,
+        do_config: bool = False,
 ):
-    """Start wifi-setup.
+    """Start wifi-setup or select wifi to use
 
-    :wifi_ssid: ssid to setup
+    :wifi_ssid: ssid to setup/select
 
     Actions:
     - Open screen overlay WIFI for wifi_ssid.
@@ -1006,25 +1007,37 @@ def ctrl_menu_wifi_ssid_setup(
 
     :wifi_ssid: SSID string
 
+    :do_config: True-> wifi config, False -> choose wifi
+
     :return: None
     """
-    logger.info("ctrl_menu_wifi_ssid_setup: wifi_ssid='%s', kb: '%s'",
-                wifi_ssid, controller_state.get_keyboard_status)
+    logger.info(("ctrl_menu_wifi_ssid_setup: "
+                 "wifi_ssid='%s'"
+                 ", kb: '%s'"
+                 ", do_config=%s"),
+                wifi_ssid, controller_state.get_keyboard_status, do_config)
 
     # remeber caller menu - later resume there
     # caller_menu_step = controller_state.menu_step
 
     def _enter_wifi_ssid_setup(hub: Hub, menu_name: str):
         """Publish SCREEN -message to display wifi-setup overlay."""
-        logger.debug("_enter_wifi_ssid_setup: menu_name='%s'", menu_name)
+        logger.debug("_enter_wifi_ssid_setup: menu_name='%s', do_config=%s",
+                     menu_name, do_config)
         # flag no wifi
         ctrl_act_update_status(hub, network_status=False)
 
-        controller_state.config_screens.activateScreen(
-            DSCREEN.SCREEN_OVERLAYS.WIFI_SETUP,
-            init_values=[(DSCREEN.WIFI_OVERLAY.SSID, wifi_ssid),
-                         (DSCREEN.WIFI_OVERLAY.PASSWORD, ""),
-                         ])
+        if do_config:
+            controller_state.config_screens.activateScreen(
+                DSCREEN.SCREEN_OVERLAYS.WIFI_SETUP,
+                init_values=[(DSCREEN.WIFI_OVERLAY.SSID, wifi_ssid),
+                             (DSCREEN.WIFI_OVERLAY.PASSWORD, ""),
+                             ])
+        else:
+            controller_state.config_screens.activateScreen(
+                DSCREEN.SCREEN_OVERLAYS.WIFI_CHOOSE,
+                init_values=[(DSCREEN.WIFI_CHOOSE_OVERLAY.SSID, wifi_ssid),
+                             ])
         overlay_msg = controller_state.config_screens.message()
         hub.publish(topic=TOPICS.SCREEN, message=overlay_msg)
 
@@ -1035,22 +1048,28 @@ def ctrl_menu_wifi_ssid_setup(
         )
 
     def _config_wifi(hub: Hub) -> int | None:
-        """Start wifi configuration using configuration in current/active
-        screen in 'controller.screen_ovrlays'.
+        """Start wifi configuration/select wifi based configuration in
+        current/active screen in 'controller.screen_ovrlays'.
 
         """
 
         # read message from current/active dscreen
+        logger.debug("_config_wifi: do_config='%s'", do_config)
         overlay_msg = controller_state.config_screens.message()
         logger.debug("ctrl_act_config_wifi: overlay_msg='%s'", overlay_msg)
 
         # message found
         if overlay_msg is not None:
             ssid = overlay_msg.fieldStrValue(DSCREEN.WIFI_OVERLAY.SSID)
-            password = overlay_msg.fieldStrValue(DSCREEN.WIFI_OVERLAY.PASSWORD)
-            if ssid is not None and password is not None:
-                # call script to set ssid password
-                set_wifi_password(ssid=ssid, password=password)
+            password = overlay_msg.fieldStrValue(
+                DSCREEN.WIFI_OVERLAY.PASSWORD)
+            logger.info(("ctrl_menu_wifi_ssid_setup._config_wifi (config): "
+                         "ssid='%s'"
+                         ", password='%s'"), ssid, password)
+            if ssid is not None:
+                # call script to set ssid password/choose ssid
+                set_wifi_password(
+                    ssid=ssid, password=password if password else "")
             else:
                 logging.log(
                     logging.ERROR,
@@ -1125,7 +1144,7 @@ def ctrl_menu_setup_with_keyboard(hub: Hub, step_resume: int | None = None):
             APP_CONTEXT.MENU.MENU_REORIGIN: "Näytön kierto",
         }
         menu_name_2_sub_title = {
-            APP_CONTEXT.MENU.MENU_CONFIG_WIFI: "valinta",
+            APP_CONTEXT.MENU.MENU_CONFIG_WIFI: "asetus",
             APP_CONTEXT.MENU.MENU_CHANNELS_ORIGIN: "hakemiston asetus",
             APP_CONTEXT.MENU.MENU_REORIGIN: "",
         }
@@ -1300,9 +1319,10 @@ def ctrl_menu_wifi_setup(
         step_resume: int | None = None,
         wifi_names: List[str] | None = None,
         ctrl_menu_resume: Callable = ctrl_menu_setup_with_keyboard,
+        do_config: bool = True,
 
 ):
-    """Enter wifi config.
+    """Enter wifi config/wifi select
 
     :ctrl_menu_resume: May be called from main setup (without
     keyboard), and from setup with keyboard.
@@ -1316,7 +1336,9 @@ def ctrl_menu_wifi_setup(
     - Creates 'menu' using 'wifi_names'
     - NEXT/PREV wifi SSID -list
     - resume back to config menu
-    - choose wifi SSID to setup
+    - choose wifi SSID to setup/select
+
+    - do_config: True-> wifi config, False -> choose wifi
 
     """
     logger.debug("ctrl_menu_wifi_setup: step_resume='%s', menu_step=%s",
@@ -1343,11 +1365,14 @@ def ctrl_menu_wifi_setup(
 
     def _enter_wifi_setup(hub: Hub, menu_name: str):
         """Publish SCREEN -message to display wifi-setup overlay."""
-        logger.debug("_enter_wifi_setup: menu_name='%s'", menu_name)
+        logger.debug("_enter_wifi_setup: menu_name='%s', do_config:",
+                     menu_name, do_config)
         hub.publish(
             topic=TOPICS.SCREEN,
             message=message_config_title(
-                title=APP_CONTEXT.MENU.MENU_MAYBE_CONFIG_WIFI,
+                title=(APP_CONTEXT.MENU.MENU_MAYBE_CONFIG_WIFI
+                       if do_config
+                       else APP_CONTEXT.MENU.MENU_MAYBE_CHOOSE_WIFI),
                 sub_title=menu_name))
 
     def _do_resume(hub: Hub):
@@ -1365,10 +1390,11 @@ def ctrl_menu_wifi_setup(
             ],
             APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _enter_wifi_setup,
             APP_CONTEXT.MENU.ACTS.BTN1_LONG: partial(
-                ctrl_menu_wifi_ssid_setup,
+                ctrl_menu_wifi_ssid_setup_or_choose,
                 wifi_ssid=wifi_names[i],
                 ctrl_menu_resume=ctrl_menu_resume,
                 caller_menu_step=caller_menu_step,
+                do_config=do_config,
             ),
             APP_CONTEXT.MENU.ACTS.BTN2_LONG: _do_resume,
             APP_CONTEXT.MENU.ACTS.KEYBOARD: ctrl_act_null,
@@ -1382,7 +1408,7 @@ def ctrl_menu_wifi_setup(
 def ctrl_menu_browse_channels(
         hub: Hub,
         step_resume: int | None = None, ):
-    """Browse channels, allow for delete. Menu actions allow delete.
+    """Browse channels, menu action for delete.
 
     Acting on controller_state.streams.
 
@@ -1475,7 +1501,7 @@ def ctrl_menu_setup_main(hub: Hub, step_resume: int | None = None):
     menu_name_2_title = {
         APP_CONTEXT.MENU.MENU_CHANNELS_DELETE: "Poista",
         # APP_CONTEXT.MENU.MENU_CHANNELS_DEL_ALL: "Poista",
-        APP_CONTEXT.MENU.MENU_ACTIVATE_CHANNELS: "Aktivoi",
+        APP_CONTEXT.MENU.MENU_ACTIVATE_CHANNELS: "Lisää",
         APP_CONTEXT.MENU.MENU_CONFIG_WIFI: "Valitse",
         APP_CONTEXT.MENU.MENU_FIRMWARE_VERSION: "Päivitä",
         APP_CONTEXT.MENU.MENU_CONFIG_KEYBOARD: "Asetukset",
@@ -1597,6 +1623,7 @@ def ctrl_menu_setup_main(hub: Hub, step_resume: int | None = None):
             APP_CONTEXT.MENU.ACTS.BTN1_LONG: partial(
                 ctrl_menu_wifi_setup,
                 ctrl_menu_resume=ctrl_menu_setup_main,
+                do_config=False,
             ),
             APP_CONTEXT.MENU.ACTS.BTN2_LONG: _resume_radio,
         },  # wifi setup
@@ -1714,7 +1741,7 @@ def ctrl_menu_activate_channels(hub: Hub, step_resume: int | None = None):
         channels_for_activation[i].name: {
             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
                 _next_stream_label(i),            # bt1-short
-                APP_CONTEXT.MENU.ACTIVATE,        # bt1-long
+                APP_CONTEXT.MENU.DO_ADD,          # bt1-long
                 _prev_stream_label(i),            # bt2-short
                 APP_CONTEXT.MENU.CONFIG_RETURN,   # bt2-long
             ],
@@ -2389,7 +2416,8 @@ def f_config_enter(hub: Hub,
 
     # List of menu names pointed by 'controller_state.menu_step'
     menu_names = [k for k in menu.keys()]
-    logger.debug("f_config_enter: menu_names='%s'", menu_names)
+    logger.debug("f_config_enter: menu_names='%s', controller_state.menu_step=%s",
+                 menu_names, controller_state.menu_step)
 
     def _menu_entry(menu_step: int):
         """Switch to  'menu[menus_names[menu_step]]'
@@ -2437,10 +2465,6 @@ def f_config_enter(hub: Hub,
         #     goon = False
         #     return goon
         try:
-            if controller_state.menu_step >= len(menu_names):
-                # At least activating last channel in a list leaves
-                # menu_step pointing outside list
-                controller_state.menu_step = len(menu_names) - 1
             menu_name = menu_names[controller_state.menu_step]
         except IndexError:
             # POssible reason: menu elements shortened (e.g. activate
@@ -2496,6 +2520,14 @@ def f_config_enter(hub: Hub,
 
     # Optionally (step_resume is not None) resume menu step
     controller_state.menu_state_resume(step_resume)
+    if controller_state.menu_step >= len(menu_names):
+        # At least activating last channel in a list leaves
+        # menu_step pointing outside list
+        logger.info(
+            ("f_config_enter: limit controller_state.menu_step='%s'"
+             ", menu_names=%s"),
+            controller_state.menu_step, menu_names)
+        controller_state.menu_step = len(menu_names) - 1
 
     # Stop streaming
     ctrl_act_stop_stream(hub=hub)

@@ -1149,6 +1149,36 @@ _layout_wifi_entry = {
          "font_size": 20, "text": None, "stroke_width": 1}],
 }
 
+_layout_wifi_choose = {
+    DSCREEN.WIFI_CHOOSE_OVERLAY.HEADER:  [
+        ScreenEntryTxt,
+        {"x": 0, "y": 0, "text_len": 7,
+         "font_size": 20,
+         "text": APP_CONTEXT.MENU.MENU_DO_CHOOSE_WIFI,
+         "stroke_width": 1}],
+    # DSCREEN.WIFI_CHOOSE_OVERLAY.SSID+"-prompt":  [
+    #     ScreenEntryTxt,
+    #     {"x": 0, "y": LINE_SPACING, "text_len": 7,
+    #      "font_size": 20,
+    #      "text": APP_CONTEXT.MENU.WIFI_SETUP_SCREEN.SSID_PROMPT,
+    #      "stroke_width": 0}],
+    DSCREEN.WIFI_CHOOSE_OVERLAY.SSID:  [
+        ScreenEntryTxt,
+        {"x": 0, "y": LINE_SPACING*1, "text_len": 20,
+         "font_size": 20, "text": None, "stroke_width": 1}],
+    # DSCREEN.WIFI_OVERLAY.PASSWORD+"-prompt": [
+    #     ScreenEntryTxt,
+    #     {"x": 0, "y": LINE_SPACING*3, "text_len": 7,
+    #      "font_size": 20,
+    #      "text": APP_CONTEXT.MENU.WIFI_SETUP_SCREEN.PASSWORD_PROMPT,
+    #      "stroke_width": 0}],
+    # DSCREEN.WIFI_OVERLAY.PASSWORD: [
+    #     ScreenEntryTxt,
+    #     {"x": 0, "y": LINE_SPACING*4, "text_len": 7,
+    #      "font_size": 20, "text": None, "stroke_width": 1}],
+}
+
+
 _layout_error = {
     DSCREEN.ERROR_OVERLAY.ERROR:  [
         ScreenEntryTxt,
@@ -1329,6 +1359,12 @@ overlay_layouts: Dict = {
         {"x": COL_STREAM_ICON, "y": ROW_STREAM_ICON,
          "size": OVERLAY_SIZE,
          "layout": _layout_wifi_entry,
+         }],
+    COROS.Screen.ENTRY_CHOOSE_WIFI_OVL: [
+        ScreenEntryContainer,
+        {"x": COL_STREAM_ICON, "y": ROW_STREAM_ICON,
+         "size": OVERLAY_SIZE,
+         "layout": _layout_wifi_choose,
          }],
     COROS.Screen.ENTRY_URL_LOAD_OVL: [
         ScreenEntryContainer,
