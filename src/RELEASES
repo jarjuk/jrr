@@ -1,4 +1,10 @@
-- TODO: useita kanavalistoja joista valita
+- 0.0.7
+- Valikkotekstien päivityksiä
+- JRR-DEV-004: Support chirp streams
+- JRR-DEV-003: Configurable TFT orientation
+- JRR-DEV-002: Expect volume knob open before shutdown
+- JRR-DEV-001: Alsa volume limit
+
 
 0.0.5-alpha1
 - DONE: RELEASE tiedojen selaus
