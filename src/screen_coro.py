@@ -44,7 +44,13 @@ class ScreenDriver():
     """
 
     def __init__(self, screen: Screen, driver: TFT_DRIVER):
-        """Set screen and set driver -delegages."""
+        """Set screen and set driver -delegages.
+
+        :screen: content
+
+        :driver: API to render content to physical display.
+
+        """
         self.screen = screen
         # self.driver = driver
         self.setDriver(driver)

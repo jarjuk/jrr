@@ -132,7 +132,7 @@ class Config():
     @property
     def channel_activation_url(self) -> str:
         """Url where to load activations."""
-        return APP_CONTEXT.MENU.LOAD_CHANNELS_DEFAULTS.DEFAULT_URL
+        return APP_CONTEXT.MENU.CHANNEL_ORIGIN_SCREEN.DEFAULT_URL
 
     @property
     def firmware_local_root(self) -> str | None:

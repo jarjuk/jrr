@@ -19,12 +19,15 @@ from .debug.debugger import stdin_debugger
 from .reader_coro import reader_coro
 from .network_coro import network_coro, reset_network_status
 from .clock_coro import clock_coro
-from .channel_manager import (read_file, StreamConfig,
-                              init_streams,
-                              parse_channels, icon_path,
-                              update_channel_configurations,
-                              channel_activation_list, channel_activate, channel_activation_index,
-                              channel_icon_image)
+from .channel_manager import (
+    read_file, StreamConfig,
+    init_streams,
+    parse_channels, icon_path,
+    update_channel_configurations,
+    channel_activation_list,
+    channel_activate,
+    channel_activation_index,
+    channel_icon_image)
 from .constants import (DSCREEN, TOPICS, COROS, RPI, APP_CONTEXT,)
 from .utils import (set_wifi_password, current_IP,
                     current_ssid, download_extract_pending, read_url)
@@ -38,7 +41,9 @@ from .streamer_coro import streamer_coro
 from .wifi import list_wifis
 from .dscreen import DApp
 from .jrr_dapp import screen_ovrlays
-from .firmware import FirmwareVersion, firmware_available_versions, firmware_repo_release_notes_url
+from .firmware import (FirmwareVersion,
+                       firmware_available_versions,
+                       firmware_repo_release_notes_url)
 from .messages import (MsgRoot,
                        is_message_type,
                        message_halt, message_create,
@@ -469,7 +474,7 @@ def ctrl_act_screen_info_txt(hub: Hub, message: str):
 
 
 def ctrl_act_error(hub: Hub, error: str, instructions: str):
-    """Send error message to screen."""
+    """Send TOPICS.SCREEN_MESSAGES.ERROR message to screen."""
     hub.publish(
         topic=TOPICS.SCREEN,
         message=message_error(
@@ -931,7 +936,6 @@ def ctrl_menu_channel_origin_setup(
                     logger.warning(
                         "ctrl_menu_channel_origin_setup: invalid url %s",
                         candidate_url)
-                    error = f"Virheellinen osoite {candidate_url}"
                     # resume back from error reporting
                     _error_resume = partial(ctrl_menu_channel_origin_setup,
                                             ctrl_menu_resume=ctrl_menu_resume,
@@ -939,8 +943,8 @@ def ctrl_menu_channel_origin_setup(
                                             )
                     _resume_step = 0
                     ctrl_menu_error_confirm(
-                        hub, error, _error_resume, _resume_step,
-                        instructions)
+                        hub, APP_CONTEXT.MENU.CHANNEL_ORIGIN_SCREEN.INVALID_CHANNEL_ORIGIN, _error_resume,
+                        _resume_step, instructions)
 
             else:
                 # Reset to factory default
@@ -1436,7 +1440,7 @@ def ctrl_menu_browse_channels(
                 ctrl_menu_resume=ctrl_menu_browse_channels,
                 # delete current stream
                 stream=controller_state.streams[i],
-                step_resume=controller_state.menu_step,
+                step_resume=i,  # Resume back to current pos
             ),
             APP_CONTEXT.MENU.ACTS.BTN2_LONG: _my_resume,
             APP_CONTEXT.MENU.ACTS.KEYBOARD: ctrl_act_null,
@@ -1470,7 +1474,7 @@ def ctrl_menu_setup_main(hub: Hub, step_resume: int | None = None):
     # NOTICE: Must match menu keys!
     menu_name_2_title = {
         APP_CONTEXT.MENU.MENU_CHANNELS_DELETE: "Poista",
-        APP_CONTEXT.MENU.MENU_CHANNELS_DEL_ALL: "Poista",
+        # APP_CONTEXT.MENU.MENU_CHANNELS_DEL_ALL: "Poista",
         APP_CONTEXT.MENU.MENU_ACTIVATE_CHANNELS: "Aktivoi",
         APP_CONTEXT.MENU.MENU_CONFIG_WIFI: "Valitse",
         APP_CONTEXT.MENU.MENU_FIRMWARE_VERSION: "Päivitä",
@@ -1479,7 +1483,7 @@ def ctrl_menu_setup_main(hub: Hub, step_resume: int | None = None):
     }
     menu_name_2_sub_title = {
         APP_CONTEXT.MENU.MENU_CHANNELS_DELETE: "kanavia",
-        APP_CONTEXT.MENU.MENU_CHANNELS_DEL_ALL: "kaikki kanavat",
+        # APP_CONTEXT.MENU.MENU_CHANNELS_DEL_ALL: "kaikki kanavat",
         APP_CONTEXT.MENU.MENU_ACTIVATE_CHANNELS: "kanavia",
         APP_CONTEXT.MENU.MENU_CONFIG_WIFI: "Wifi-verkko",
         APP_CONTEXT.MENU.MENU_FIRMWARE_VERSION: "ohjelmistoversio",
@@ -1546,25 +1550,26 @@ def ctrl_menu_setup_main(hub: Hub, step_resume: int | None = None):
             APP_CONTEXT.MENU.ACTS.KEYBOARD: ctr_act_none,
         },  # Browse channels
 
-        APP_CONTEXT.MENU.MENU_CHANNELS_DEL_ALL: {
-            APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
-                APP_CONTEXT.MENU.NEXT,                    # bt1-short
-                APP_CONTEXT.MENU.CHOOSE,                  # bt1-long
-                APP_CONTEXT.MENU.PREV,                    # bt2-short
-                APP_CONTEXT.MENU.CONFIG_RADIO,            # bt2-long
-            ],
-            APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _my_entry_action,
-            APP_CONTEXT.MENU.ACTS.BTN1_SHORT: None,
-            APP_CONTEXT.MENU.ACTS.BTN1_LONG: partial(
-                ctrl_menu_chdelete_with_confirm,
-                stream=None,  # delete all
-                ctrl_menu_resume=ctrl_menu_setup_main,
-                step_resume=controller_state.menu_step,
-            ),
-            APP_CONTEXT.MENU.ACTS.BTN2_SHORT: None,
-            APP_CONTEXT.MENU.ACTS.BTN2_LONG: _resume_radio,
-            APP_CONTEXT.MENU.ACTS.KEYBOARD: ctr_act_none,
-        },  # Delete all channels
+        # No delete all available
+        # APP_CONTEXT.MENU.MENU_CHANNELS_DEL_ALL: {
+        #     APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
+        #         APP_CONTEXT.MENU.NEXT,                    # bt1-short
+        #         APP_CONTEXT.MENU.CHOOSE,                  # bt1-long
+        #         APP_CONTEXT.MENU.PREV,                    # bt2-short
+        #         APP_CONTEXT.MENU.CONFIG_RADIO,            # bt2-long
+        #     ],
+        #     APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _my_entry_action,
+        #     APP_CONTEXT.MENU.ACTS.BTN1_SHORT: None,
+        #     APP_CONTEXT.MENU.ACTS.BTN1_LONG: partial(
+        #         ctrl_menu_chdelete_with_confirm,
+        #         stream=None,  # delete all
+        #         ctrl_menu_resume=ctrl_menu_setup_main,
+        #         step_resume=controller_state.menu_step,
+        #     ),
+        #     APP_CONTEXT.MENU.ACTS.BTN2_SHORT: None,
+        #     APP_CONTEXT.MENU.ACTS.BTN2_LONG: _resume_radio,
+        #     APP_CONTEXT.MENU.ACTS.KEYBOARD: ctr_act_none,
+        # },  # Delete all channels
 
         APP_CONTEXT.MENU.MENU_ACTIVATE_CHANNELS: {
             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
@@ -1579,7 +1584,7 @@ def ctrl_menu_setup_main(hub: Hub, step_resume: int | None = None):
             APP_CONTEXT.MENU.ACTS.BTN2_SHORT: None,
             APP_CONTEXT.MENU.ACTS.BTN2_LONG: _resume_radio,
             APP_CONTEXT.MENU.ACTS.KEYBOARD: ctr_act_none,
-        },  # Activate channels
+        },  # Add channels
 
         APP_CONTEXT.MENU.MENU_CONFIG_WIFI: {
             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
@@ -1749,7 +1754,9 @@ def ctrl_menu_activate_with_confirm(
 
     :stream: new stream to activate
     """
-    logger.info("ctrl_menu_activate_with_confirm: activation_url='%s, channel=%s",
+    logger.info(("ctrl_menu_activate_with_confirm: "
+                 "activation_url='%s, "
+                 "channel=%s"),
                 activation_url, channel.name)
 
     def _entry_to_confirmation(hub: Hub, menu_name: str | None):
@@ -1771,6 +1778,8 @@ def ctrl_menu_activate_with_confirm(
     def _do_resume(hub: Hub):
         """Continue in lambda passed in parameter 'ctrl_menu_resume'."""
         # ctrl_menu_browse_channels(hub=hub, step_resume=step_resume)
+        logger.debug("ctrl_menu_activate_with_confirm._do_resume: step_resume='%s'",
+                     step_resume)
         ctrl_menu_resume(hub, step_resume=step_resume)
 
     def _do_activate_stream(hub: Hub, new_stream: StreamConfig):
@@ -1778,6 +1787,9 @@ def ctrl_menu_activate_with_confirm(
         menu.
 
         """
+        logger.debug(("ctrl_menu_activate_with_confirm._do_activate_stream:"
+                      " new_stream='%s'"),
+                     new_stream)
         controller_state.streams = channel_activate(
             controller_state.streams,
             new_stream=new_stream,
@@ -1790,10 +1802,10 @@ def ctrl_menu_activate_with_confirm(
     menu = {
         "actvate": {
             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
-                APP_CONTEXT.MENU.UN_USED,         # bt1-short
+                APP_CONTEXT.MENU.UN_USED,           # bt1-short
                 APP_CONTEXT.MENU.ACTIVATE_CONFIRM,  # bt1-long
-                APP_CONTEXT.MENU.UN_USED,         # bt2-short
-                APP_CONTEXT.MENU.CONFIG_RETURN,   # bt2-long
+                APP_CONTEXT.MENU.UN_USED,           # bt2-short
+                APP_CONTEXT.MENU.CONFIG_RETURN,     # bt2-long
             ],
             APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _entry_to_confirmation,
             APP_CONTEXT.MENU.ACTS.BTN1_SHORT: ctr_act_none,
@@ -1978,7 +1990,7 @@ def ctrl_menu_setup_channel_origin(hub: Hub, step_resume: int | None = None):
             line_limit=APP_CONTEXT.SCREEN.VALUE_FIELD_WIDTH)
         ctrl_act_screen_config_prompt(
             hub=hub,
-            prompt=APP_CONTEXT.MENU.LOAD_CHANNELS_DEFAULTS.PROMP,
+            prompt=APP_CONTEXT.MENU.CHANNEL_ORIGIN_SCREEN.PROMP,
             value=formatted_input,
         )
         return None
@@ -2006,12 +2018,12 @@ def ctrl_menu_setup_channel_origin(hub: Hub, step_resume: int | None = None):
             DSCREEN.SCREEN_OVERLAYS.URL_LOAD,
             init_values=[
                 (DSCREEN.URL_LOAD_OVERLAY.TITLE,
-                 APP_CONTEXT.MENU.LOAD_CHANNELS_DEFAULTS.PROMP,
+                 APP_CONTEXT.MENU.CHANNEL_ORIGIN_SCREEN.PROMP,
                  ),
                 (DSCREEN.URL_LOAD_OVERLAY.URL_BASE,
-                 APP_CONTEXT.MENU.LOAD_CHANNELS_DEFAULTS.DEFAULT_URL),
+                 APP_CONTEXT.MENU.CHANNEL_ORIGIN_SCREEN.DEFAULT_URL),
                 (DSCREEN.URL_LOAD_OVERLAY.YAML_FILE,
-                 APP_CONTEXT.MENU.LOAD_CHANNELS_DEFAULTS.YAML,
+                 APP_CONTEXT.MENU.CHANNEL_ORIGIN_SCREEN.YAML,
                  )
             ])
         # Show initial values on screen
@@ -2170,15 +2182,15 @@ def ctrl_menu_error_confirm(
     menu = {
         "kb-nok": {
             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
-                APP_CONTEXT.MENU.RESUME,               # bt1-short
-                APP_CONTEXT.MENU.RESUME,              # bt1-long
-                APP_CONTEXT.MENU.RESUME,               # bt2-short
+                APP_CONTEXT.MENU.UN_USED,               # bt1-short
+                APP_CONTEXT.MENU.UN_USED,               # bt1-long
+                APP_CONTEXT.MENU.UN_USED,               # bt2-short
                 APP_CONTEXT.MENU.RESUME,                # bt2-long
             ],
             APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _my_entry,
             APP_CONTEXT.MENU.ACTS.KEYBOARD: ctrl_act_null,
-            APP_CONTEXT.MENU.ACTS.BTN1_SHORT: _do_resume,
-            APP_CONTEXT.MENU.ACTS.BTN1_LONG: _do_resume,
+            APP_CONTEXT.MENU.ACTS.BTN1_SHORT: ctr_act_none,
+            APP_CONTEXT.MENU.ACTS.BTN1_LONG: ctr_act_none,
             APP_CONTEXT.MENU.ACTS.BTN2_SHORT: _do_resume,
             APP_CONTEXT.MENU.ACTS.BTN2_LONG: _do_resume
         }  # kb-nok MENU_INDEX_KB_NOK
@@ -2255,6 +2267,8 @@ def ctrl_menu_chdelete_with_confirm(
     :step_resume: menu_step to resume to 'ctrl_menu_resume' -lambda
 
     """
+    logger.info("ctrl_menu_chdelete_with_confirm: stream: %s, step_resume='%s'",
+                stream, step_resume)
 
     def _entry_to_confirmation(hub: Hub, menu_name: str | None):
         """Ask for confirmation to delete 'stream'.
@@ -2281,12 +2295,14 @@ def ctrl_menu_chdelete_with_confirm(
                     title=APP_CONTEXT.MENU.MAY_DELETE,
                     question="kaikki kanavat?",
                     imagepath=os.path.join(
-                        APP_CONTEXT.APP_RESOURCES, "question-100.png")
+                        APP_CONTEXT.APP_RESOURCES, APP_CONTEXT.QUESTION_IMAGE)
                 ))
 
     def _do_resume(hub: Hub):
         """Continue in lambda passed in parameter 'ctrl_menu_resume'."""
         # ctrl_menu_browse_channels(hub=hub, step_resume=step_resume)
+        logger.debug("ctrl_menu_chdelete_with_confirm._do_resume: step_resume='%s'",
+                     step_resume)
         ctrl_menu_resume(hub, step_resume=step_resume)
 
     def _do_delete_stream(hub: Hub, stream_name: str | None):
@@ -2365,7 +2381,7 @@ def f_config_enter(hub: Hub,
     """
 
     logger.warning("**f_config_enter - starting**, step_resume='%s'",
-                step_resume)
+                   step_resume)
 
     # optionall flash info message on screeen
     if info_message is not None:
@@ -2413,18 +2429,24 @@ def f_config_enter(hub: Hub,
 
         # menu_name = menu_names[controller_state.menu_step] if controller_state.menu_step < len(
         #     menu_names) else ""
-        if controller_state.menu_step > len(menu_names) or controller_state.menu_step < 0:
-            logger.error(
-                "f_config: controller_start.menu_step='%s', menu_names= % s",
-                controller_state.menu_step,
-                menu_names)
-            goon = False
-            return goon
+        # if controller_state.menu_step >= len(menu_names) or controller_state.menu_step < 0:
+        #     logger.error(
+        #         "f_config: controller_start.menu_step='%s', menu_names= % s",
+        #         controller_state.menu_step,
+        #         menu_names)
+        #     goon = False
+        #     return goon
         try:
+            if controller_state.menu_step >= len(menu_names):
+                # At least activating last channel in a list leaves
+                # menu_step pointing outside list
+                controller_state.menu_step = len(menu_names) - 1
             menu_name = menu_names[controller_state.menu_step]
         except IndexError:
+            # POssible reason: menu elements shortened (e.g. activate
+            # chanelles) exits - and restart
             logger.error(
-                "f_config: controller_start.menu_step='%s', menu_names= % s",
+                "f_config: controller_start.menu_step='%s', menu_names= %s",
                 controller_state.menu_step,
                 menu_names)
             raise

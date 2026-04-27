@@ -12,6 +12,7 @@ from dataclasses import dataclass, asdict
 from typing import (List, Tuple, Dict, cast, )
 from PIL import Image, ImageFont, ImageDraw
 import requests
+from textwrap import wrap
 
 from .constants import (COROS, APP_CONTEXT, RPI, DSCREEN)
 from .config import app_config
@@ -231,7 +232,17 @@ class ScreenEntryTxt(ScreenEntry):
         return canvas
 
 
+@dataclass
 class ScreenEntryMultilineTxt(ScreenEntryTxt):
+
+    lines: int = 2     # Number of lines
+
+    def my_text_wrapper(self):
+        """Wrap self.text to 'text_len' line chunks"""
+        lines = wrap(self.text, width=self.text_len)
+        wrapped_text = "\n".join(lines)
+        return wrapped_text
+
     def render_to_canvas(self, canvas: Image.Image) -> Image.Image:
         """Update canvas with content for screen entry: in my case
         w. rendered'text')."""
@@ -239,7 +250,7 @@ class ScreenEntryMultilineTxt(ScreenEntryTxt):
 
         bbox = draw.textbbox(
             (self.x, self.y),
-            "X" * self.text_len,
+            "\n".join(["X" * self.text_len for l in range(self.lines)]),
             font=self.font,
         )
         # Create background to hide prev value
@@ -247,18 +258,25 @@ class ScreenEntryMultilineTxt(ScreenEntryTxt):
 
         pos = self.anchor_2_pos(bbox)
 
-        logger.debug(
-            "ScreenEntryTxt: xy=(%s,%s), pos=%s, anchor=%s, bbox=%s, font_size=%s, text_len=%s",
-            self.x, self.y, pos, self.anchor, bbox, self.font_size, self.text_len)
+        # Wrap text by character count
+        wrapped_text = self.my_text_wrapper()
 
-        draw.text(
+        logger.debug(
+            ("ScreenEntryMultilineTxt: xy=(%s,%s), pos=%s, anchor=%s, bbox=%s,"
+             " font_size=%s, text_len=%s"
+             "wrapped_text=\n'%s'"
+             ),
+            self.x, self.y, pos, self.anchor, bbox, self.font_size, self.text_len, wrapped_text)
+
+        draw.multiline_text(
             pos,
-            self.text,
+            wrapped_text,
             font=self.font,
             stroke_width=self.stroke_width,
             stroke_fill=COLOR_BLACK if self.stroke_width > 0 else None,
             anchor=self.anchor,
             fill=True,
+            align="left",
         )
         return canvas
 
@@ -398,7 +416,7 @@ class ScreenEntryImage(ScreenEntryImageBase):
             return self.imagepath[7:]  # Remove 'file://' prefix
         return self.imagepath
 
-    @ property
+    @property
     def img(self) -> Image.Image | None:
         """Cached image for 'imagepath'.
 
@@ -426,26 +444,33 @@ class ScreenEntryImage(ScreenEntryImageBase):
                     else:
                         self._img = Image.open(self._local_file)
                     self.maybe_resize()
-                except FileNotFoundError as e:
+                except Exception as e:
                     # Not an error for volation
                     if self.volatile:
                         logger.warning("img: Error=%s for imagepath='%s'",
                                        e, self.imagepath)
                         self._img = None
                     else:
-                        raise
+                        # Replace with error image
+                        logger.error("img: Error=%s for imagepath='%s'",
+                                     e, self.imagepath)
+                        self._img = Image.open(
+                            os.path.join(APP_CONTEXT.APP_RESOURCES,
+                                         APP_CONTEXT.ERROR_IMAGE
+                                         ))
+                        # raise
         return self._img
 
     # ------------------------------------------------------------------
     # Screen Entry representation (text/image rendering)
 
-    @ property
+    @property
     def to_text(self):
         """Return text representation"""
         return f"{self.imagepath}"
 
 
-@ dataclass
+@dataclass
 class ScreenEntryImageIconsBase(ScreenEntryImage):
     """Base class for icon sprites.
 
@@ -455,7 +480,7 @@ class ScreenEntryImageIconsBase(ScreenEntryImage):
     vertical: bool = False      # verfical/horizon stack
     spacing: int = 0            # number of pixes between icons
 
-    @ property
+    @property
     def icon_count(self):
         """Return number of icons on screen entry. """
         # fixed value 'network' and 'streaming'
@@ -1139,8 +1164,9 @@ _layout_error = {
 
     DSCREEN.ERROR_OVERLAY.ICON:  [
         ScreenEntryImage,
-        {"x": int((OVERLAY_SIZE[0]-100)/2), "y": LINE_SPACING*3,
+        {"x": int((OVERLAY_SIZE[0]-100)/2), "y": LINE_SPACING*4,
          "volatile": True,
+         "height": OVERLAY_SIZE[1]-LINE_SPACING*4,
          "imagepath": os.path.join(APP_CONTEXT.APP_RESOURCES, "error-100.png"),
          }],
 
@@ -1238,23 +1264,25 @@ _layout_url_load = {
         ScreenEntryTxt,
         {"x": 0, "y": 0, "text_len": 30,
          "font_size": 20,
-         "text": APP_CONTEXT.MENU.CHANNEL_SETUP, "stroke_width": 1}],
-    DSCREEN.URL_LOAD_OVERLAY.URL_BASE+"-prompt":  [
-        ScreenEntryTxt,
-        {"x": 0, "y": LINE_SPACING, "text_len": 20,
-         "font_size": 20, "text": "URL-base:", "stroke_width": 1}],
+         "text": APP_CONTEXT.MENU.CHANNEL_SETUP, "stroke_width": 1,
+         }],
+    # DSCREEN.URL_LOAD_OVERLAY.URL_BASE+"-prompt":  [
+    #     ScreenEntryTxt,
+    #     {"x": 0, "y": LINE_SPACING, "text_len": 20,
+    #      "font_size": 20, "text": "URL-base:", "stroke_width": 1}],
     DSCREEN.URL_LOAD_OVERLAY.URL_BASE:  [
-        ScreenEntryTxt,
-        {"x": 0, "y": LINE_SPACING*2, "text_len": 20,
-         "font_size": 20, "text": "", "stroke_width": 0}],
+        ScreenEntryMultilineTxt,
+        {"x": 0, "y": LINE_SPACING, "text_len": 20,
+         "font_size": 15, "text": "", "stroke_width": 0, "lines": 3}],
     DSCREEN.URL_LOAD_OVERLAY.YAML_FILE+"-prompt": [
         ScreenEntryTxt,
-        {"x": 0, "y": LINE_SPACING*3, "text_len": 7,
-         "font_size": 20, "text": "yaml:", "stroke_width": 1}],
+        {"x": 0, "y": LINE_SPACING*4, "text_len": 7,
+         "font_size": 20, "text": DSCREEN.URL_LOAD_OVERLAY.YAML_FILE,
+         "stroke_width": 1}],
     DSCREEN.URL_LOAD_OVERLAY.YAML_FILE: [
         ScreenEntryTxt,
-        {"x": 0, "y": LINE_SPACING*4, "text_len": 7,
-         "font_size": 20, "text": "yaml", "stroke_width": 0}],
+        {"x": 0, "y": LINE_SPACING*5, "text_len": 7,
+         "font_size": 15, "text": None, "stroke_width": 0}],
 }
 
 _layout_firmware = {
@@ -1272,7 +1300,6 @@ _layout_firmware = {
         {"x": 0, "y": LINE_SPACING*2, "text_len": 20,
          "font_size": 20, "text": "", "stroke_width": 0}],
 }
-
 
 
 # One of these is active at one time (= images override each other.)

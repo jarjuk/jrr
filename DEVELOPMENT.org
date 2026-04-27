@@ -120,7 +120,7 @@ markers =
 ** rsync source code to target ~jrr5~
 #+BEGIN_SRC bash :eval no-export :results output
 echo "Running in $(pwd) host '$(hostname)' on $(date)"
-esrsync -a --delete --update --verbose --checksum --recursive jrr.py jrr5:.
+rsync -a --delete --update --verbose --checksum --recursive jrr.py jrr5:.
 rsync -a --delete --update --verbose --checksum --recursive src/ jrr5:jrr/src/
 #+END_SRC
 
@@ -2336,4 +2336,4 @@ end
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2026-04-25.11:10; # time-stamp
+Modified:2026-04-27.08:35; # time-stamp

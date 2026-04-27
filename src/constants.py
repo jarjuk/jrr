@@ -232,6 +232,8 @@ class APP_CONTEXT:
     DEBUG_DIR = Path.home() / "src/debug/"
     DEBUG_SUFFIX = "dbg"
     APP_RESOURCES = os.path.join(os.path.dirname(__file__), "resources")
+    ERROR_IMAGE = "error-100.png"
+    QUESTION_IMAGE = "question-100.png"
     # ICON_SPRITE_FILE_PATH = Path.home() / "src/resources" / "icon-sprite.png"
     ICON_SPRITE_FILE_PATH = os.path.join(APP_RESOURCES, "icon-sprite.png")
     APP_STATE_FILE = "jrr.yaml"
@@ -295,13 +297,11 @@ class APP_CONTEXT:
         VOLUME_TURN_ON = "Käännä nuppi auki"
 
         KB_NOK = "Näppäimistövirhe"
-        KB_ACT = """
-        Kytke USB näppäimistö ja
-        paina jotain näppäintä!"
-        """
+        KB_ACT = "Kytke USB näppäimistö!"
 
         WIFI_SETUP = "Wifi valinta"
-        CHANNEL_SETUP = "Kanavahakemisto"        
+        CHANNEL_SETUP = "Kanavahakemisto:"
+        YAML_FILE = "Kanavahakemisto:"
 
         # Radio Streamer
         RADIO_NEXT_CHANNEL = NEXT           # Stream next channel
@@ -328,18 +328,19 @@ class APP_CONTEXT:
         MENU_CHANNELS_DELETE = "poista"
         MENU_IP = "Verkkoyhteys"
         MENU_CHANNELS_ADD = "Lisää"
-        MENU_ACTIVATE_CHANNELS = "Aktivoi kanavia"
+        MENU_ACTIVATE_CHANNELS = "Lisää kanavia"
         MENU_CHANNELS_DEL_ALL = "Poista"
         # MENU_CHANNELS_RESET = "Oletusarvot"
 
         CONFIG_MENU_ADD_CHANNEL = "Lisää"
 
-        class LOAD_CHANNELS_DEFAULTS:
+        class CHANNEL_ORIGIN_SCREEN:
             PROMP = "Gimme URL"
             # DEFAULT_URL = "file:///home/pi/resources/channels"
             # DEFAULT_URL = "https://github.com/jarjuk/jrr/blob/main/resources/channels"
             DEFAULT_URL = "https://raw.githubusercontent.com/jarjuk/jrr/refs/heads/main/resources/channels/index.yaml"
             YAML = "rondo.yaml"
+            INVALID_CHANNEL_ORIGIN = "Virheellinen osoite"
 
         class WIFI_SETUP_SCREEN:
             SSID_PROMPT = "SSID:"
@@ -376,11 +377,12 @@ class KEYBOARD:
     RIGHT = "RIGHT"
     RIGHT2 = "<RIGHT>"
     TAB = "	"        # 'normal' tab
-    TAB2 = "<TAB>"       # 'normal' tab    
+    TAB2 = "<TAB>"       # 'normal' tab
     STAB = "STAB"        # shift tab
     HOME = "<HOME>"
     END = "<END>"
     DOT = "<DOT>"
+    SYSRQ = "<SYSRQ>"    # print screen
 
 
 class DSCREEN:
