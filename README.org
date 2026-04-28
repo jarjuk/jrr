@@ -210,6 +210,10 @@ näppäimistöä ei ole kytketty
 
 [[file:pics-keep/screenshots/jrr-02-setup-main-Reboot.png]]
 
+* Ohjelmistoversion palautus tehdasasetuksiin
+
+- Paina molemmat painonapit alas ennen virtojen kytkemistä ja kytke virta radioon.
+
 * Fin                                                              :noexport:
 
 
@@ -242,4 +246,4 @@ näppäimistöä ei ole kytketty
 # reftex-default-bibliography: ("./README.bib")
 
 
-Modified:2026-04-28.13:01; # time-stamp
+Modified:2026-04-28.19:36; # time-stamp
