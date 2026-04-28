@@ -161,24 +161,54 @@ näppäimistöä ei ole kytketty
 
 * Näytöt
 
-** Radion kuuntelu
+** 1 - Radion kuuntelu
 
 [[file:pics-keep/screenshots/jrr-01-radio-stream.png]]
 
-** Asetukset
+** 2 - Asetukset
 
-*** Poista kanavia
+*** 2.1 - Poista kanavia
 
 [[file:pics-keep/screenshots/jrr-02-setup-main-Poista.png]]
 
 
-*** Lisää kanavia
+*** 2.2 - Lisää kanavia
+
 [[file:pics-keep/screenshots/jrr-02-setup-main-Lisää kanavia.png]]
 
-*** Valitse Wifi -verkko
+*** 2.3 - Valitse Wifi -verkko
 
 [[file:pics-keep/screenshots/jrr-02-setup-main-Wifi.png]]
 
+*** 2.4 - Asetukset näppämistöllä
+
+[[file:pics-keep/screenshots/jrr-02-setup-main-Näppis.png]]
+
+**** 2.4.1 - Wifi asetukset
+
+[[file:pics-keep/screenshots/jrr-03-keyboard-config-Wifi.png]]
+
+[[file:pics-keep/screenshots/jrr-04-wifi-setup-wifi-setup.png]]
+
+**** 2.4.2 - Radiokanavahakemiston asetukset
+
+[[file:pics-keep/screenshots/jrr-03-keyboard-config-Hakemisto.png]]
+
+
+[[file:pics-keep/screenshots/jrr-03-channel-origin-channel-setup.png]]
+
+**** 2.4.x - Näytön kierto
+
+[[file:pics-keep/screenshots/jrr-03-keyboard-config-Näytön kierto.png]]
+
+
+*** 2.5. - Päivitä ohjelmistoversio
+
+[[file:pics-keep/screenshots/jrr-02-setup-main-Ohjelmaversio.png]]
+
+*** 2.6. - Uudelleenkäynnistys
+
+[[file:pics-keep/screenshots/jrr-02-setup-main-Reboot.png]]
 
 * Fin                                                              :noexport:
 
@@ -212,4 +242,4 @@ näppäimistöä ei ole kytketty
 # reftex-default-bibliography: ("./README.bib")
 
 
-Modified:2026-04-28.12:45; # time-stamp
+Modified:2026-04-28.12:56; # time-stamp
