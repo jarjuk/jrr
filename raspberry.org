@@ -2923,16 +2923,16 @@ echo "var=$var"
 
 #+RESULTS:
 #+begin_example
-Rsync SDIR=bin/ from host=eero to jrr5.local:jrr/bin/ on pe 4.7.2025 09.02.25 +0300
+Rsync SDIR=bin/ from host=Leo to jrr5.local:jrr/bin/ on ti 28.4.2026 10.12.59 +0300
 rsync -a --delete --update --verbose --checksum --recursive bin/ jrr5:jrr/bin/
-total 5
--rwxr-xr-x 1 jj jj 7804 heinä   4 08:56 jrr.sh
+total 8
+-rwxr-xr-x 1 jj jj 8092 huhti  28 10:11 jrr.sh
 sending incremental file list
 ./
 jrr.sh
 
-sent 1.181 bytes  received 104 bytes  2.570,00 bytes/sec
-total size is 7.804  speedup is 6,07
+sent 1.724 bytes  received 110 bytes  1.222,67 bytes/sec
+total size is 8.092  speedup is 4,41
 #+end_example
 
 #+call: src-rsync[:dir .](SDIR="jrr.py", DDIR="jrr/")
@@ -3262,7 +3262,7 @@ cat jrr/bin/jrr.sh
 
 #+RESULTS:
 #+begin_example
-Running in /home/pi host 'jrr5' on Tue Jul  1 16:07:37 EEST 2025
+Running in /home/pi host 'jrr5' on Tue Apr 28 08:20:11 EEST 2026
 #!/bin/bash
 # Järviradioradion management script
 
@@ -3275,6 +3275,13 @@ JRR_DEBUG=""                # default WARNING, more -v's --> more output
 # JRR_DEBUG="-v -v"  
 ALL_LINES=""                # default - only one console line per time tick
 # ALL_LINES="--all-lines"
+
+# Firmware update configs
+LOCAL_REPO=$HOME/jrr
+PENDING_LINK=$LOCAL_REPO/src.next
+CURRENT_LINK=$LOCAL_REPO/src
+PREV_LINK=$LOCAL_REPO/src.prev
+
 
 # ------------------------------------------------------------------
 # Subrus
@@ -3304,7 +3311,9 @@ usage() {
     echo "stop                  : Stop jrr -service"
     echo "start                 : start jrr -service"    
     echo "status                : Show process ids for jrr.py and ffmpeg streamer process"
-    echo "kill-ffmpeg           : Kill ffmpeg streamer process"    
+    echo "kill-ffmpeg           : Kill ffmpeg streamer process"
+    echo "activate-pending      : Activate  PENDING_LINK if it valid"
+    echo "debug                 : Run jrr.py from command line"
     echo ""
     echo "Examples:"
     echo ""
@@ -3319,6 +3328,12 @@ log() {
        	# echo $(date $TS_FORMAT): $0'|'$MSG 1>&2
        	echo "$MSG" 1>&2
     fi
+}
+
+error_msg() {
+    local MSG=$1
+    logger "$MSG"
+    log 1 "$MSG"
 }
 
 kill_streamer() {
@@ -3357,7 +3372,29 @@ do_kill() {
     fi
 }
 
+# Activate PENDING_LINK (if it exists)
+# - cleanup PREV_LINK and directory it points to
+# - move CURRENT_LINK to PREV_LINK
+# - deploy PENDING_LINK as CURRENT_LINK
+activate_pending() {
 
+
+    log 2 "activate_pending: check $PENDING_LINK"
+    if [ -L $PENDING_LINK ]; then
+        log 1 "activate_pending: $PENDING_LINK exists "
+        log 2 "activate_pending: pre $(ls -ltr $CURRENT_LINK $PENDING_LINK)"
+	# Cleanup PREV_LINK and directory it points to
+	rm -rf $(readlink -f $PREV_LINK)
+        rm -f $PREV_LINK
+
+	# Mark CURRENT as PREV
+        mv $CURRENT_LINK $PREV_LINK
+
+	# Deploy PENDING as CURRENT
+        mv $PENDING_LINK $CURRENT_LINK
+        log 2 "activate_pending: post $(ls -ltr $CURRENT_LINK $PREV_LINK)"
+    fi 
+}
 
 # ------------------------------------------------------------------
 # Starting
@@ -3490,9 +3527,15 @@ do
             if [ $ISTAT1 != 0 ]; then
                 exit $ISTAT1
             fi
-	        ;;
+	    ;;
+
+        debug)
+            .venv/bin/python ./jrr.py -v -v --screen-shots radio
+	    ;;
+	
         
         daemon)
+            activate_pending
 	        kill_streamer
             do_kill
             log 1 "User '$(whoami)' launching järviradioradio daemon"
@@ -3541,6 +3584,10 @@ do
             do_kill
             ;;
         
+        activate-pending)
+            activate_pendig
+            ;;
+
         true)
             ;;
 
@@ -3579,7 +3626,7 @@ jrr.sh --help ; echo ISTAT=$?
 
 #+RESULTS:
 #+begin_example
-Running in /home/pi host 'jrr5' on Tue Jul  1 16:08:41 EEST 2025
+Running in /home/pi host 'jrr5' on Tue Apr 28 08:19:13 EEST 2026
 
 usage: jrr.sh
 /home/pi/jrr/bin/jrr.sh - 0.2
@@ -3605,6 +3652,7 @@ stop                  : Stop jrr -service
 start                 : start jrr -service
 status                : Show process ids for jrr.py and ffmpeg streamer process
 kill-ffmpeg           : Kill ffmpeg streamer process
+activate-pending      : Activate  PENDING_LINK if it valid
 
 Examples:
 
@@ -6564,4 +6612,4 @@ sine-gen.sh alsa-devices
 # reftex-default-bibliography: ("./raspberry.bib")
 
 
-Modified:2026-04-24.13:02; # time-stamp
+Modified:2026-04-28.10:13; # time-stamp

@@ -28,7 +28,7 @@ from .channel_manager import (
     channel_activate,
     channel_activation_index,
     channel_icon_image)
-from .constants import (DSCREEN, TOPICS, COROS, RPI, APP_CONTEXT,)
+from .constants import (DSCREEN, TOPICS, COROS, RPI, APP_CONTEXT, KEYBOARD, )
 from .utils import (set_wifi_password, current_IP,
                     current_ssid, download_extract_pending, read_url)
 from .gpio_coro import (
@@ -66,6 +66,7 @@ from .messages import (MsgRoot,
                        MsgStreamerStatusReply,
                        MsgKeyboardStatus,
                        message_streamer_start, message_streamer_stop,
+                       message_snapshot,
                        )
 
 # ------------------------------------------------------------------
@@ -801,6 +802,40 @@ def ctr_act_none(hub: Hub, key=None):
     return None
 
 
+def ctr_act_screen_snapshot(hub: Hub, screenshot_location: str):
+    """Send SCREEN_MESSAGES.SNAPSHOT to screen coro"""
+    logger.info("ctr_act_screenshot: screenshot_location='%s'",
+                screenshot_location)
+    hub.publish(
+        topic=TOPICS.SCREEN,
+        message=message_snapshot(
+            location=screenshot_location,
+        ))
+
+
+def ctr_act_maybe_screen_snapshot(hub: Hub, key: str, screenshot_location: str, menu_name: str):
+    """Send SCREEN_MESSAGES.SNAPSHOT to screen coro to take screen
+    shot in 'screenshot_location' for PRINT_SCREEN -key
+
+    :screenshot_location: application menu location
+
+    :menu_name: menu within screenshot_location
+
+    :return: True if snapshot taken else False
+
+    """
+    logger.debug(("ctr_act_maybe_screen_snapshot: "
+                  "key='%s'"
+                  ", screenshot_location=%s"
+                  ", menu_name=%s"), key, screenshot_location, menu_name)
+    if key == KEYBOARD.PRINT_SCREEN:
+        ctr_act_screen_snapshot(
+            hub,
+            screenshot_location=f"{screenshot_location}-{menu_name}")
+        return True
+    return False
+
+
 def ctr_act_todo(hub: Hub, key=None):
     logger.error("TODO")
     return None
@@ -985,7 +1020,9 @@ def ctrl_menu_channel_origin_setup(
     }  # menu
 
     # Only one menu
-    f_config_enter(hub, menu=menu, step_resume=0)
+    f_config_enter(
+        hub, menu=menu, step_resume=0,
+        screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.CHANNEL_ORIGIN)
 
 
 def ctrl_menu_wifi_ssid_setup_or_choose(
@@ -1104,7 +1141,10 @@ def ctrl_menu_wifi_ssid_setup_or_choose(
     }  # menu
 
     # Only one menu
-    f_config_enter(hub, menu=menu, step_resume=0)
+    f_config_enter(
+        hub, menu=menu, step_resume=0,
+        screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.WIFI_SETUP if do_config
+        else APP_CONTEXT.SCREEN_SHOT_LOCATIONS.WIFI_CHOOSE)
 
 
 def ctrl_menu_setup_with_keyboard(hub: Hub, step_resume: int | None = None):
@@ -1229,7 +1269,9 @@ def ctrl_menu_setup_with_keyboard(hub: Hub, step_resume: int | None = None):
 
     }  # menu
 
-    f_config_enter(hub, menu, step_resume=step_resume)
+    f_config_enter(
+        hub, menu, step_resume=step_resume,
+        screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.KEYBORD_CONFIG)
 
 
 def ctrl_menu_firmware_setup(
@@ -1243,7 +1285,7 @@ def ctrl_menu_firmware_setup(
 
     :ctrl_menu_resume: fst where to return
 
-    :step_resume: fst step to return back to 
+    :step_resume: fst step to return back to
 
     """
     logger.debug("ctrl_menu_firmware_setup: step_resume='%s', menu_step=%s",
@@ -1311,7 +1353,10 @@ def ctrl_menu_firmware_setup(
         for i in range(len(firmware_versions))
     }
 
-    f_config_enter(hub, menu=menu, step_resume=step_resume)
+    f_config_enter(
+        hub, menu=menu,
+        step_resume=step_resume,
+        screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.FIRMARE_UPDATE)
 
 
 def ctrl_menu_wifi_setup(
@@ -1402,7 +1447,10 @@ def ctrl_menu_wifi_setup(
         for i in range(len(wifi_names))
     }
 
-    f_config_enter(hub, menu=menu, step_resume=step_resume)
+    f_config_enter(hub,
+                   menu=menu,
+                   step_resume=step_resume,
+                   screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.WIFI_LIST)
 
 
 def ctrl_menu_browse_channels(
@@ -1478,7 +1526,10 @@ def ctrl_menu_browse_channels(
     if len(menu.keys()) == 0:
         _my_resume(hub)
     else:
-        f_config_enter(hub, menu=menu, step_resume=step_resume)
+        f_config_enter(hub,
+                       menu=menu,
+                       step_resume=step_resume,
+                       screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.CHANNEL_BROWSE_DEL)
 
 
 def ctrl_menu_setup_main(hub: Hub, step_resume: int | None = None):
@@ -1671,7 +1722,11 @@ def ctrl_menu_setup_main(hub: Hub, step_resume: int | None = None):
         },  # MENU_REBOOT
     }
 
-    f_config_enter(hub, menu, step_resume=step_resume)
+    f_config_enter(
+        hub,
+        menu,
+        step_resume=step_resume,
+        screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.SETUP_MAIN)
 
 
 def ctrl_menu_activate_channels(hub: Hub, step_resume: int | None = None):
@@ -1763,7 +1818,11 @@ def ctrl_menu_activate_channels(hub: Hub, step_resume: int | None = None):
         for i in range(len(channels_for_activation))
     }
 
-    f_config_enter(hub, menu, step_resume=step_resume)
+    f_config_enter(
+        hub,
+        menu,
+        step_resume=step_resume,
+        screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.CHANNEL_ACTIVATE)
 
 
 def ctrl_menu_activate_with_confirm(
@@ -1847,7 +1906,10 @@ def ctrl_menu_activate_with_confirm(
     }
 
     # Start executing menu
-    f_config_enter(hub, menu=menu, step_resume=0)
+    f_config_enter(hub,
+                   menu=menu,
+                   step_resume=0,
+                   screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.CHANNEL_ACTIVATE_CONFIRM)
 
 
 def ctrl_menu_firmware_activate(
@@ -1961,7 +2023,11 @@ def ctrl_menu_firmware_activate(
     }
 
     # Start executing menu
-    f_config_enter(hub, menu=menu, step_resume=0)
+    f_config_enter(
+        hub,
+        menu=menu,
+        step_resume=0,
+        screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.FIRMARE_UPDATE_COFIRM)
 
 
 def ctrl_menu_setup_channel_origin(hub: Hub, step_resume: int | None = None):
@@ -2114,7 +2180,11 @@ def ctrl_menu_setup_channel_origin(hub: Hub, step_resume: int | None = None):
     if step_resume is None:
         step_resume = 0
 
-    f_config_enter(hub, menu=menu, step_resume=step_resume)
+    f_config_enter(
+        hub,
+        menu=menu,
+        step_resume=step_resume,
+        screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.CHANNEL_SETUP)
 
 # ------------------------------------------------------------------
 # Callable sub-menus
@@ -2174,7 +2244,11 @@ def ctrl_menu_reboot_confirm(
 
     }  # menu
 
-    f_config_enter(hub, menu=menu, step_resume=0)
+    f_config_enter(
+        hub,
+        menu=menu,
+        step_resume=0,
+        screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.REBOOT)
 
 
 def ctrl_menu_error_confirm(
@@ -2207,7 +2281,7 @@ def ctrl_menu_error_confirm(
         ctrl_menu_cancel(hub, step_resume=step_cancel)
 
     menu = {
-        "kb-nok": {
+        error: {
             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
                 APP_CONTEXT.MENU.UN_USED,               # bt1-short
                 APP_CONTEXT.MENU.UN_USED,               # bt1-long
@@ -2224,7 +2298,11 @@ def ctrl_menu_error_confirm(
 
     }  # menu
 
-    f_config_enter(hub, menu=menu, step_resume=0)
+    f_config_enter(
+        hub,
+        menu=menu,
+        step_resume=0,
+        screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.ERROR_ACCEPT)
 
 
 def ctrl_menu_keyboard_confirm(
@@ -2276,7 +2354,11 @@ def ctrl_menu_keyboard_confirm(
 
     }  # menu
 
-    f_config_enter(hub, menu=menu, step_resume=0)
+    f_config_enter(
+        hub,
+        menu=menu,
+        step_resume=0,
+        screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.KEYBORD_ERROR)
 
 
 def ctrl_menu_chdelete_with_confirm(
@@ -2366,17 +2448,23 @@ def ctrl_menu_chdelete_with_confirm(
     }
 
     # Start executing menu
-    f_config_enter(hub, menu=menu, step_resume=0)
+    f_config_enter(
+        hub,
+        menu=menu,
+        step_resume=0,
+        screenshot_location=APP_CONTEXT.SCREEN_SHOT_LOCATIONS.CHANNEL_BROWSE_DEL_CONFIRM)
 
 
 # ------------------------------------------------------------------
 # State machines
 
-def f_config_enter(hub: Hub,
-                   menu: Dict,
-                   step_resume: int | None = None,
-                   info_message: str | None = None,
-                   ):
+def f_config_enter(
+        hub: Hub,
+        menu: Dict,
+        step_resume: int | None = None,
+        info_message: str | None = None,
+        screenshot_location: str = APP_CONTEXT.SCREEN_SHOT_LOCATIONS.UNDEFINED
+):
     """Enter config statemachine, messages are processed in 'f_config'.
 
     :step_resume: optionally resume menu step.
@@ -2387,6 +2475,9 @@ def f_config_enter(hub: Hub,
 
     :menu: dict of dicts. First level maps 'menu_names' to dict for
     menu configuration -dict. Keys for menu configuration -dict:
+
+    :screenshot_location: file baseme where eventual screenshot
+    written.
 
     - ENTRY_ACTION: Lamba to execute, when entering menu. Default
     action ctrl_act_default_menu_enter.
@@ -2407,8 +2498,10 @@ def f_config_enter(hub: Hub,
 
     """
 
-    logger.warning("**f_config_enter - starting**, step_resume='%s'",
-                   step_resume)
+    logger.warning(("**f_config_enter - starting**"
+                    ", step_resume='%s'"
+                    ", screenshot_location=%s"),
+                   step_resume, screenshot_location)
 
     # optionall flash info message on screeen
     if info_message is not None:
@@ -2506,8 +2599,13 @@ def f_config_enter(hub: Hub,
                     set_menu_step = menu[menu_name][APP_CONTEXT.MENU.ACTS.BTN2_LONG](
                         hub=hub)
         elif is_message_type(msg, TOPICS.KEYBOARD_MESSAGES.KEY):
-            if APP_CONTEXT.MENU.ACTS.KEYBOARD in menu[menu_name]:
-                msg_key = cast(MsgKey, msg)
+            msg_key = cast(MsgKey, msg)
+            if not (
+                app_config.enable_screen_snapshots and
+                ctr_act_maybe_screen_snapshot(
+                    hub,
+                    msg_key.key,
+                    screenshot_location, menu_name)) and APP_CONTEXT.MENU.ACTS.KEYBOARD in menu[menu_name]:
                 set_menu_step = menu[menu_name][APP_CONTEXT.MENU.ACTS.KEYBOARD](
                     hub=hub, key=msg_key.key)
 
@@ -2584,7 +2682,10 @@ def f_radio_enter(hub: Hub, step_resume: int | None = None):
                     ctrl_act_menu_next_prev(
                         hub=hub, advance=0, menus=menu_choices)
                 elif msg_button.long_press:
-                    pass
+                    if app_config.enable_screen_snapshots:
+                        ctr_act_screen_snapshot(
+                            hub,
+                            APP_CONTEXT.SCREEN_SHOT_LOCATIONS.RADIO_STREAMING)
 
             else:
                 pass

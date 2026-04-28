@@ -75,6 +75,10 @@ def commandLineParser() -> argparse.ArgumentParser:
         CLI.OPT_CONSOLE_ALL_LINES, action="store_true", default=False,
         help="Output all journalctl lines to console (default no)",
     )
+    radio_parser.add_argument(
+        CLI.OPT_ALLOW_SCREENSHOTS, action="store_true", default=False,
+        help="Allow screenshots (default no)",
+    )
 
     # --------------------
     # Icon converter

@@ -1,3 +1,18 @@
+2026-04-28  jj  <jj@Leo>
+
+	* bin/jrr.sh (debug): added command debug
+
+2026-04-27  jj  <jj@Leo>
+
+	* src/messages.py (MsgScreenSnapshot): JRR-DEV-005 added
+	(message_snapshot): JRR-DEV-005 added
+
+	* src/jrr_radio.py (ctr_act_screenshot): JRR-DEV-005 added
+
+	* src/screen_coro.py (ScreenDriver.snapshot): JRR-DEV-005 added
+
+	* src/config.py (Config.enable_screen_snapshots): JRR-DEV-005 added
+
 2026-04-18  jj  <jj@Leo>
 
 	* src/jrr_radio.py (f_init_enter.f_init_done): wait for init_GPIO_shutdown to success

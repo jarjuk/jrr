@@ -162,6 +162,12 @@ class Config():
         """Show all lines on console mode"""
         return self.cliArgs.all_lines
 
+    @property
+    def enable_screen_snapshots(self) -> bool:
+        """Enable screen snapshot"""
+        return self.cliArgs.screen_shots
+    
+
 
 # Annotated[Config(), "Singleton configuration init from cli arguments"]
 app_config = Config()

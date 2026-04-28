@@ -235,6 +235,12 @@ class MsgScreenReorigin(MsgScreen):
 
 
 @dataclass
+class MsgScreenSnapshot(MsgScreen):
+    """Take snapshot from screen"""
+    location: str       # screenshot location
+
+
+@dataclass
 class MsgScreenNetworkInfo(MsgScreen):
     """Show 'error' and """
     title: str
@@ -326,6 +332,8 @@ message_constructors = {
     TOPICS.SCREEN_MESSAGES.FIRMAWRE: MsgScreenFirmware,
     TOPICS.SCREEN_MESSAGES.NETWORK_INFO: MsgScreenNetworkInfo,  # Wifi info
     TOPICS.SCREEN_MESSAGES.REORIGIN: MsgScreenReorigin,         # Flip display
+    # Snapshot from screen image
+    TOPICS.SCREEN_MESSAGES.SNAPSHOT: MsgScreenSnapshot,
 }
 
 
@@ -785,6 +793,18 @@ def message_reorigin(screen_orientation: int) -> MsgScreenReorigin:
     )
     msg_reorigin = cast(MsgScreenReorigin, msg)
     return msg_reorigin
+
+
+def message_snapshot(location: str) -> MsgScreenSnapshot:
+    """Take snapshot from screen image
+
+    """
+    msg = message_create(
+        message_type=TOPICS.SCREEN_MESSAGES.SNAPSHOT,
+        d={"location": location}
+    )
+    msg_snapshot = cast(MsgScreenSnapshot, msg)
+    return msg_snapshot
 
 
 def message_network_info(

@@ -16,6 +16,7 @@ class CLI:
     # CLI options (for radio streamer)
     # OPT_SYSTEM_HALT = "--system-halt"
     OPT_CONSOLE_ALL_LINES = "--all-lines"
+    OPT_ALLOW_SCREENSHOTS = "--screen-shots"
 
     # CLI options (for icon converter)
     OPT_ICON_SOURCE = "--icons-from"
@@ -119,6 +120,7 @@ class TOPICS:
         BUTTON_TXT = "button"                      # button text
         MSG_INFO = "info"                          # info message to user
         REORIGIN = "reorigin"                      # Reset Origin on 'ILI9486'
+        SNAPSHOT = "snapshot"                      # Snapshot screen to file
         # Alternatives
         STREAM_ICON = "msg-stream-icon"            # stream icon image to screen
         CONFIG_TITLE = "title-subtitle"            # bold title, sub-title
@@ -164,7 +166,7 @@ class COROS:
         ENTRY_CONFIG = "config-ovlay"
         ENTRY_CONFIG_TITLE = "conf-menu-ovlay"
         ENTRY_WIFI_OVL = "wifi-ovlay"
-        ENTRY_CHOOSE_WIFI_OVL = "wifi-choose-ovlay" 
+        ENTRY_CHOOSE_WIFI_OVL = "wifi-choose-ovlay"
         ENTRY_URL_LOAD_OVL = "url-load-ovlay"
         ENTRY_FIRMWARE1_OVL = "firmware1-ovlay"
         ENTRY_FIRMWARE2_OVL = "firmware2-ovlay"
@@ -218,6 +220,10 @@ class RPI:
 class APP_CONTEXT:
     DEFAULT_FIRMWARE_LOCAL_ROOT = os.path.join(
         Path.home(), "jrr")
+    APP_TEMP = os.path.join(
+        Path.home(), "tmp")
+    APP_SNAPSHOT = APP_TEMP
+
     # STREAMER_SCRIPT = Path.home() / "src/jrr_streamer.sh"
     STREAMER_SCRIPT = os.path.join(
         DEFAULT_FIRMWARE_LOCAL_ROOT, "src", "jrr_streamer.sh")
@@ -370,6 +376,26 @@ class APP_CONTEXT:
         CONFIGURATION_CONTAINER = "config"
         # CONFIGURATION_MENU = "config-menu"
 
+    class SCREEN_SHOT_LOCATIONS:
+        RADIO_STREAMING = "jrr-01-radio-stream"
+        SETUP_MAIN = "jrr-02-setup-main"
+        CHANNEL_ACTIVATE = "jrr-03-channel-activate"
+        CHANNEL_ACTIVATE_CONFIRM = "jrr-04-channel-activate-confirm"
+        CHANNEL_SETUP = "jrr-03-channel-setup"
+        CHANNEL_ORIGIN = "jrr-03-channel-origin"
+        CHANNEL_BROWSE_DEL = "jrr-03-channel-browse"
+        CHANNEL_BROWSE_DEL_CONFIRM = "jrr-04-channel-browse-delete-confirm"
+        WIFI_LIST = "jrr-03-wifi-list"
+        WIFI_SETUP = "jrr-04-wifi-setup"
+        WIFI_CHOOSE = "jrr-04-wifi-choose"
+        FIRMARE_UPDATE = "jrr-03-firmware-update"
+        FIRMARE_UPDATE_COFIRM = "jrr-04-firmware-update-confirm"
+        KEYBORD_CONFIG = "jrr-03-keyboard-config"
+        KEYBORD_ERROR = "jrr-04-keyboard-error"
+        REBOOT = "jrr-03-reboot"
+        ERROR_ACCEPT = "jrr-90-error"
+        UNDEFINED = "jrr-99-undefined"
+
 
 class KEYBOARD:
     """Configure keys"""
@@ -386,7 +412,7 @@ class KEYBOARD:
     HOME = "<HOME>"
     END = "<END>"
     DOT = "<DOT>"
-    SYSRQ = "<SYSRQ>"    # print screen
+    PRINT_SCREEN = "<SYSRQ>"    # print screen
 
 
 class DSCREEN:

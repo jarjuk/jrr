@@ -216,6 +216,24 @@ killall ffmpeg ; .venv/bin/python ./jrr.py -v -v  radio |   tee tmp/apu.log
 
 #+RESULTS:
 
+*** Screen shots
+After ~systemctl stop jrr; jrr.sh stop~
+
+#+BEGIN_SRC bash :eval no-export :results output
+  echo "Running in $(pwd) host '$(hostname)' on $(date)"
+  cd jrr
+  jrr.sh --help
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi host 'jrr5' on Tue Apr 28 08:13:19 EEST 2026
+
+
+#+begin_example
+.venv/bin/python ./jrr.py -v -v  radio |   tee tmp/apu.log
+#+end_example
+
+
 *** manual streaming
 
 #+BEGIN_SRC bash :eval no-export :results output
@@ -298,7 +316,6 @@ Other commands
 ./jrr_streamer.sh --duration 10 --end-freq 5000 chirp
 ./jrr_streamer.sh play /home/pi/tmp/chrip-100-5000-10s.wav
 #+end_example
-
 
 ** Check version
 
@@ -451,9 +468,61 @@ if git diff-tree --no-commit-id --name-only -r HEAD | grep -q '^src/VERSION$'; t
 fi
 #+END_SRC
 
+#+RESULTS:
 
+** Create screen snapthots
+
+
+Stop ~jrr~ service
+
+#+call: jrr-stop[:dir /ssh:jrr5: ]()
+
+#+RESULTS:
+: Running in /home/pi host 'jrr5' on Tue Apr 28 10:06:12 EEST 2026
+: 'pi' runs '/home/pi/jrr/bin/jrr.sh stop' on 'jrr5:/home/pi'
+: do_stop - send SIGTERM to JRR_PID=10276
+
+
+Check that it is stopped
+#+call: jrr-status[:dir /ssh:jrr5: ]()
+
+#+RESULTS:
+: Running in /home/pi host 'jrr5' on Tue Apr 28 10:26:12 EEST 2026
+: 'pi' runs '/home/pi/jrr/bin/jrr.sh status' on 'jrr5:/home/pi'
+: jrr.sh: status=1/
+: jrr.py: status=1/
+: ffmpeg: status=1/
+
+Run ~jrr.sh debug~ to enable screenshot actions:
+- long button 2 in radio stream
+- SYSREQ/PRINT SCREEN on config screens  
+#+call: jrr-debug()
+
+#+RESULTS:
+
+Copy screen snapthos to ~pics-keep/screenshots/~
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+rsync -a --update --verbose --checksum jrr5:tmp/jrr-*png pics-keep/screenshots/
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/jj/work/jrr host 'Leo' on ti 28.4.2026 10.59.08 +0300
+: receiving incremental file list
+: jrr-02-setup-main-Ohjelmaversio.png
+: jrr-90-error-Ei päivitettävää.png
+: 
+: sent 62 bytes  received 34.692 bytes  69.508,00 bytes/sec
+: total size is 164.239  speedup is 4,73
+
+[[file:pics-keep/screenshots]]
 
 * Issues
+
+** TODO JRR-DEV-005: Support screen snapshots
+
+- added option OPT_ALLOW_SCREENSHOTS
+
 
 ** DONE JRR-DEV-004: Support chirp streams
 
@@ -462,7 +531,6 @@ fi
   - [X] Added ~src/jrr_streamer.sh --end-freq 20000 --duration 10 chirp~
     - [X] Renamed src/jrr_streamer.sh --end-freq 20000 --duration 10 chirp-gen
   - [X] Differentiate chirp stream from network stream
-
 
 ** DONE JRR-DEV-003: Configurable TFT orientation
 
@@ -2192,6 +2260,19 @@ echo "Running in $(pwd) host '$(hostname)' on $(date)"
 #+RESULTS: jrr-where
 : Running in /home/pi host 'jrr5' on Tue Apr 14 15:06:57 EEST 2026
 
+*** ~jrr-stop~: stop ~jrr~ - service
+
+#+name: jrr-stop
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+jrr.sh stop 2>&1
+#+END_SRC
+
+#+RESULTS: jrr-start
+: Running in /home/pi host 'jrr5' on Tue Apr 14 15:07:30 EEST 2026
+: 'pi' runs '/home/pi/jrr/bin/jrr.sh start' on 'jrr5:/home/pi'
+
+
 *** ~jrr-start~: start ~jrr~ - service
 
 #+name: jrr-start
@@ -2213,11 +2294,11 @@ jrr.sh status 2>&1
 #+END_SRC
 
 #+RESULTS: jrr-status
-: Running in /home/pi host 'jrr5' on Tue Apr 14 15:08:09 EEST 2026
+: Running in /home/pi host 'jrr5' on Tue Apr 28 10:04:37 EEST 2026
 : 'pi' runs '/home/pi/jrr/bin/jrr.sh status' on 'jrr5:/home/pi'
-: jrr.sh: status=0/pi          4044       1  0 15:07 ?        00:00:00 /bin/bash /home/pi/jrr/bin/jrr.sh daemon
-: jrr.py: status=0/pi          4057    4044 10 15:07 ?        00:00:06 .venv/bin/python ./jrr.py radio
-: ffmpeg: status=0/pi          4091    4090  6 15:07 ?        00:00:03 ffmpeg -hide_banner -nostdin -nostats -loglevel error -i https://jarviradio.radiotaajuus.fi:9000/jr -filter_complex [0:a]volume=volume=2,pan=mono|c0=0.5*c0+0.5*c1,alimiter[aout] -map [aout] -ac 2 -f alsa hw:CARD=Audio,DEV=0
+: jrr.sh: status=1/
+: jrr.py: status=0/pi         10276   10272  8 09:57 pts/1    00:00:34 .venv/bin/python ./jrr.py -v -v radio --screen-shots
+: ffmpeg: status=0/pi          2665    2664  5 08:22 ?        00:05:27 ffmpeg -hide_banner -nostdin -nostats -loglevel error -i https://jarviradio.radiotaajuus.fi:9000/jr -filter_complex [0:a]volume=volume=1.5,pan=mono|c0=0.5*c0+0.5*c1,alimiter[aout] -map [aout] -ac 2 -f alsa hw:CARD=Audio,DEV=0
 
 
 Success
@@ -2229,6 +2310,51 @@ Success
 : ffmpeg: status=0/pi          4091    4090  7 15:07 ?        00:00:03 ffmpeg -hide_banner -nostdin -nostats -loglevel error -i https://jarviradio.radiotaajuus.fi:9000/jr -filter_complex [0:a]volume=volume=2,pan=mono|c0=0.5*c0+0.5*c1,alimiter[aout] -map [aout] -ac 2 -f alsa hw:CARD=Audio,DEV=0
 
 #+RESULTS: jrr-start
+
+*** ~jrr-debug~: run ~jrr.sh debug~
+
+   #+name: jrr-debug
+   #+BEGIN_SRC elisp :noweb yes :results output :eval no-export :exports none  :var TERM_HEADER="jrr5 journalctl"
+   (start-process "server" "buf-server" "xterm"  "-T" TERM_HEADER "-fa" "'Monospace'" "-fs" "12" "-hold" "-e"  "bash" "-c" "ssh jrr5 jrr/bin/jrr.sh --dir jrr debug")
+   #+END_SRC
+
+   #+RESULTS: jrr-debug
+
+
+
+** Log-management
+*** ~syslog-tail~: Tail journal
+
+   #+name: syslog-tail
+   #+BEGIN_SRC elisp :noweb yes :results output :eval no-export :exports none  :var TERM_HEADER="jrr5 journalctl"
+   (start-process "server" "buf-server" "xterm"  "-T" TERM_HEADER "-fa" "'Monospace'" "-fs" "12" "-hold" "-e"  "bash" "-c" "ssh jrr5 journalctl -f")
+   #+END_SRC
+
+   #+RESULTS: syslog-tail
+
+*** ~dmesg-tail~: sorsa tail wave-2930150425.csv
+
+   #+name: dmesg-tail
+   #+BEGIN_SRC elisp :noweb yes :results output :eval no-export :exports none :var TERM_HEADER="jrr5 dmesg"
+   (start-process "server" "buf-server" "xterm"  "-T" "dmesg@sorsa" "-fa" "'Monospace'" "-fs" "12" "-hold" "-e"  "bash" "-c" (concat "ssh jrr5 dmesg -w" ) )
+   #+END_SRC
+
+   #+RESULTS: dmesg-tail
+
+   #+RESULTS: wavecsv-tail
+
+*** ~journald-vacuum~: clean up logs
+
+#+name: journald-vacuum
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+sudo journalctl --flush --rotate --vacuum-time=1s
+sudo journalctl --user --flush --rotate --vacuum-time=1s
+#+END_SRC
+
+#+RESULTS: journald-vacuum
+: Running in /home/pi host 'jrr5' on Wed May 21 14:22:30 EEST 2025
+
 
 
 * Notes                                                            :noexport:
@@ -2303,7 +2429,6 @@ end
 #+LABEL: fig:fig-figname
 #+RESULTS: fig-figname.png
 
-
 * Fin                                                              :noexport:
 
 
@@ -2336,4 +2461,4 @@ end
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2026-04-27.08:35; # time-stamp
+Modified:2026-04-28.10:59; # time-stamp

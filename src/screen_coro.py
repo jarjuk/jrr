@@ -6,6 +6,7 @@ import os
 import time
 import logging
 import asyncio
+from datetime import datetime
 from functools import partial
 # from PIL import Image, ImageFont, ImageDraw
 
@@ -22,7 +23,7 @@ from .messages import (is_message_type, message_props, MsgScreenUpdate,
                        MsgScreenIcon, MsgScreenText, MsgClockUpdate, MsgRoot,
                        MsgScreenButtons, MsgDScreen, MsgExit,
                        message_create, message_halt_ack, message_panik,
-                       MsgScreenReorigin,
+                       MsgScreenReorigin, MsgScreenSnapshot,
                        )
 
 from .screen import Screen, overlay_names
@@ -180,6 +181,13 @@ class ScreenDriver():
         await self.driver.close()
         self.awake = False
 
+    async def snapshot(self, filepath: str):
+        """Snapshot screen content to filepath."""
+        logger.info("snapshot: filepath='%s'", filepath)
+        image = self.screen.img
+        if image is not None:
+            await asyncio.to_thread(image.save, filepath)
+
 
 # ------------------------------------------------------------------
 # Module state
@@ -207,7 +215,7 @@ async def _screen_action(msg: Any, hub: Hub, screen_orientation: int):
             origin=origin,
         )
         return display_driver
-    
+
     def screen_orientation2origin(screen_orientation: int) -> Origin:
         """Map 'screen_orientation' to 'Origin' understood by 'TFT_DRIVER'"""
         return (Origin.LOWER_RIGHT
@@ -582,6 +590,12 @@ async def _screen_action(msg: Any, hub: Hub, screen_orientation: int):
     elif is_message_type(msg, TOPICS.COMMON_MESSAGES.CLOCK_TICK):
         raise NotImplementedError(
             f"message {TOPICS.COMMON_MESSAGES.CLOCK_TICK}", )
+
+    elif is_message_type(msg, TOPICS.SCREEN_MESSAGES.SNAPSHOT):
+        msg_snapshot = cast(MsgScreenSnapshot, msg)
+        filename = f"{msg_snapshot.location}.png"
+        filepath = os.path.join(APP_CONTEXT.APP_SNAPSHOT, filename)
+        await screen_driver.snapshot(filepath=filepath)
 
     elif is_message_type(msg, TOPICS.COMMON_MESSAGES.EXIT):
         msg_exit = cast(MsgExit, msg)

@@ -35,7 +35,8 @@ usage() {
     echo "--debug|-v            : increment DEBUG='$DEBUG' level (in script $0)"
     echo "--jrr-debug           : increment JRR_DEBUG='$JRR_DEBUG' level "
     echo "--all-lines           : output all lines in console mode "
-# echo "--jrr-log FILE        : daemon output JRR_LOG='$JRR_LOG'"
+    echo "--dir DIR             : change to  DIR "    
+    # echo "--jrr-log FILE      : daemon output JRR_LOG='$JRR_LOG'"
     echo "-?|--help             : usage"
     echo ""
     echo "commands:"
@@ -47,7 +48,8 @@ usage() {
     echo "start                 : start jrr -service"    
     echo "status                : Show process ids for jrr.py and ffmpeg streamer process"
     echo "kill-ffmpeg           : Kill ffmpeg streamer process"
-    echo "activate-pending      : Activate  PENDING_LINK if it valid"    
+    echo "activate-pending      : Activate  PENDING_LINK if it valid"
+    echo "debug                 : Run jrr.py from command line"
     echo ""
     echo "Examples:"
     echo ""
@@ -171,6 +173,12 @@ do
 	    JRR_DEBUG="$JRR_DEBUG -v"
 	    log 1 "setting JRR_DEBUG=$JRR_DEBUG"
 	    ;;
+    
+	--dir)
+	    shift
+	    cd "$1"; shift
+	    log 1 "Changed to $(pwd)"
+	    ;;
 
 	--all-lines|--all_lines)
 	    shift
@@ -261,7 +269,12 @@ do
             if [ $ISTAT1 != 0 ]; then
                 exit $ISTAT1
             fi
-	        ;;
+	    ;;
+
+        debug)
+            .venv/bin/python ./jrr.py -v -v radio --screen-shots 
+	    ;;
+	
         
         daemon)
             activate_pending
