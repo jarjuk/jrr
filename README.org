@@ -242,4 +242,4 @@ näppäimistöä ei ole kytketty
 # reftex-default-bibliography: ("./README.bib")
 
 
-Modified:2026-04-28.12:56; # time-stamp
+Modified:2026-04-28.13:01; # time-stamp
