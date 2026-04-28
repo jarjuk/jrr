@@ -507,21 +507,25 @@ rsync -a --update --verbose --checksum jrr5:tmp/jrr-*png pics-keep/screenshots/
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/jj/work/jrr host 'Leo' on ti 28.4.2026 12.44.53 +0300
+: Running in /home/jj/work/jrr host 'Leo' on ti 28.4.2026 12.55.17 +0300
 : receiving incremental file list
-: jrr-02-setup-main-Wifi.png
+: jrr-03-channel-origin-channel-setup.png
 : 
-: sent 43 bytes  received 20.033 bytes  40.152,00 bytes/sec
-: total size is 317.781  speedup is 15,83
+: sent 43 bytes  received 19.270 bytes  38.626,00 bytes/sec
+: total size is 350.908  speedup is 18,17
 
 [[file:pics-keep/screenshots]]
 
 * Issues
 
-** TODO JRR-DEV-005: Support screen snapshots
+** DONE JRR-DEV-006: Factory reset
+
+- [X] bin/jrr.sh
+- [X] Documentation
+
+** DONE JRR-DEV-005: Support screen snapshots
 
 - added option OPT_ALLOW_SCREENSHOTS
-
 
 ** DONE JRR-DEV-004: Support chirp streams
 
@@ -2460,4 +2464,4 @@ end
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2026-04-28.12:45; # time-stamp
+Modified:2026-04-28.19:37; # time-stamp
