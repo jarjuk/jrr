@@ -2923,16 +2923,16 @@ echo "var=$var"
 
 #+RESULTS:
 #+begin_example
-Rsync SDIR=bin/ from host=Leo to jrr5.local:jrr/bin/ on ti 28.4.2026 10.12.59 +0300
+Rsync SDIR=bin/ from host=Leo to jrr5.local:jrr/bin/ on ti 28.4.2026 18.36.04 +0300
 rsync -a --delete --update --verbose --checksum --recursive bin/ jrr5:jrr/bin/
-total 8
--rwxr-xr-x 1 jj jj 8092 huhti  28 10:11 jrr.sh
+total 12
+-rwxr-xr-x 1 jj jj 9044 huhti  28 18:35 jrr.sh
 sending incremental file list
 ./
 jrr.sh
 
-sent 1.724 bytes  received 110 bytes  1.222,67 bytes/sec
-total size is 8.092  speedup is 4,41
+sent 1.736 bytes  received 116 bytes  1.234,67 bytes/sec
+total size is 9.044  speedup is 4,88
 #+end_example
 
 #+call: src-rsync[:dir .](SDIR="jrr.py", DDIR="jrr/")
@@ -2952,9 +2952,9 @@ total size is 8.092  speedup is 4,41
 
 #+RESULTS:
 #+begin_example
-Rsync SDIR=src/ from host=Leo to jrr5.local:jrr/src.init/ on pe 17.4.2026 16.09.28 +0300
+Rsync SDIR=src/ from host=Leo to jrr5.local:jrr/src.init/ on ti 28.4.2026 18.35.48 +0300
 rsync -a --delete --update --verbose --checksum --recursive src/ jrr5:jrr/src.init/
-total 596
+total 624
 -rw-rw-r-- 1 jj jj   6032 joulu   9  2024 epd2in13b_V3.py
 -rw-rw-r-- 1 jj jj   5904 joulu   9  2024 epd2in13bc.py
 drwxrwxr-x 3 jj jj   4096 joulu   9  2024 lib
@@ -2977,16 +2977,11 @@ drwxrwxr-x 2 jj jj   4096 joulu  30  2024 examples
 -rwxr-xr-x 1 jj jj   4459 tammi  15  2025 demo_keyboard.py
 -rw-rw-r-- 1 jj jj   2309 maalis 14  2025 reader_coro.py
 -rw-rw-r-- 1 jj jj    343 maalis 16  2025 jrr_streams.yaml
--rw-rw-r-- 1 jj jj  17170 touko   8  2025 dscreen.py
--rw-rw-r-- 1 jj jj    833 touko   8  2025 helpers.py
--rw-rw-r-- 1 jj jj   5420 touko   8  2025 kb_coro.py
--rw-rw-r-- 1 jj jj   3226 touko   9  2025 tft_ili9486.py
 -rwxrwxr-x 1 jj jj      0 touko   9  2025 __init__.py
 -rw-rw-r-- 1 jj jj   3063 touko  16  2025 stdin_coro.py
 drwxrwxr-x 3 jj jj   4096 touko  16  2025 debug
 -rwxr-xr-x 1 jj jj  13966 touko  21  2025 demo_ili9486.py
 -rw-rw-r-- 1 jj jj   6477 touko  22  2025 console.py
--rw-rw-r-- 1 jj jj   4910 touko  28  2025 jrr.py
 -rw-rw-r-- 1 jj jj   9210 touko  30  2025 kb.py
 drwxrwxr-x 2 jj jj   4096 kesä    2  2025 resources
 -rw-rw-r-- 1 jj jj    839 kesä    6  2025 wifi.py
@@ -2994,29 +2989,32 @@ drwxrwxr-x 2 jj jj   4096 kesä    2  2025 resources
 drwxrwxr-x 3 jj jj   4096 kesä    9  2025 cnf
 -rw-rw-r-- 1 jj jj   4142 kesä   10  2025 jrr_converter.py
 -rw-rw-r-- 1 jj jj   1393 heinä   2  2025 github.py
--rw-rw-r-- 1 jj jj   4997 heinä   2  2025 config.py
--rw-rw-r-- 1 jj jj   1852 heinä   6  2025 jrr_dapp.py
--rw-rw-r-- 1 jj jj   9056 heinä   7  2025 utils.py
 -rw-rw-r-- 1 jj jj  14390 heinä   7  2025 firmware.py
--rw-rw-r-- 1 jj jj  43922 heinä   7  2025 screen.py
--rw-rw-r-- 1 jj jj    310 heinä   7  2025 RELEASES
--rw-rw-r-- 1 jj jj  10235 heinä   7  2025 channel_manager.py
-drwxrwxr-x 2 jj jj   4096 heinä   7  2025 __pycache__
--rwxr-xr-x 1 jj jj  17441 huhti  14 15:28 jrr_streamer.sh
--rw-rw-r-- 1 jj jj   9080 huhti  14 15:28 streamer_coro.py
--rw-rw-r-- 1 jj jj  20369 huhti  17 09:28 messages.py
-drwxrwxr-x 4 jj jj   4096 huhti  17 09:52 Python_ILI9486
--rw-rw-r-- 1 jj jj  16380 huhti  17 10:06 constants.py
--rw-rw-r-- 1 jj jj 101489 huhti  17 10:21 jrr_radio.py
--rw-rw-r-- 1 jj jj  20937 huhti  17 10:35 screen_coro.py
--rw-rw-r-- 1 jj jj   4409 huhti  17 16:07 gpio_coro.py
--rw-rw-r-- 1 jj jj     13 huhti  17 16:09 VERSION
+-rw-rw-r-- 1 jj jj   4701 huhti  18 14:44 gpio_coro.py
+-rw-rw-r-- 1 jj jj   3398 huhti  18 18:09 tft_ili9486.py
+drwxrwxr-x 2 jj jj   4096 huhti  24 12:55 __pycache__
+-rw-rw-r-- 1 jj jj  17824 huhti  24 15:28 dscreen.py
+-rw-rw-r-- 1 jj jj  11478 huhti  24 20:04 channel_manager.py
+-rw-rw-r-- 1 jj jj   9503 huhti  24 20:26 streamer_coro.py
+-rw-rw-r-- 1 jj jj   5417 huhti  24 20:27 kb_coro.py
+-rw-rw-r-- 1 jj jj    838 huhti  24 20:27 helpers.py
+drwxrwxr-x 4 jj jj   4096 huhti  26 16:56 Python_ILI9486
+-rwxr-xr-x 1 jj jj  18196 huhti  27 10:50 jrr_streamer.sh
+-rw-rw-r-- 1 jj jj   9060 huhti  27 10:55 utils.py
+-rw-rw-r-- 1 jj jj   2149 huhti  27 12:25 jrr_dapp.py
+-rw-rw-r-- 1 jj jj  46323 huhti  27 12:34 screen.py
+-rw-rw-r-- 1 jj jj   5065 huhti  27 17:30 jrr.py
+-rw-rw-r-- 1 jj jj    526 huhti  27 17:31 RELEASES
+-rw-rw-r-- 1 jj jj   5141 huhti  27 17:36 config.py
+-rw-rw-r-- 1 jj jj  22286 huhti  27 17:47 messages.py
+-rw-rw-r-- 1 jj jj     10 huhti  28 08:09 VERSION
+-rw-rw-r-- 1 jj jj  23432 huhti  28 08:33 screen_coro.py
+-rw-rw-r-- 1 jj jj 114829 huhti  28 10:48 jrr_radio.py
+-rw-rw-r-- 1 jj jj  18687 huhti  28 10:56 constants.py
 sending incremental file list
-./
-VERSION
 
-sent 14.878 bytes  received 69 bytes  1.195,76 bytes/sec
-total size is 14.009.809  speedup is 937,30
+sent 14.867 bytes  received 37 bytes  29.808,00 bytes/sec
+total size is 14.117.767  speedup is 947,25
 #+end_example
 
 
@@ -6612,4 +6610,4 @@ sine-gen.sh alsa-devices
 # reftex-default-bibliography: ("./raspberry.bib")
 
 
-Modified:2026-04-28.10:13; # time-stamp
+Modified:2026-04-28.18:44; # time-stamp

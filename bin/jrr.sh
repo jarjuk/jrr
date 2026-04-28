@@ -13,9 +13,15 @@ ALL_LINES=""                # default - only one console line per time tick
 
 # Firmware update configs
 LOCAL_REPO=$HOME/jrr
+INIT_SRC=$LOCAL_REPO/src.init
 PENDING_LINK=$LOCAL_REPO/src.next
 CURRENT_LINK=$LOCAL_REPO/src
 PREV_LINK=$LOCAL_REPO/src.prev
+
+
+# Push buttons
+SW1=19
+SW2=20
 
 
 # ------------------------------------------------------------------
@@ -109,7 +115,7 @@ do_kill() {
 }
 
 # Activate PENDING_LINK (if it exists)
-# - cleanup PREV_LINK and directory it points to
+# - cleanup PREV_LINK (and directory it points to unless src.init)
 # - move CURRENT_LINK to PREV_LINK
 # - deploy PENDING_LINK as CURRENT_LINK
 activate_pending() {
@@ -118,19 +124,41 @@ activate_pending() {
     log 2 "activate_pending: check $PENDING_LINK"
     if [ -L $PENDING_LINK ]; then
         log 1 "activate_pending: $PENDING_LINK exists "
-        log 2 "activate_pending: pre $(ls -ltr $CURRENT_LINK $PENDING_LINK)"
-	# Cleanup PREV_LINK and directory it points to
-	rm -rf $(readlink -f $PREV_LINK)
+        log 1 "activate_pending: pre $(ls -ltr $CURRENT_LINK $PENDING_LINK)"
+
+        local prev_dir=$(readlink -f $PREV_LINK)
+        if [[ "$(baseneme prev_dir)" !=  "$(basename $INIT_SRC)" ]]; then
+	        # Cleanup directory (not if src.init)
+	        rm -rf $(readlink -f $PREV_LINK)
+        fi
         rm -f $PREV_LINK
 
-	# Mark CURRENT as PREV
+	    # Mark CURRENT as PREV
         mv $CURRENT_LINK $PREV_LINK
 
-	# Deploy PENDING as CURRENT
+	    # Deploy PENDING as CURRENT
         mv $PENDING_LINK $CURRENT_LINK
-        log 2 "activate_pending: post $(ls -ltr $CURRENT_LINK $PREV_LINK)"
+        log 1 "activate_pending: post $(ls -ltr $CURRENT_LINK $PREV_LINK)"
     fi 
 }
+
+
+factory_reset() {
+    log 1 "Factory reset started!"
+
+	# Cleanup PREV_LINK and directory it points to
+	rm -rf $(readlink -f $PREV_LINK)
+    rm -f $PREV_LINK
+
+	# Mark CURRENT as PREV
+    mv $CURRENT_LINK $PREV_LINK
+
+    # link INIT_SRC as CURRENT_LINK
+    log 1 "Link INIT_SRC=$INIT_SRC -> CURRENT_LINK=$CURRENT_LINK"
+    ln -s $INIT_SRC $CURRENT_LINK
+    
+}
+
 
 # ------------------------------------------------------------------
 # Starting
@@ -277,9 +305,20 @@ do
 	
         
         daemon)
-            activate_pending
 	        kill_streamer
             do_kill
+
+            # Luetaan GPIO:t (chip yleensä gpiochip0)
+            val_sw1=$(gpioget gpiochip0 $SW1)
+            val_sw2=$(gpioget gpiochip0 $SW2)
+
+            log 1 "SW1[GPIO$SW1]=: $val_sw1, SW2[GPIO$SW2]=: $val_sw2"
+
+            if [[ "val_sw1" -eq 0 && "$val_sw2" -eq 0 ]]; then
+                factory_reset
+            else
+                activate_pending
+            fi            
             log 1 "User '$(whoami)' launching järviradioradio daemon"
             CMD=".venv/bin/python ./jrr.py $JRR_DEBUG radio $ALL_LINES"
             log 1 "User '$(whoami)' runs CMD='$CMD' in directory $(pwd) with PATH='$PATH'"
