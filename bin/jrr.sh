@@ -127,7 +127,7 @@ activate_pending() {
         log 1 "activate_pending: pre $(ls -ltr $CURRENT_LINK $PENDING_LINK)"
 
         local prev_dir=$(readlink -f $PREV_LINK)
-        if [[ "$(baseneme prev_dir)" !=  "$(basename $INIT_SRC)" ]]; then
+        if [[ "$(basename $prev_dir)" !=  "$(basename $INIT_SRC)" ]]; then
 	        # Cleanup directory (not if src.init)
 	        rm -rf $(readlink -f $PREV_LINK)
         fi
@@ -146,16 +146,25 @@ activate_pending() {
 factory_reset() {
     log 1 "Factory reset started!"
 
-	# Cleanup PREV_LINK and directory it points to
-	rm -rf $(readlink -f $PREV_LINK)
-    rm -f $PREV_LINK
+    if [ -d $INIT_SRC ]; then 
 
-	# Mark CURRENT as PREV
-    mv $CURRENT_LINK $PREV_LINK
+	    # Cleanup PREV_LINK and directory it points to
+        local prev_dir=$(readlink -f $PREV_LINK)
+        if [[ "$(basename $prev_dir)" !=  "$(basename $INIT_SRC)" ]]; then
+	        # Cleanup directory (not if src.init)
+	        rm -rf $(readlink -f $PREV_LINK)
+        fi
+        rm -f $PREV_LINK
 
-    # link INIT_SRC as CURRENT_LINK
-    log 1 "Link INIT_SRC=$INIT_SRC -> CURRENT_LINK=$CURRENT_LINK"
-    ln -s $INIT_SRC $CURRENT_LINK
+	    # Mark CURRENT as PREV
+        mv $CURRENT_LINK $PREV_LINK
+
+        # link INIT_SRC as CURRENT_LINK
+        log 1 "Link INIT_SRC=$INIT_SRC -> CURRENT_LINK=$CURRENT_LINK"
+        ln -s $INIT_SRC $CURRENT_LINK
+   else
+       log 1 "Factory reset not possible no INIT_SRC=$INIT_SRC directory!!"      
+   fi
     
 }
 
@@ -308,6 +317,10 @@ do
 	        kill_streamer
             do_kill
 
+            # configure pull-ups
+            raspi-gpio set $SW1 ip pu
+            raspi-gpio set $SW2 ip pu
+            
             # Luetaan GPIO:t (chip yleensä gpiochip0)
             val_sw1=$(gpioget gpiochip0 $SW1)
             val_sw2=$(gpioget gpiochip0 $SW2)
