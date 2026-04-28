@@ -3,10 +3,10 @@
 * Valikkorakenne
 
 #+name: plantuml2-wbs
-#+BEGIN_SRC plantuml :eval no-export :exports results :file pics/jrr-menu.png
+#+BEGIN_SRC plantuml :eval no-export :exports results :file pics/jrr-menu.svg
  @startwbs
  ,* JRR
- ,**:== Radio
+ ,**:== [[../pics-keep/screenshots/jrr-01-radio-stream.png Radio]]
  ==Näyttökentät==
 ,* Radiokanavan nimi
 ,* Radiokanavan ikoni
@@ -37,13 +37,6 @@
  ,**<U+2022><U+00A0><U+00A0>**: Edellinen radiokanava
  ,**<U+2014>** : Takaisin asetukset -valikkoon;
 
-,***: **Poista kaikki kanavat**
- ==Näppäin 1==
- ,**<U+2022><U+00A0><U+00A0>**: Ei käytössä
- ,**<U+2014>** : Poista kaikki radiokanavat
- ==Näppäin 2==
- ,**<U+2022><U+00A0><U+00A0>**: Ei käytössä
- ,**<U+2014>** : Takaisin asetukset -valikkoon;
 
 ,***: **Aktivoi radiokanavia**
  ==Näyttökentät==
@@ -161,7 +154,7 @@ näppäimistöä ei ole kytketty
 #+END_SRC
 
 #+RESULTS: plantuml2-wbs
-[[file:pics/jrr-menu.png]]
+[[file:pics/jrr-menu.svg]]
 
 
 
@@ -198,4 +191,4 @@ näppäimistöä ei ole kytketty
 # reftex-default-bibliography: ("./README.bib")
 
 
-Modified:2025-07-04.08:21; # time-stamp
+Modified:2026-04-28.12:36; # time-stamp
