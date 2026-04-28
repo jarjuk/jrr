@@ -507,13 +507,12 @@ rsync -a --update --verbose --checksum jrr5:tmp/jrr-*png pics-keep/screenshots/
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/jj/work/jrr host 'Leo' on ti 28.4.2026 10.59.08 +0300
+: Running in /home/jj/work/jrr host 'Leo' on ti 28.4.2026 12.44.53 +0300
 : receiving incremental file list
-: jrr-02-setup-main-Ohjelmaversio.png
-: jrr-90-error-Ei päivitettävää.png
+: jrr-02-setup-main-Wifi.png
 : 
-: sent 62 bytes  received 34.692 bytes  69.508,00 bytes/sec
-: total size is 164.239  speedup is 4,73
+: sent 43 bytes  received 20.033 bytes  40.152,00 bytes/sec
+: total size is 317.781  speedup is 15,83
 
 [[file:pics-keep/screenshots]]
 
@@ -2461,4 +2460,4 @@ end
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2026-04-28.10:59; # time-stamp
+Modified:2026-04-28.12:45; # time-stamp

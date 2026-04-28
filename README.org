@@ -159,6 +159,27 @@ näppäimistöä ei ole kytketty
 
 
 
+* Näytöt
+
+** Radion kuuntelu
+
+[[file:pics-keep/screenshots/jrr-01-radio-stream.png]]
+
+** Asetukset
+
+*** Poista kanavia
+
+[[file:pics-keep/screenshots/jrr-02-setup-main-Poista.png]]
+
+
+*** Lisää kanavia
+[[file:pics-keep/screenshots/jrr-02-setup-main-Lisää kanavia.png]]
+
+*** Valitse Wifi -verkko
+
+[[file:pics-keep/screenshots/jrr-02-setup-main-Wifi.png]]
+
+
 * Fin                                                              :noexport:
 
 
@@ -191,4 +212,4 @@ näppäimistöä ei ole kytketty
 # reftex-default-bibliography: ("./README.bib")
 
 
-Modified:2026-04-28.12:36; # time-stamp
+Modified:2026-04-28.12:45; # time-stamp
