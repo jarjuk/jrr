@@ -1,3 +1,4 @@
+#+PROPERTY: header-args+ :var  RELEASE="2"
 #+PROPERTY: header-args+ :var  CONDA_ENV="pyyton3"
 
 * Setup development environment
@@ -516,6 +517,185 @@ rsync -a --update --verbose --checksum jrr5:tmp/jrr-*png pics-keep/screenshots/
 
 [[file:pics-keep/screenshots]]
 
+
+* Firmware
+:PROPERTIES:
+:header-args+: :var  JRR="pi@jrr5.local"
+:header-args+: :var  JRR_DISK="mmcblk0"
+:header-args+: :var  SD_DEV="/dev/sda"
+:END:
+
+** Copy firmware over ssh from ~JRR/dev/JRR_DISK~ to ~firmware/JRR-RELEASE.img.gz~
+
+
+Ensure that JRR_DIR is correct
+#+BEGIN_SRC bash :eval no-export :results output
+  echo "Running in $(pwd) host '$(hostname)' on $(date)"
+  echo JRR_DISK=$JRR_DISK
+  ssh $JRR lsblk
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/jj/work/jrr host 'Leo' on la 16.5.2026 11.44.06 +0300
+: JRR_DISK=mmcblk0
+: NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+: mmcblk0     179:0    0 14.8G  0 disk 
+: |-mmcblk0p1 179:1    0  512M  0 part /boot/firmware
+: `-mmcblk0p2 179:2    0 14.3G  0 part /
+
+
+Pull dev
+
+#+BEGIN_SRC bash :eval no-export :results output
+  echo "Running in $(pwd) host '$(hostname)' on $(date)"
+  ssh $JRR "sudo dd if=/dev/$JRR_DISK bs=4M status=none | gzip -1" > firmware/$JRR-$RELEASE.img.gz  
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/jj/work/jrr host 'Leo' on la 16.5.2026 11.44.24 +0300
+
+Create ~SHA_CHECK~ for check sum
+#+BEGIN_SRC bash :eval no-export :results output
+  echo "Running in $(pwd) host '$(hostname)' on $(date)"
+  SHA_CHECK=firmware/$JRR-$RELEASE.img.gz.sha256
+  ([[ -f  $SHA_CHECK ]] && echo SHA_CHECK=$SHA_CHECK exists - quit ; exit)  || sha256sum firmware/$JRR-$RELEASE.img.gz  | tee $SHA_CHECK
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/jj/work/jrr host 'Leo' on su 17.5.2026 20.10.40 +0300
+: SHA_CHECK=firmware/pi@jrr5.local-2.img.gz.sha256 exists - quit
+
+
+
+#+BEGIN_SRC bash :eval no-export :results output
+  SHA_CHECK=firmware/$JRR-$RELEASE.img.gz.sha256
+  echo "Checking sha256sum in SHA_CHECK=$SHA_CHECK in $(pwd) host '$(hostname)' on $(date)"
+  sha256sum --check $SHA_CHECK
+#+END_SRC
+
+#+RESULTS:
+: Checking sha256sum in SHA_CHECK=firmware/pi@jrr5.local-2.img.gz.sha256 in /home/jj/work/jrr host 'Leo' on su 17.5.2026 20.12.10 +0300
+: firmware/pi@jrr5.local-2.img.gz: OK
+
+
+** Copy ~firmware/JRR-RELEASE.img.gz~ to ~SD_DEV~
+
+Ensure correct SD_DEV
+
+#+BEGIN_SRC bash :eval no-export :results output
+  echo "Running in $(pwd) host '$(hostname)' on $(date)"
+  echo SD_DEV=$SD_DEV
+  lsblk  -o NAME,SIZE,TRAN,RM,MOUNTPOINT $SD_DEV
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/jj/work/jrr host 'Leo' on su 17.5.2026 20.18.16 +0300
+: SD_DEV=/dev/sda
+: NAME    SIZE TRAN RM MOUNTPOINT
+: sda    28,9G usb   1 
+: └─sda1 28,9G       1 /media/jj/3F4A-4CE6
+
+Check:
+- RM=1 → removable device
+- TRAN=usb → often SD card readers appear as USB
+- Size matches your SD card
+
+#+BEGIN_SRC bash :eval no-export :results output  :dir /sudo::
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+dmesg | tail -20
+#+END_SRC
+
+
+
+#+RESULTS:
+#+begin_example
+Running in /root host 'Leo' on Sun May 17 08:16:30 PM EEST 2026
+Running in /root host 'Leo' on Sun May 17 08:16:30 PM EEST 2026
+[121787.016091] usb 3-1.4.4.2.3: New USB device strings: Mfr=1, Product=3, SerialNumber=2
+[121787.016093] usb 3-1.4.4.2.3: Product: Mass Storage Device
+[121787.016095] usb 3-1.4.4.2.3: Manufacturer: Generic
+[121787.016097] usb 3-1.4.4.2.3: SerialNumber: 121F20110712
+[121787.018495] usb-storage 3-1.4.4.2.3:1.0: USB Mass Storage device detected
+[121787.019488] scsi host0: usb-storage 3-1.4.4.2.3:1.0
+[121788.037039] scsi 0:0:0:0: Direct-Access     Mass     Storage Device   1.00 PQ: 0 ANSI: 0 CCS
+[121788.037863] sd 0:0:0:0: Attached scsi generic sg0 type 0
+[121788.145792] sd 0:0:0:0: [sda] 60563456 512-byte logical blocks: (31.0 GB/28.9 GiB)
+[121788.146086] sd 0:0:0:0: [sda] Write Protect is off
+[121788.146097] sd 0:0:0:0: [sda] Mode Sense: 03 00 00 00
+[121788.146297] sd 0:0:0:0: [sda] No Caching mode page found
+[121788.146303] sd 0:0:0:0: [sda] Assuming drive cache: write through
+[121788.167394]  sda: sda1
+[121788.167695] sd 0:0:0:0: [sda] Attached SCSI removable disk
+[121788.425936] audit: type=1107 audit(1779037474.005:587): pid=3020 uid=101 auid=4294967295 ses=4294967295 subj=unconfined msg='apparmor="DENIED" operation="dbus_signal"  bus="system" path="/org/freedesktop/login1" interface="org.freedesktop.DBus.Properties" member="PropertiesChanged" name=":1.10" mask="receive" pid=6273 label="snap.thunderbird.thunderbird" peer_pid=3067 peer_label="unconfined"
+                 exe="/usr/bin/dbus-daemon" sauid=101 hostname=? addr=? terminal=?'
+[121788.455001] audit: type=1107 audit(1779037474.034:588): pid=3020 uid=101 auid=4294967295 ses=4294967295 subj=unconfined msg='apparmor="DENIED" operation="dbus_signal"  bus="system" path="/org/freedesktop/login1" interface="org.freedesktop.DBus.Properties" member="PropertiesChanged" name=":1.10" mask="receive" pid=6273 label="snap.thunderbird.thunderbird" peer_pid=3067 peer_label="unconfined"
+                 exe="/usr/bin/dbus-daemon" sauid=101 hostname=? addr=? terminal=?'
+[122459.112722] perf: interrupt took too long (7803 > 7796), lowering kernel.perf_event_max_sample_rate to 25000
+#+end_example
+
+#+BEGIN_SRC bash :eval no-export :results output  :dir /sudo::
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+sudo fdisk -l ${SD_DEV}
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Running in /root host 'Leo' on Sun May 17 08:18:36 PM EEST 2026
+Disk /dev/sda: 28.88 GiB, 31008489472 bytes, 60563456 sectors
+Disk model: Storage Device  
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x00000000
+
+Device     Boot Start      End  Sectors  Size Id Type
+/dev/sda1        8192 60563455 60555264 28.9G  c W95 FAT32 (LBA)
+#+end_example
+
+#+BEGIN_SRC bash :eval no-export :results output
+  echo "Running in $(pwd) host '$(hostname)' on $(date)"
+  mount | grep $SD_DEV
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/jj/work/jrr host 'Leo' on su 17.5.2026 20.21.34 +0300
+
+
+: Running in /home/jj/work/jrr host 'Leo' on su 17.5.2026 20.20.31 +0300
+: /dev/sda1 on /media/jj/3F4A-4CE6 type vfat (rw,nosuid,nodev,relatime,uid=1000,gid=1000,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,showexec,utf8,flush,errors=remount-ro,uhelper=udisks2)
+
+Unmount ~SD_DEV~
+
+#+BEGIN_SRC bash :eval no-export :results output  :dir /sudo::
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+sudo umount ${SD_DEV}1
+#+END_SRC
+
+#+RESULTS:
+: Running in /root host 'Leo' on Sun May 17 08:21:11 PM EEST 2026
+
+*Warning SD_DISK MUST point to USB disk*
+#+BEGIN_SRC bash :eval no-export :results output  :dir /sudo::
+  echo "Running in $(pwd) host '$(hostname)' on $(date)"
+  ISO_FILE_GZ=/home/jj/work/jrr/firmware/$JRR-$RELEASE.img.gz
+  [[ ! -f "$ISO_FILE_GZ" ]] && echo "No such file ISO_FILE_GZ=$ISO_FILE_GZ - quit"&& exit 1
+  echo ISO_FILE_GZ=$ISO_FILE_GZ
+  echo SD_DEV=$SD_DEV
+  ls -ltr $ISO_FILE_GZ
+  gzip -dc "$ISO_FILE_GZ" | sudo dd of=$SD_DEV bs=4M status=none oflag=sync
+#+END_SRC
+
+#+RESULTS:
+: Running in /root host 'Leo' on Sun May 17 08:52:39 PM EEST 2026
+: ISO_FILE_GZ=/home/jj/work/jrr/firmware/pi@jrr5.local-2.img.gz
+: SD_DEV=/dev/sda
+: -rw-rw-r-- 1 jj jj 1559756800 May 16 12:03 /home/jj/work/jrr/firmware/pi@jrr5.local-2.img.gz
+
+
+
+
 * Issues
 
 ** DONE JRR-DEV-006: Factory reset
@@ -712,7 +892,6 @@ amixer -c Audio scontents
 :   Mono:
 :   Front Left: Playback 175 [100%] [0.00dB] [on]
 :   Front Right: Playback 175 [100%] [0.00dB] [on]
-
 
 * Admin
 ** Os admin
@@ -2359,7 +2538,6 @@ sudo journalctl --user --flush --rotate --vacuum-time=1s
 : Running in /home/pi host 'jrr5' on Wed May 21 14:22:30 EEST 2025
 
 
-
 * Notes                                                            :noexport:
 
 ** Chirp
@@ -2464,4 +2642,4 @@ end
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2026-04-28.19:37; # time-stamp
+Modified:2026-05-18.08:52; # time-stamp

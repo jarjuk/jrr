@@ -281,11 +281,12 @@ cp $ETOOLGERBERS/../02-ngc/$GERB.ngc cad/jyrsi/lattia/.
 
 ** Lattia
 
-- M4 pultin reijät 4 kpl
+1- M4 pultin reijät 4 kpl
   - kumitassun phi 22mm
-  - seinän paksuus 19mm
-  - etäisyys radion reunasta 30mm - 
-  - --> etäisyys lattian reunasta =  30mm-19mm = 11mm
+  - --> etäisyys
+    - sivureunasta: levynpaksuus + tila mutterille = 19mm + 5mm = 24mm
+    - taka/etureunasta: tila mutterille = 5mm 
+  
 
 ** Etuseinä
 
@@ -439,7 +440,7 @@ ls cad/sabluunat
    | JRR-CAD-9  |    1.8.2025 | LaserRengas                           |             | Phi 99.5                               | 101.5              |
    | JRR-CAD-10 | 13.4.2026/1 | Potinkanreikä                         | 19.4.2026/2 | Diameter/10.5                          | Diameter +11m      |
    | JRR-CAD-11 |   13.4.2026 | Kauitin ja potikkalinja               | 19.4.2026/2 | Sijainti alareunassa                   | Keskellä           |
-   | JRR-CAD-12 |   13.4.2026 | Painonappien reijät                   |             |                                        | 4.5 -5mm           |
+   | JRR-CAD-12 |   13.4.2026 | Painonappien reijät                   |             | 3.2mm                                  | 4mm                |
    | JRR-CAD-13 |   23.4.2026 | vert-feed/etu-pls-upotus-millface-6mm | 23.4.2026/2 | 2mm/s                                  | 4mm/s              |
    |------------+-------------+---------------------------------------+-------------+----------------------------------------+--------------------|
 
@@ -953,4 +954,4 @@ drwxr-xr-x 5 jj jj      5 heinä   8 14:03 jyrsi
 # reftex-default-bibliography: ("./jrr-cad.bib")
 
 
-Modified:2026-04-23.08:37; # time-stamp
+Modified:2026-05-08.08:33; # time-stamp

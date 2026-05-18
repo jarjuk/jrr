@@ -1,3 +1,18 @@
+2026-05-16  jj  <jj@Leo>
+
+	* jrr-pcb.org (Release Issues): JRR-17: F1 0.75A
+
+2026-05-15  jj  <jj@Leo>
+
+	* jrr-pcb.org (~kicad-2d~: Create 2d image NAME for SCHEMA_ROOT/SCHEMA_NAME for LAYERS): added
+	(BOM): added images pics/jrr5-fab_f.png, pics/jrr5-fab_b.png
+	(Release Issues): JRR-15, D1/D2 pad sizes
+	(Release Issues): JRR-16, D1/D2 MPN missing
+
+2026-05-04  jj  <jj@Leo>
+
+	* jrr-cad.org (Issues): JRR-CAD-12 tobe 4mm
+
 2026-04-28  jj  <jj@Leo>
 
 	* bin/jrr.sh (debug): added command debug
