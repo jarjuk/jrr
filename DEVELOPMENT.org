@@ -600,10 +600,11 @@ Ensure correct SD_DEV. Check:
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/jj/work/jrr host 'Leo' on to 16.7.2026 16.05.08 +0300
+: Running in /home/jj/work/jrr host 'Leo' on to 16.7.2026 17.20.51 +0300
 : SD_DEV=/dev/sda
-: NAME  SIZE TRAN RM MOUNTPOINT
-: sda  28,9G usb   1 
+: NAME    SIZE TRAN RM MOUNTPOINT
+: sda    29,7G usb   1 
+: └─sda1 29,7G       1 /media/jj/3165-3434
 
 
 
@@ -651,7 +652,8 @@ Check if mounted
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/jj/work/jrr host 'Leo' on to 16.7.2026 16.05.26 +0300
+: Running in /home/jj/work/jrr host 'Leo' on to 16.7.2026 17.20.59 +0300
+: /dev/sda1 on /media/jj/3165-3434 type vfat (rw,nosuid,nodev,relatime,uid=1000,gid=1000,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,showexec,utf8,flush,errors=remount-ro,uhelper=udisks2)
 
 
 : Running in /home/jj/work/jrr host 'Leo' on su 17.5.2026 20.20.31 +0300
@@ -665,17 +667,19 @@ sudo umount ${SD_DEV}1
 #+END_SRC
 
 #+RESULTS:
-: Running in /root host 'Leo' on Wed Jul 15 02:51:49 PM EEST 2026
+: Running in /root host 'Leo' on Thu Jul 16 05:21:06 PM EEST 2026
 
 Check that SD_DEV points to usb device with RM=1 mount 
 #+call: lsblk-conf()
 
 #+RESULTS:
-: Running in /home/jj/work/jrr host 'Leo' on to 16.7.2026 16.12.26 +0300
+: Running in /home/jj/work/jrr host 'Leo' on to 16.7.2026 17.21.10 +0300
 : SD_DEV=/dev/sda
-: NAME  SIZE TRAN RM MOUNTPOINT
-: sda  28,9G usb   1 
+: NAME    SIZE TRAN RM MOUNTPOINT
+: sda    29,7G usb   1 
+: └─sda1 29,7G       1 
 
+Ensure that ISO_FILE is there
 #+BEGIN_SRC bash :eval no-export :results output
 echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
 ISO_FILE_GZ=$FIRMWARE_DIR/JRR-$FIRMWARE_RELEASE.img.gz
@@ -684,7 +688,7 @@ ls -ltr $ISO_FILE_GZ
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/jj/work/jrr for user 'jj' on host 'Leo' on to 16.7.2026 16.10.25 +0300
+: Running in /home/jj/work/jrr for user 'jj' on host 'Leo' on to 16.7.2026 17.21.15 +0300
 : ISO_FILE_GZ=/home/jj/work/jrr/firmware/JRR-3.img.gz
 : -rw-rw-r-- 1 jj jj 1559679005 heinä  16 16:00 /home/jj/work/jrr/firmware/JRR-3.img.gz
 
@@ -2665,4 +2669,4 @@ end
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2026-07-16.16:50; # time-stamp
+Modified:2026-07-16.17:21; # time-stamp
