@@ -224,6 +224,8 @@ class APP_CONTEXT:
         Path.home(), "tmp")
     APP_SNAPSHOT = APP_TEMP
 
+    USE_LGPIO = True   # = new (default), =not using direct GPIO 
+
     # STREAMER_SCRIPT = Path.home() / "src/jrr_streamer.sh"
     STREAMER_SCRIPT = os.path.join(
         DEFAULT_FIRMWARE_LOCAL_ROOT, "src", "jrr_streamer.sh")

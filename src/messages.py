@@ -636,6 +636,7 @@ def message_button(button: int, long_press: bool):
     :return: MsgButton
     """
     # return f"{button}={short_or_long}"
+    logger.debug("message_button: button='%s', long_press='%s'", button, long_press)
     msg = message_create(message_type=TOPICS.GPIO_MESSAGES.GPIO,
                          d={
                              "button": button,

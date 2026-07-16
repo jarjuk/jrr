@@ -1,10 +1,5 @@
 """Co-routines for GPIO management
 """
-try:
-    from RPi import GPIO
-except ModuleNotFoundError:
-    pass
-
 
 import logging
 
@@ -14,9 +9,20 @@ from typing import List
 from functools import partial
 
 from .publish_subsrcibe import Hub
-from .constants import RPI, TOPICS
+from .constants import RPI, TOPICS, APP_CONTEXT
 from .messages import message_button, message_halt
 from .utils import send_dmesg
+
+if APP_CONTEXT.USE_LGPIO:
+    from gpiozero import Device, Button
+    from gpiozero.pins.lgpio import LGPIOFactory
+    Device.pin_factory = LGPIOFactory()
+else:
+    try:
+        from RPi import GPIO
+    except ModuleNotFoundError:
+        pass
+
 
 # semafore = asyncio.Semaphore(0)
 # semafore_msg = bytearray(200)
@@ -52,19 +58,36 @@ def _button_callback_hub_topic(button, hub: Hub, topic, loop):
     """Send message on 'topic' on data controller 'hub'."""
     msg = None
     now = datetime.datetime.now()
-    if not GPIO.input(button):
-        # button pressed - start timer
-        button_long_short[button] = now
+    start_now = None
+
+    # LGPIO/GPIO
+    if APP_CONTEXT.USE_LGPIO:
+        logging.debug("callback: USE_LGPIO button: %s, pressed: %s, now: %s",
+                      button, button.is_pressed, now, )
+        button_pin = button.pin.number
+        if button.is_pressed:
+            start_now = now
+    else:
+        button_pin = button
+        if GPIO.input(button):
+            # button pressed - start timer
+            start_now = now
+
+    # Button pushed+timer started OR released
+    if start_now is not None:
+        button_long_short[button] = start_now
     else:
         # button relaesed --> create msg
         diff = now - button_long_short[button]
+        long_press = diff.total_seconds() > RPI.LONG_PRESS_S
         msg = message_button(
-            button,
-            long_press=diff.total_seconds() > RPI.LONG_PRESS_S
+            button_pin,
+            long_press=long_press
         )
 
-        logging.debug("callback: button: %s, now: %s, prev: %s diff: %s",
-                      button, now, button_long_short[button], diff)
+        logging.debug(
+            "callback: button: %s, now: %s, prev: %s diff: %s, long: %s",
+            button, now, button_long_short[button], diff, long_press)
 
     # Something to publish?
     if msg is not None:
@@ -79,7 +102,11 @@ def _shutdown_input_handler(button, hub: Hub, topic, loop):
     Log message to kerner and send shutdown message to 'topic'.
     """
 
-    button_state = GPIO.input(button)
+    button_state = None
+    if APP_CONTEXT.USE_LGPIO:
+        button_state = button.is_pressed
+    else:
+        button_state = GPIO.input(button)
 
     logger.warning("_shutdown_input_handler: button='%s', button_state: %s",
                    button, button_state)
@@ -96,8 +123,52 @@ def _shutdown_input_handler(button, hub: Hub, topic, loop):
 
 def gpio_init():
     """Common init for all GPIO stuff."""
-    logger.info("gpio_init: setmode GPIO.BCM")
-    GPIO.setmode(GPIO.BCM)
+    if not APP_CONTEXT.USE_LGPIO:
+        # Deprecated: using GPIO
+        logger.info("gpio_init: setmode GPIO.BCM")
+        GPIO.setmode(GPIO.BCM)
+
+
+def _init_GPIO_old(buttons: List,
+                   hub: Hub, topic: str, loop):
+    """Depaced version on old os"""
+    # GPIO.setmode(GPIO.BCM)
+    button_callback = partial(
+        _button_callback_hub_topic, hub=hub, topic=topic, loop=loop)
+    for button in buttons:
+        logger.info("init_GPIO_buttons: button='%s'", button)
+        GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        # init slot for detecting long/short press for button
+        button_long_short[button] = 0
+        GPIO.add_event_detect(button, GPIO.BOTH,
+                              callback=button_callback, bouncetime=50)
+
+
+def _init_GPIO_new(buttons: List,
+                   hub: Hub, topic: str, loop):
+    """New version using gpiozero and LGPIOFactory os"""
+    button_callback = partial(
+        _button_callback_hub_topic, hub=hub, topic=topic, loop=loop)
+
+    for button in buttons:
+        logger.info("init_GPIO_buttons: button='%s'", button)
+        # GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        btn = Button(
+            button,
+            pull_up=True,
+            bounce_time=0.05
+        )
+
+        # init slot for detecting long/short press for button
+        button_long_short[button] = 0
+
+        # GPIO.add_event_detect(button, GPIO.BOTH,
+        #                       callback=button_callback, bouncetime=50)
+        btn.when_pressed = lambda b=btn: \
+            button_callback(b)
+
+        btn.when_released = lambda b=btn: \
+            button_callback(b)
 
 
 def init_GPIO_buttons(buttons: List, hub: Hub, topic: str, loop
@@ -123,27 +194,14 @@ def init_GPIO_buttons(buttons: List, hub: Hub, topic: str, loop
     -----
 
     """
-
-    # GPIO.setmode(GPIO.BCM)
-    button_callback = partial(
-        _button_callback_hub_topic, hub=hub, topic=topic, loop=loop)
-    for button in buttons:
-        logger.info("init_GPIO_buttons: button='%s'", button)
-        GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        # init slot for detecting long/short press for button
-        button_long_short[button] = 0
-        GPIO.add_event_detect(button, GPIO.BOTH,
-                              callback=button_callback, bouncetime=50)
+    if APP_CONTEXT.USE_LGPIO:
+        _init_GPIO_new(buttons, hub, topic, loop)
+    else:
+        _init_GPIO_old(buttons, hub, topic, loop)
 
 
-def init_GPIO_shutdown(button: int, hub: Hub, topic: str, loop):
-    """Init shutdown action shutdown 'button' (=volume knob).
-
-    :return: true if  succesfull
-    """
-    logger.info("init_GPIO_shutdown: button='%s'", button)
+def _init_GPIO_shutdown_old(button: int, hub: Hub, topic: str, loop):
     GPIO.setup(button, GPIO.IN)
-
     button_state = GPIO.input(button)
     if button_state:
         logger.warning(
@@ -159,9 +217,37 @@ def init_GPIO_shutdown(button: int, hub: Hub, topic: str, loop):
         callback=button_callback, bouncetime=500)
     return True
 
+
+def _init_GPIO_shutdown_new(button: int, hub: Hub, topic: str, loop):
+    button_callback = partial(
+        _shutdown_input_handler, hub=hub, topic=topic, loop=loop)
+    btn = Button(
+        button,
+        bounce_time=0.05
+    )
+    btn.when_pressed = lambda b=btn: \
+        button_callback(b)
+
+    return True
+
+
+def init_GPIO_shutdown(button: int, hub: Hub, topic: str, loop):
+    """Init shutdown action shutdown 'button' (=volume knob).
+
+    :return: true if  succesfull
+    """
+    logger.info("init_GPIO_shutdown: button='%s'", button)
+    if APP_CONTEXT.USE_LGPIO:
+        return _init_GPIO_shutdown_new(button, hub, topic, loop)
+    else:
+        return _init_GPIO_shutdown_old(button, hub, topic, loop)
+
+
 def gpio_close():
     logger.info("Close GPIO_buttons")
-    GPIO.cleanup()
+    if not APP_CONTEXT.USE_LGPIO:
+        # Depcreated using GPIO
+        GPIO.cleanup()
 
 
 async def GPIO_button_coro(name: str, hub: Hub, topic: str):

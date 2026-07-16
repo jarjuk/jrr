@@ -1,3 +1,24 @@
+2026-07-16  jj  <jj@Leo>
+
+	* DEVELOPMENT.org (Install
+	~firmware/JRR-$FIRMAWARE_RELEASE.img.gz~ on ~SD_DEV~): using
+	#+PROPERTY: FIRMWARE_RELEASE="3"
+
+	* raspberry.org: FIRMWARE_RELEASE="3"
+
+2026-05-19  jj  <jj@Leo>
+
+	* src/jrr_streamer.sh (init_ALSA_CARD): Added + set ALSA_CARD empty
+
+	* src/gpio_coro.py: use
+
+	* src/constants.py (APP_CONTEXT): added USE_LGPIO
+
+	* bin/jrr.sh (LOCAL_REPO): running $LOCAL_REPO/jrr.py, trap on
+	errors, using replace raspi-gpio with pinctrl
+
+	* src/dscreen.py (DApp.activateScreen): Fixed field comrehension in error list
+
 2026-05-16  jj  <jj@Leo>
 
 	* jrr-pcb.org (Release Issues): JRR-17: F1 0.75A

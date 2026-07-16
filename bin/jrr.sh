@@ -2,9 +2,39 @@
 # Järviradioradion management script
 
 # ------------------------------------------------------------------
+# traps
+
+#set -eE
+# set -eou pipefail
+set -eE
+
+trap 'err_report $? $LINENO' ERR 
+# trap 'err_report $? $LINENO' EXIT
+trap terminator TERM
+
+err_report() {
+    if [ $1 != 0 ]; then
+        echo "$0, exiting error $1 from line $2"
+        log 1 "$0, exiting error $1 from line $2"
+        exit $1
+    else 
+        echo "$0, exiting normally from line $2"
+    fi
+    exit $1
+}
+
+terminator() {
+    pkill -TERM -P $!
+    log 1 "Terminated"
+    exit 0
+}
+
+
+# ------------------------------------------------------------------
 # Default confits
 VERSION=0.2
-DEBUG=1                     # log verbosity
+DEBUG=1                     # default log verbosity
+# DEBUG=4                   # debug log verbosity
 # JRR_LOG=                  # default daemon output not save to log file
 JRR_DEBUG=""                # default WARNING, more -v's --> more output
 # JRR_DEBUG="-v -v"  
@@ -79,7 +109,7 @@ error_msg() {
 }
 
 kill_streamer() {
-    killall ffmpeg
+   killall ffmpeg || true
 }
 
 
@@ -105,7 +135,7 @@ do_stop() {
 }
 
 do_kill() {
-    JRR_PID=$(pgrep -f jrr.py)
+    JRR_PID=$(pgrep -f jrr.py || true)
     if [ ! -z "$JRR_PID" ]; then
         log 1 "do_kill: $JRR_ID still running - SIGKILL (-9)"
         kill -9 $JRR_PID
@@ -285,31 +315,31 @@ do
         status)
             # (set -x; ps -ef | grep -e jrr -e ffmpeg -e python )
 
-            P=$(ps -ef | grep 'jrr.sh daemon'  | grep -v grep)
-            ISTAT2=$?
+            P=$(ps -ef | grep 'jrr.sh daemon'  | grep -v grep || true)
+            ISTAT2=$([ -n "$P" ] && echo "OK" || echo "NOK")
             echo "jrr.sh: status=$ISTAT2/$P"            
             
-            P=$(ps -ef | grep jrr.py  | grep -v grep)
-            ISTAT3=$?
+            P=$(ps -ef | grep jrr.py  | grep -v grep || true)
+            ISTAT3=$([ -n "$P" ] && echo "OK" || echo "NOK")            
             echo "jrr.py: status=$ISTAT3/$P"
 
-	        P=$(ps -ef | grep ffmpeg | grep -v grep)
-            ISTAT1=$?
+	        P=$(ps -ef | grep ffmpeg | grep -v grep || true)
+            ISTAT1=$([ -n "$P" ] && echo "OK" || echo "NOK")            
             echo "ffmpeg: status=$ISTAT1/$P"
             
-            if [ $ISTAT3 != 0  ]; then
-                exit $ISTAT3
+            if [ $ISTAT3 != "OK"  ]; then
+                exit 3
             fi
-            if [ $ISTAT2 != 0  ]; then
-                exit $ISTAT2
+            if [ $ISTAT2 != "OK"  ]; then
+                exit 2
             fi
-            if [ $ISTAT1 != 0 ]; then
-                exit $ISTAT1
+            if [ $ISTAT1 != "OK" ]; then
+                exit 1
             fi
 	    ;;
 
         debug)
-            .venv/bin/python ./jrr.py -v -v radio --screen-shots 
+            .venv/bin/python $LOCAL_REPO/jrr.py -v -v radio --screen-shots 
 	    ;;
 	
         
@@ -318,22 +348,29 @@ do
             do_kill
 
             # configure pull-ups
-            raspi-gpio set $SW1 ip pu
-            raspi-gpio set $SW2 ip pu
+            if command -v raspi-gpio >/dev/null 2>&1; then
+                raspi-gpio set $SW1 ip pu
+                raspi-gpio set $SW2 ip pu
+            else
+                # fallback to libgpiod tools
+                pinctrl set $SW1 ip pu
+                pinctrl set $SW2 ip pu
+            fi            
             
             # Luetaan GPIO:t (chip yleensä gpiochip0)
-            val_sw1=$(gpioget gpiochip0 $SW1)
-            val_sw2=$(gpioget gpiochip0 $SW2)
+            val_sw1=$(gpioget --chip gpiochip0 $SW1)
+            val_sw2=$(gpioget --chip gpiochip0 $SW2)
 
             log 1 "SW1[GPIO$SW1]=: $val_sw1, SW2[GPIO$SW2]=: $val_sw2"
 
-            if [[ "val_sw1" -eq 0 && "$val_sw2" -eq 0 ]]; then
+            if [[ "val_sw1"="$SW1=active" && "$val_sw2"="$SW2=active" ]]; then
                 factory_reset
             else
+                # Activate pending - if any
                 activate_pending
             fi            
             log 1 "User '$(whoami)' launching järviradioradio daemon"
-            CMD=".venv/bin/python ./jrr.py $JRR_DEBUG radio $ALL_LINES"
+            CMD=".venv/bin/python $LOCAL_REPO/jrr.py $JRR_DEBUG radio $ALL_LINES"
             log 1 "User '$(whoami)' runs CMD='$CMD' in directory $(pwd) with PATH='$PATH'"
             trap shutdown SIGTERM
             $CMD 2>&1 &

@@ -563,7 +563,7 @@ class DApp:
             try:
                 fieldValue = self.currentScreen.fieldByName(name=init_value[0])
             except StopIteration as ex:
-                msg = f"No such field {init_value[0]} - in {f.name for f in self.currentScreen.fieldValues}"
+                msg = f"No such field {init_value[0]} - in {[f.name for f in self.currentScreen.fieldValues]}"
                 logger.error("activateScreen: msg='%s'", msg)
                 raise KeyError(msg)
             fieldValue.value = init_value[1]

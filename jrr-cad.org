@@ -410,14 +410,23 @@ ls -ltr cad/laseroinnit/LaseroiPotikka*
 Hakemistossa [[file:cad/sabluunat]] olevat maalaussabluunat
 
 #+BEGIN_SRC bash :eval no-export :results output :exports results
-ls cad/sabluunat
+ls -lt cad/sabluunat
 #+END_SRC
 
 #+RESULTS:
-: JussiSalmiakki.dxf
-: JussiSalmiakki.jpg
-: JussiSalmiakki.pdf
-: JussiSalmiakki.svg
+#+begin_example
+total 328
+-rw-r--r-- 1 jj jj  16152 heinä  13 13:07 salmiakki-ok4.cst
+-rw-r--r-- 1 jj jj  16710 touko  25 13:57 salmiakki-ok3.cst
+-rw-r--r-- 1 jj jj  16710 touko  25 12:49 salmiakki-ok2.cst
+-rw-r--r-- 1 jj jj  12518 touko  25 12:30 salmiakki-ok.cst
+-rw-rw-r-- 1 jj jj   6617 huhti  19 16:54 raspberry-hat-mask.pdf
+-rw-r--r-- 1 jj jj  25130 heinä  30  2025 salmiakki.cst
+-rw-r--r-- 1 jj jj  33980 helmi  19  2020 JussiSalmiakki.jpg
+-rw-rw-r-- 1 jj jj   3572 helmi  19  2020 JussiSalmiakki.pdf
+-rw-rw-r-- 1 jj jj  18932 helmi  19  2020 JussiSalmiakki.dxf
+-rw-r--r-- 1 jj jj 160286 helmi  19  2020 JussiSalmiakki.svg
+#+end_example
 
 
 #+CAPTION: JussiSalmiakki
@@ -497,58 +506,100 @@ total 55
 
 #+RESULTS:
 #+begin_example
-Running in /home/jj/work/jrr host 'Leo' on to 23.4.2026 08.37.51 +0300
+Running in /home/jj/work/jrr host 'Leo' on ma 13.7.2026 15.03.19 +0300
 DRY_RUN=0
 sync SUB_FOLDER=pics
 sending incremental file list
+./
+jrr-menu.png
+jrr-menu.svg
+jrr5-fab_b.png
+jrr5-fab_f.png
+jrr5.grb
+jrr5.png
 
-sent 383 bytes  received 28 bytes  822,00 bytes/sec
-total size is 740.523  speedup is 1.801,76
+sent 637.788 bytes  received 142 bytes  255.172,00 bytes/sec
+total size is 1.200.083  speedup is 1,88
 sending incremental file list
+./
 
-sent 321 bytes  received 12 bytes  666,00 bytes/sec
-total size is 740.523  speedup is 2.223,79
-744K	/media/jj/jj/jrr/pics
-744K	pics
+sent 494 bytes  received 25 bytes  1.038,00 bytes/sec
+total size is 1.200.083  speedup is 2.312,30
+1,2M	/media/jj/jj/jrr/pics
+1,2M	pics
 sync SUB_FOLDER=pics-keep
 sending incremental file list
+./
+screenshots/
+screenshots/jrr-01-radio-stream.png
+screenshots/jrr-02-setup-main-Lisää kanavia.png
+screenshots/jrr-02-setup-main-Näppis.png
+screenshots/jrr-02-setup-main-Ohjelmaversio.png
+screenshots/jrr-02-setup-main-Poista.png
+screenshots/jrr-02-setup-main-Reboot.png
+screenshots/jrr-02-setup-main-Wifi.png
+screenshots/jrr-03-channel-activate-WNRVbluegrass.png
+screenshots/jrr-03-channel-browse-Järviradio.png
+screenshots/jrr-03-channel-origin-channel-setup.png
+screenshots/jrr-03-firmware-update-0.0.8-rc02.png
+screenshots/jrr-03-keyboard-config-Hakemisto.png
+screenshots/jrr-03-keyboard-config-Näytön kierto.png
+screenshots/jrr-03-keyboard-config-Wifi.png
+screenshots/jrr-03-wifi-list-koolinki.png
+screenshots/jrr-04-channel-activate-WNRVbluegrass.png
+screenshots/jrr-04-channel-activate-confirm-actvate.png
+screenshots/jrr-04-channel-browse-delete-confirm-delete.png
+screenshots/jrr-04-firmware-update-confirm-activate.png
+screenshots/jrr-04-wifi-choose-wifi-setup.png
+screenshots/jrr-04-wifi-setup-wifi-setup.png
+screenshots/jrr-05-channel-activate-confirm-actvate.png
+screenshots/jrr-90-error-Ei päivitettävää.png
 
-sent 197 bytes  received 19 bytes  432,00 bytes/sec
-total size is 373.965  speedup is 1.731,32
+sent 464.537 bytes  received 467 bytes  186.001,60 bytes/sec
+total size is 835.806  speedup is 1,80
 sending incremental file list
+./
+screenshots/
 
-sent 180 bytes  received 12 bytes  384,00 bytes/sec
-total size is 373.965  speedup is 1.947,73
-376K	/media/jj/jj/jrr/pics-keep
-376K	pics-keep
+sent 1.419 bytes  received 23 bytes  2.884,00 bytes/sec
+total size is 835.806  speedup is 579,62
+500K	/media/jj/jj/jrr/pics-keep/screenshots
+876K	/media/jj/jj/jrr/pics-keep
+500K	pics-keep/screenshots
+876K	pics-keep
 sync SUB_FOLDER=cad
 sending incremental file list
 ./
-jrr5.20260422-192531.FCBak
+jrr5.20260423-083345.FCBak
 jrr5.FCStd
 jrr5.nc
-jyrsi/etu/
-jyrsi/etu/etu-pls-upotus-millface-6mm-rel02.ngc
+laseroinnit/
 
-sent 638.877 bytes  received 205 bytes  1.278.164,00 bytes/sec
-total size is 2.077.644  speedup is 3,25
+sent 638.775 bytes  received 188 bytes  425.975,33 bytes/sec
+total size is 2.081.430  speedup is 3,26
 sending incremental file list
 jrr5.20260421-200806.FCBak
+jrr5.20260422-192531.FCBak
+laseroinnit/rengas-kehys-potikka.lbrn2
+sabluunat/salmiakki-ok.cst
+sabluunat/salmiakki-ok2.cst
+sabluunat/salmiakki-ok3.cst
+sabluunat/salmiakki-ok4.cst
 
-sent 319.850 bytes  received 60 bytes  639.820,00 bytes/sec
-total size is 2.393.560  speedup is 7,48
+sent 721.170 bytes  received 185 bytes  1.442.710,00 bytes/sec
+total size is 2.798.086  speedup is 3,88
 20K	/media/jj/jj/jrr/cad/3D
 228K	/media/jj/jj/jrr/cad/jyrsi
-312K	/media/jj/jj/jrr/cad/laseroinnit
+340K	/media/jj/jj/jrr/cad/laseroinnit
 816K	/media/jj/jj/jrr/cad/pages
-260K	/media/jj/jj/jrr/cad/sabluunat
-2,6M	/media/jj/jj/jrr/cad
+332K	/media/jj/jj/jrr/cad/sabluunat
+3,0M	/media/jj/jj/jrr/cad
 228K	cad/jyrsi
-260K	cad/sabluunat
+332K	cad/sabluunat
 20K	cad/3D
 816K	cad/pages
-312K	cad/laseroinnit
-2,6M	cad
+340K	cad/laseroinnit
+3,0M	cad
 #+end_example
 
 
@@ -954,4 +1005,4 @@ drwxr-xr-x 5 jj jj      5 heinä   8 14:03 jyrsi
 # reftex-default-bibliography: ("./jrr-cad.bib")
 
 
-Modified:2026-05-08.08:33; # time-stamp
+Modified:2026-07-13.15:05; # time-stamp

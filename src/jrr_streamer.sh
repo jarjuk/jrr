@@ -60,8 +60,8 @@ GAIN=1.5
 LOCAL_REPO=$HOME/jrr/
 PENDING_LINK=$LOCAL_REPO/src.next
 
-# parameter for amixer -c ALSA_CARD
-ALSA_CARD="Audio"
+# parameter for amixer -c ALSA_CARD (empty locate automagically)
+ALSA_CARD=""
 
 # default volume on ALSA_CARD
 ALSA_VOLUME="95%"
@@ -156,6 +156,10 @@ init_audio_out() {
         AUDIO_OUT=$(aplay -L | grep '^hw:CARD=SE') || : 
     fi
     if [ -z "$AUDIO_OUT" ]; then
+        log 3 "Trying aplay -L | grep '^hw:CARD=DAC' for AUDIO_OUT"    
+        AUDIO_OUT=$(aplay -L | grep '^hw:CARD=DAC') || : 
+    fi
+    if [ -z "$AUDIO_OUT" ]; then
         log 3 "Trying aplay -L | grep '^hw:CARD=Headphones' for AUDIO_OUT"    
         AUDIO_OUT=$(aplay -L | grep '^hw:CARD=Headphones') || : 
     fi
@@ -164,6 +168,19 @@ init_audio_out() {
     fi
     log 2 "init_audio_out: done AUDIO_OUT='$AUDIO_OUT'"
 
+}
+
+init_ALSA_CARD() {
+    log 1 "init_ALSA_CARD: starting with ALSA_CARD='$ALSA_CARD'"
+    if [ -z "$ALSA_CARD" ]; then
+        log 3 "init_ALSA_CARD: try USB-Audio in /proc/asound/cards"    
+        ALSA_CARD=$(awk -F'[][]' '/USB-Audio/ {print $2}' /proc/asound/cards)
+    fi
+    if [ -z "$ALSA_CARD" ]; then
+        log 3 "init_ALSA_CARD: try USB in /proc/asound/cards"    
+        ALSA_CARD=$(awk -F'[][]' '/USB/ {print $2}' /proc/asound/cards)
+    fi
+    log 1 "init_ALSA_CARD: done with ALSA_CARD='$ALSA_CARD'"
 }
 
 set_alsa_volume() {
@@ -476,8 +493,10 @@ do
             ;;
 
         stream)
+            # try to set ALSA_CARD if not set
+            init_ALSA_CARD
             #  Set volume  on ALSA device
-            set_alsa_volume $ALSA_CARD $ALSA_VOLUME
+            set_alsa_volume "$ALSA_CARD" "$ALSA_VOLUME"
             echo "Running in host '$(hostname)' on $(date)"
             [[ -z "$FILE" ]] && (FILE="$1"; shift)
             URL=$FILE
