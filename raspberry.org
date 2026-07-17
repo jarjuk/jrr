@@ -2,7 +2,7 @@
 #PROPERTY: header-args+ :var  JRR5_IP="jrr5.local"
 #+PROPERTY: header-args+ :var  JRR5_IP="jrr5x.local"
 #+PROPERTY: header-args+ :var  CONDA_ENV="pyyton3"
-#+PROPERTY: header-args+ :var  FIRMWARE_RELEASE="4"
+#+PROPERTY: header-args+ :var  FIRMWARE_RELEASE="5"
 
 Somewhat dirtyish trick to be able to tangle files pointed by a global property.
 
@@ -376,7 +376,9 @@ mount | grep $SD_DEV
 #+name: umount-sd-dev
 #+BEGIN_SRC bash :eval no-export :results output  :dir /sudo::
 echo "Running in $(pwd) host '$(hostname)' on $(date)"
-sudo umount ${SD_DEV}*
+sudo umount ${SD_DEV}1
+sudo umount ${SD_DEV}2
+sudo umount ${SD_DEV}3
 #+END_SRC
 
 #+RESULTS: umount-sd-dev
@@ -8762,13 +8764,16 @@ Should not exist
 :header-args+: :var  FILE="/etc/systemd/journald.conf"
 :END:
 
+
+Modify configuration file
+
 #+BEGIN_SRC bash :eval no-export :results output
 echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
 echo "FILE=$FILE"
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/pi for user 'pi' on host 'jrr5x' on Thu Jul 16 10:18:07 EEST 2026
+: Running in /home/pi for user 'pi' on host 'jrr5x' on Fri Jul 17 21:23:51 EEST 2026
 : FILE=/etc/systemd/journald.conf
 
 
@@ -8840,73 +8845,17 @@ FILE=/etc/systemd/journald.conf
 #Audit=yes
 #+end_example
 
+#+call: journald-cnf()
 
-#+begin_example
-Running in /home/pi for user 'pi' on host 'jrr5' on Tue May 19 21:44:08 EEST 2026
-FILE=/etc/systemd/journald.conf
--rw-r--r-- 1 root root 1429 Sep  3  2025 /etc/systemd/journald.conf
-#  This file is part of systemd.
-#
-#  systemd is free software; you can redistribute it and/or modify it under the
-#  terms of the GNU Lesser General Public License as published by the Free
-#  Software Foundation; either version 2.1 of the License, or (at your option)
-#  any later version.
-#
-# Entries in this file show the compile time defaults. Local configuration
-# should be created by either modifying this file (or a copy of it placed in
-# /etc/ if the original file is shipped in /usr/), or by creating "drop-ins" in
-# the /etc/systemd/journald.conf.d/ directory. The latter is generally
-# recommended. Defaults can be restored by simply deleting the main
-# configuration file and all drop-ins located in /etc/.
-#
-# Use 'systemd-analyze cat-config systemd/journald.conf' to display the full config.
-#
-# See journald.conf(5) for details.
+#+RESULTS:
+: Show relevant journald configs in /home/pi for user 'pi' on host 'jrr5x' on Fri Jul 17 21:25:48 EEST 2026
+: #Storage=auto
+: #RuntimeMaxUse=
+: #RuntimeMaxFileSize=
+: #MaxRetentionSec=0
 
-[Journal]
-#Storage=auto
-#Compress=yes
-#Seal=yes
-#SplitMode=uid
-#SyncIntervalSec=5m
-#RateLimitIntervalSec=30s
-#RateLimitBurst=10000
-#SystemMaxUse=
-#SystemKeepFree=
-#SystemMaxFileSize=
-#SystemMaxFiles=100
-#RuntimeMaxUse=
-#RuntimeKeepFree=
-#RuntimeMaxFileSize=
-#RuntimeMaxFiles=100
-#MaxRetentionSec=0
-#MaxFileSec=1month
-#ForwardToSyslog=no
-#ForwardToKMsg=no
-#ForwardToConsole=no
-#ForwardToWall=yes
-#TTYPath=/dev/console
-#MaxLevelStore=debug
-#MaxLevelSyslog=debug
-#MaxLevelKMsg=notice
-#MaxLevelConsole=info
-#MaxLevelWall=emerg
-#MaxLevelSocket=debug
-#LineMax=48K
-#ReadKMsg=yes
-#Audit=yes
-#+end_example
 
-#+name: journald-cnf
-#+BEGIN_SRC bash :eval no-export :results output
-echo "Show relevant journald configs in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
-grep Storage $FILE
-grep RuntimeMaxUse $FILE
-grep RuntimeMaxFileSize $FILE
-grep MaxRetentionSec $FILE
-#+END_SRC
-
-#+RESULTS: journald-cnf
+Expect unhardened initial values
 : Running in /home/pi for user 'pi' on host 'jrr5x' on Thu Jul 16 10:18:44 EEST 2026
 : #Storage=auto
 : #RuntimeMaxUse=
@@ -8914,20 +8863,7 @@ grep MaxRetentionSec $FILE
 : #MaxRetentionSec=0
 
 
-: Running in /home/pi for user 'pi' on host 'jrr5' on Wed Jul 15 15:04:26 EEST 2026
-: #Storage=auto
-: #RuntimeMaxUse=
-: #RuntimeMaxFileSize=
-: #MaxRetentionSec=
-
-
-: Running in /home/pi for user 'pi' on host 'jrr5' on Tue May 19 21:46:40 EEST 2026
-: #Storage=auto
-: #RuntimeMaxUse=
-: #RuntimeMaxFileSize=
-: #MaxRetentionSec=0
-
-
+Harden journald configuration
 
 #+BEGIN_SRC bash :eval no-export :results output
 echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
@@ -8941,23 +8877,50 @@ sudo sed -i.back \
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/pi for user 'pi' on host 'jrr5x' on Thu Jul 16 10:19:13 EEST 2026
+: Running in /home/pi for user 'pi' on host 'jrr5x' on Fri Jul 17 21:26:33 EEST 2026
 
+Expect values have changed
 #+call: journald-cnf()
 
 #+RESULTS:
-: Show relevant journald configs in /home/pi for user 'pi' on host 'jrr5x' on Thu Jul 16 10:20:12 EEST 2026
+: Show relevant journald configs in /home/pi for user 'pi' on host 'jrr5x' on Fri Jul 17 21:27:03 EEST 2026
 : Storage=volatile
 : RuntimeMaxUse=50M
 : RuntimeMaxFileSize=10M
 : MaxRetentionSec=1day
 
-
+Expected values
 : Running in /home/pi for user 'pi' on host 'jrr5' on Tue May 19 21:50:59 EEST 2026
 : Storage=volatile
 : RuntimeMaxUse=50M
 : RuntimeMaxFileSize=10M
 : MaxRetentionSec=1day
+
+Show differences to original
+#+call: diff-FILE()
+
+#+RESULTS:
+#+begin_example
+Running in /home/pi host 'jrr5x' on Fri Jul 17 21:32:49 EEST 2026
+FILE_ORIG=/etc/systemd/journald.conf.back, FILE=/etc/systemd/journald.conf
+20c20
+< Storage=volatile
+---
+> #Storage=auto
+31c31
+< RuntimeMaxUse=50M
+---
+> #RuntimeMaxUse=
+33c33
+< RuntimeMaxFileSize=10M
+---
+> #RuntimeMaxFileSize=
+35c35
+< MaxRetentionSec=1day
+---
+> #MaxRetentionSec=0
+Files  /etc/systemd/journald.conf and  /etc/systemd/journald.conf.back NOT equal
+#+end_example
 
 ** Noatime in ext4 mounts
 :PROPERTIES:
@@ -8970,7 +8933,7 @@ echo "FILE=$FILE"
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/pi for user 'pi' on host 'jrr5x' on Thu Jul 16 10:20:20 EEST 2026
+: Running in /home/pi for user 'pi' on host 'jrr5x' on Fri Jul 17 21:33:15 EEST 2026
 : FILE=/etc/fstab
 
 #+BEGIN_SRC bash :eval no-export :results output
@@ -8982,48 +8945,30 @@ cat $FILE
 
 #+RESULTS:
 #+begin_example
-Running in /home/pi for user 'pi' on host 'jrr5x' on Thu Jul 16 10:20:43 EEST 2026
+Running in /home/pi for user 'pi' on host 'jrr5x' on Fri Jul 17 21:33:34 EEST 2026
 FILE=/etc/fstab
--rw-r--r-- 1 root root 682 Jul 15 20:19 /etc/fstab
+-rw-r--r-- 1 root root 625 Jul 16 19:01 /etc/fstab
 proc            /proc           proc    defaults          0       0
-PARTUUID=659644ac-01  /boot/firmware  vfat    defaults          0       2
-PARTUUID=659644ac-02  /               ext4    defaults,noatime  0       1
+PARTUUID=0249d47d-01  /boot/firmware  vfat    defaults          0       2
+PARTUUID=0249d47d-02  /               ext4    defaults,noatime  0       1
 # Modifications from  org-document raspberry.org - start
 
 # Mount partition 3 as  /home2 on 
-PARTUUID=659644ac-03  /home2             ext4    defaults,noatime  0       1
+PARTUUID=0249d47d-03 /home2             ext4    defaults,noatime  0       1
 
-# tmp directorises to tmpfs (these will be lost on reboot)
-# tmpfs /tmp tmpfs defaults,noatime,nosuid,size=100m 0 0
+## tmp directorises to tmpfs (these will be lost on reboot)
 # tmpfs /var/tmp tmpfs defaults,noatime,nosuid,size=50m 0 0
 # tmpfs /var/cache tmpfs defaults,noatime,nosuid,size=100m 0 0
 
 # Modifications from  org-document raspberry.org - end
 #+end_example
 
+Expect to see ~noatime~ for ext4 mounts
 
-#+begin_example
-Running in /home/pi for user 'pi' on host 'jrr5' on Tue May 19 21:52:36 EEST 2026
-FILE=/etc/fstab
--rw-r--r-- 1 root root 682 May 19 10:52 /etc/fstab
-proc            /proc           proc    defaults          0       0
-PARTUUID=f307c993-01  /boot/firmware  vfat    defaults          0       2
-PARTUUID=f307c993-02  /               ext4    defaults,noatime  0       1
-# Modifications from  org-document raspberry.org - start
-
-# Mount partition 3 as  /home2 on 
-PARTUUID=f307c993-03  /home2             ext4    defaults,noatime  0       1
-
-# tmp directorises to tmpfs (these will be lost on reboot)
-# tmpfs /tmp tmpfs defaults,noatime,nosuid,size=100m 0 0
-# tmpfs /var/tmp tmpfs defaults,noatime,nosuid,size=50m 0 0
-# tmpfs /var/cache tmpfs defaults,noatime,nosuid,size=100m 0 0
-
-# Modifications from  org-document raspberry.org - end
-#+end_example
 
 ** Disable swap
 
+*** Check swap status
 #+name: swap-show
 #+BEGIN_SRC bash :eval no-export :results output
 echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
@@ -9031,15 +8976,10 @@ swapon --show
 #+END_SRC
 
 #+RESULTS: swap-show
-: Running in /home/pi for user 'pi' on host 'jrr5x' on Thu Jul 16 10:21:00 EEST 2026
+: Running in /home/pi for user 'pi' on host 'jrr5x' on Fri Jul 17 21:34:25 EEST 2026
 : NAME       TYPE      SIZE USED PRIO
 : /dev/zram0 partition 905M   0B  100
 
-Initial swap
-
-: Running in /home/pi for user 'pi' on host 'jrr5' on Tue May 19 21:53:33 EEST 2026
-: NAME       TYPE      SIZE USED PRIO
-: /dev/zram0 partition 905M   0B  100
 
 Chatgpt:
 #+begin_example
@@ -9049,6 +8989,8 @@ default on recent Raspberry Pi OS releases.
 #+end_example
 
 --> No need to disable it!!
+
+*** +Disable swap+ - NOT NEEDED
 
 #+BEGIN_SRC bash :eval no-export :results output
 echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
@@ -9074,13 +9016,15 @@ sudo apt purge -y dphys-swapfile
 :header-args+: :var  FILE="/etc/fstab"
 :END:
 
+Modify ~/etc/fstab~
+
 #+BEGIN_SRC bash :eval no-export :results output
 echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
 echo "FILE=$FILE"
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/pi for user 'pi' on host 'jrr5x' on Thu Jul 16 10:22:08 EEST 2026
+: Running in /home/pi for user 'pi' on host 'jrr5x' on Fri Jul 17 21:35:20 EEST 2026
 : FILE=/etc/fstab
 
 #+name: fstab-show
@@ -9093,19 +9037,18 @@ cat $FILE
 
 #+RESULTS: fstab-show
 #+begin_example
-Running in /home/pi for user 'pi' on host 'jrr5x' on Thu Jul 16 10:22:18 EEST 2026
+Running in /home/pi for user 'pi' on host 'jrr5x' on Fri Jul 17 21:35:39 EEST 2026
 FILE=/etc/fstab
--rw-r--r-- 1 root root 682 Jul 15 20:19 /etc/fstab
+-rw-r--r-- 1 root root 625 Jul 16 19:01 /etc/fstab
 proc            /proc           proc    defaults          0       0
-PARTUUID=659644ac-01  /boot/firmware  vfat    defaults          0       2
-PARTUUID=659644ac-02  /               ext4    defaults,noatime  0       1
+PARTUUID=0249d47d-01  /boot/firmware  vfat    defaults          0       2
+PARTUUID=0249d47d-02  /               ext4    defaults,noatime  0       1
 # Modifications from  org-document raspberry.org - start
 
 # Mount partition 3 as  /home2 on 
-PARTUUID=659644ac-03  /home2             ext4    defaults,noatime  0       1
+PARTUUID=0249d47d-03 /home2             ext4    defaults,noatime  0       1
 
-# tmp directorises to tmpfs (these will be lost on reboot)
-# tmpfs /tmp tmpfs defaults,noatime,nosuid,size=100m 0 0
+## tmp directorises to tmpfs (these will be lost on reboot)
 # tmpfs /var/tmp tmpfs defaults,noatime,nosuid,size=50m 0 0
 # tmpfs /var/cache tmpfs defaults,noatime,nosuid,size=100m 0 0
 
@@ -9114,19 +9057,18 @@ PARTUUID=659644ac-03  /home2             ext4    defaults,noatime  0       1
 
 Initial ~/etc/fstab~
 #+begin_example
-Running in /home/pi for user 'pi' on host 'jrr5' on Tue May 19 21:58:11 EEST 2026
+Running in /home/pi for user 'pi' on host 'jrr5x' on Fri Jul 17 21:35:39 EEST 2026
 FILE=/etc/fstab
--rw-r--r-- 1 root root 682 May 19 10:52 /etc/fstab
+-rw-r--r-- 1 root root 625 Jul 16 19:01 /etc/fstab
 proc            /proc           proc    defaults          0       0
-PARTUUID=f307c993-01  /boot/firmware  vfat    defaults          0       2
-PARTUUID=f307c993-02  /               ext4    defaults,noatime  0       1
+PARTUUID=0249d47d-01  /boot/firmware  vfat    defaults          0       2
+PARTUUID=0249d47d-02  /               ext4    defaults,noatime  0       1
 # Modifications from  org-document raspberry.org - start
 
 # Mount partition 3 as  /home2 on 
-PARTUUID=f307c993-03  /home2             ext4    defaults,noatime  0       1
+PARTUUID=0249d47d-03 /home2             ext4    defaults,noatime  0       1
 
-# tmp directorises to tmpfs (these will be lost on reboot)
-# tmpfs /tmp tmpfs defaults,noatime,nosuid,size=100m 0 0
+## tmp directorises to tmpfs (these will be lost on reboot)
 # tmpfs /var/tmp tmpfs defaults,noatime,nosuid,size=50m 0 0
 # tmpfs /var/cache tmpfs defaults,noatime,nosuid,size=100m 0 0
 
@@ -9148,7 +9090,7 @@ cat <<HERE | sudo tee -a $FILE
 # $START
 
 # Directories using tmpfs (these will be lost on reboot)
-# Comment these out for package install
+# NOTICE: comment these out if tmp space exhausted (e.g. new package install)
 tmpfs /tmp tmpfs defaults,noatime,nosuid,size=100m 0 0
 tmpfs /var/tmp tmpfs defaults,noatime,nosuid,size=50m 0 0
 tmpfs /var/cache tmpfs defaults,noatime,nosuid,size=100m 0 0
@@ -9161,11 +9103,11 @@ HERE
 #+RESULTS:
 #+begin_example
 modifying /etc/fstab on host 'jrr5x'
--rw-r--r-- 1 root root 682 Jul 15 20:19 /etc/fstab
+-rw-r--r-- 1 root root 625 Jul 16 19:01 /etc/fstab
 # tmpfs modifications from  org-document raspberry.org - start
 
 # Directories using tmpfs (these will be lost on reboot)
-# Comment these out for package install
+# NOTICE: comment these out if tmp space exhausted (e.g. new package install)
 tmpfs /tmp tmpfs defaults,noatime,nosuid,size=100m 0 0
 tmpfs /var/tmp tmpfs defaults,noatime,nosuid,size=50m 0 0
 tmpfs /var/cache tmpfs defaults,noatime,nosuid,size=100m 0 0
@@ -9177,19 +9119,18 @@ tmpfs /var/cache tmpfs defaults,noatime,nosuid,size=100m 0 0
 
 #+RESULTS:
 #+begin_example
-Running in /home/pi for user 'pi' on host 'jrr5x' on Thu Jul 16 10:23:03 EEST 2026
+Running in /home/pi for user 'pi' on host 'jrr5x' on Fri Jul 17 21:37:39 EEST 2026
 FILE=/etc/fstab
--rw-r--r-- 1 root root 1079 Jul 16 10:22 /etc/fstab
+-rw-r--r-- 1 root root 1060 Jul 17 21:37 /etc/fstab
 proc            /proc           proc    defaults          0       0
-PARTUUID=659644ac-01  /boot/firmware  vfat    defaults          0       2
-PARTUUID=659644ac-02  /               ext4    defaults,noatime  0       1
+PARTUUID=0249d47d-01  /boot/firmware  vfat    defaults          0       2
+PARTUUID=0249d47d-02  /               ext4    defaults,noatime  0       1
 # Modifications from  org-document raspberry.org - start
 
 # Mount partition 3 as  /home2 on 
-PARTUUID=659644ac-03  /home2             ext4    defaults,noatime  0       1
+PARTUUID=0249d47d-03 /home2             ext4    defaults,noatime  0       1
 
-# tmp directorises to tmpfs (these will be lost on reboot)
-# tmpfs /tmp tmpfs defaults,noatime,nosuid,size=100m 0 0
+## tmp directorises to tmpfs (these will be lost on reboot)
 # tmpfs /var/tmp tmpfs defaults,noatime,nosuid,size=50m 0 0
 # tmpfs /var/cache tmpfs defaults,noatime,nosuid,size=100m 0 0
 
@@ -9197,37 +9138,7 @@ PARTUUID=659644ac-03  /home2             ext4    defaults,noatime  0       1
 # tmpfs modifications from  org-document raspberry.org - start
 
 # Directories using tmpfs (these will be lost on reboot)
-# Comment these out for package install
-tmpfs /tmp tmpfs defaults,noatime,nosuid,size=100m 0 0
-tmpfs /var/tmp tmpfs defaults,noatime,nosuid,size=50m 0 0
-tmpfs /var/cache tmpfs defaults,noatime,nosuid,size=100m 0 0
-
-# tmpfs Modifications from  org-document raspberry.org - end
-#+end_example
-
-
-#+begin_example
-Running in /home/pi for user 'pi' on host 'jrr5' on Tue May 19 22:51:57 EEST 2026
-FILE=/etc/fstab
--rw-r--r-- 1 root root 1079 May 19 22:51 /etc/fstab
-proc            /proc           proc    defaults          0       0
-PARTUUID=f307c993-01  /boot/firmware  vfat    defaults          0       2
-PARTUUID=f307c993-02  /               ext4    defaults,noatime  0       1
-# Modifications from  org-document raspberry.org - start
-
-# Mount partition 3 as  /home2 on 
-PARTUUID=f307c993-03  /home2             ext4    defaults,noatime  0       1
-
-# tmp directorises to tmpfs (these will be lost on reboot)
-# tmpfs /tmp tmpfs defaults,noatime,nosuid,size=100m 0 0
-# tmpfs /var/tmp tmpfs defaults,noatime,nosuid,size=50m 0 0
-# tmpfs /var/cache tmpfs defaults,noatime,nosuid,size=100m 0 0
-
-# Modifications from  org-document raspberry.org - end
-# tmpfs modifications from  org-document raspberry.org - start
-
-# Directories using tmpfs (these will be lost on reboot)
-# Comment these out for package install
+# NOTICE: comment these out if tmp space exhausted (e.g. new package install)
 tmpfs /tmp tmpfs defaults,noatime,nosuid,size=100m 0 0
 tmpfs /var/tmp tmpfs defaults,noatime,nosuid,size=50m 0 0
 tmpfs /var/cache tmpfs defaults,noatime,nosuid,size=100m 0 0
@@ -9236,6 +9147,47 @@ tmpfs /var/cache tmpfs defaults,noatime,nosuid,size=100m 0 0
 #+end_example
 
 #+call: reboot()
+
+After reboot
+
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
+mount
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Running in /home/pi for user 'pi' on host 'jrr5x' on Fri Jul 17 21:41:22 EEST 2026
+sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
+proc on /proc type proc (rw,relatime)
+udev on /dev type devtmpfs (rw,nosuid,relatime,size=325532k,nr_inodes=81383,mode=755)
+devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,gid=5,mode=600,ptmxmode=000)
+tmpfs on /run type tmpfs (rw,nosuid,nodev,noexec,relatime,size=185368k,mode=755)
+/dev/mmcblk0p2 on / type ext4 (rw,noatime)
+securityfs on /sys/kernel/security type securityfs (rw,nosuid,nodev,noexec,relatime)
+tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev)
+cgroup2 on /sys/fs/cgroup type cgroup2 (rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot)
+none on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
+bpf on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
+systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=37,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=435)
+debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
+mqueue on /dev/mqueue type mqueue (rw,nosuid,nodev,noexec,relatime)
+tracefs on /sys/kernel/tracing type tracefs (rw,nosuid,nodev,noexec,relatime)
+tmpfs on /run/lock type tmpfs (rw,nosuid,nodev,noexec,relatime,size=5120k)
+tmpfs on /run/credentials/systemd-journald.service type tmpfs (ro,nosuid,nodev,noexec,relatime,nosymfollow,size=1024k,nr_inodes=1024,mode=700,noswap)
+fusectl on /sys/fs/fuse/connections type fusectl (rw,nosuid,nodev,noexec,relatime)
+configfs on /sys/kernel/config type configfs (rw,nosuid,nodev,noexec,relatime)
+tmpfs on /var/cache type tmpfs (rw,nosuid,noatime,size=102400k)
+tmpfs on /tmp type tmpfs (rw,nosuid,noatime,size=102400k)
+tmpfs on /var/tmp type tmpfs (rw,nosuid,noatime,size=51200k)
+/dev/mmcblk0p3 on /home2 type ext4 (rw,noatime)
+/dev/mmcblk0p1 on /boot/firmware type vfat (rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,errors=remount-ro)
+binfmt_misc on /proc/sys/fs/binfmt_misc type binfmt_misc (rw,nosuid,nodev,noexec,relatime)
+tmpfs on /run/credentials/getty@tty1.service type tmpfs (ro,nosuid,nodev,noexec,relatime,nosymfollow,size=1024k,nr_inodes=1024,mode=700,noswap)
+tmpfs on /run/credentials/serial-getty@ttyS0.service type tmpfs (ro,nosuid,nodev,noexec,relatime,nosymfollow,size=1024k,nr_inodes=1024,mode=700,noswap)
+tmpfs on /run/user/1000 type tmpfs (rw,nosuid,nodev,relatime,size=92680k,nr_inodes=23170,mode=700,uid=1000,gid=1000)
+#+end_example
+
 
 ** Overlay (not done)
 
@@ -9301,23 +9253,27 @@ journalctl --disk-usage
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/pi for user 'pi' on host 'jrr5x' on Thu Jul 16 10:38:28 EEST 2026
-: Archived and active journals take up 8.2M in the file system.
+: Running in /home/pi for user 'pi' on host 'jrr5x' on Fri Jul 17 21:38:35 EEST 2026
+: Archived and active journals take up 2.3M in the file system.
+
+
+: Running in /home/pi for user 'pi' on host 'jrr5x' on Fri Jul 17 21:38:08 EEST 2026
+: Archived and active journals take up 2.9M in the file system.
 
 #+call: journald-vacuum()
 
 #+RESULTS:
 #+begin_example
-Running in /home/pi host 'jrr5x' on Thu Jul 16 10:36:16 EEST 2026
-Deleted archived journal /run/log/journal/81f71caafafb49cf976dfd69d3b77904/system@0870ab236a9f434f82bbecb61285c5e6-0000000000000e96-000656b578bf0bee.journal (304K).
-Deleted archived journal /run/log/journal/81f71caafafb49cf976dfd69d3b77904/system@0870ab236a9f434f82bbecb61285c5e6-0000000000000e9c-000656b578c08f80.journal (628K).
-Vacuuming done, freed 932K of archived journals from /run/log/journal/81f71caafafb49cf976dfd69d3b77904.
+Running in /home/pi host 'jrr5x' on Fri Jul 17 21:38:22 EEST 2026
 Vacuuming done, freed 0B of archived journals from /run/log/journal.
 Vacuuming done, freed 0B of archived journals from /var/log/journal.
+Deleted archived journal /run/log/journal/286bf67f130449f68b72b5d2a9e69a75/system@668bb4cc230443448c83f1026b94ac26-0000000000000001-000656cb4eee9d65.journal (688K).
+Deleted archived journal /run/log/journal/286bf67f130449f68b72b5d2a9e69a75/system@668bb4cc230443448c83f1026b94ac26-0000000000000392-000656cb51f2ad0d.journal (188K).
+Vacuuming done, freed 876K of archived journals from /run/log/journal/286bf67f130449f68b72b5d2a9e69a75.
 Vacuuming done, freed 0B of archived journals from /run/log/journal.
+Vacuuming done, freed 0B of archived journals from /run/log/journal/286bf67f130449f68b72b5d2a9e69a75.
 Vacuuming done, freed 0B of archived journals from /var/log/journal.
-Vacuuming done, freed 0B of archived journals from /run/log/journal/81f71caafafb49cf976dfd69d3b77904.
-Archived and active journals take up 8.2M in the file system.
+Archived and active journals take up 2.3M in the file system.
 #+end_example
 
 Vacuuming done, freed 0B of archived journals from /var/log/journal.
@@ -9344,16 +9300,55 @@ mount | grep ' on /run '
 :END:
 
 
+** Release versions
 
-** Relase versions
+| # |       Date | Content                                                                  |
+|---+------------+--------------------------------------------------------------------------|
+| 5 | 2026-07-17 | jrr5x rootfs 10G/home 2G, jrr-service, OS-hardened, firmware_release.txt |
+| 4 | 2026-07-17 | jrr5x rootfs 10G/home 2G, jrr-service, no OS-hardened                    |
+| 3 | 2026-07-16 | jrr5x jrr-home2, jrr-service enabled, no OS-hardened                     |
 
-| # |       Date | Content                                              |
-|---+------------+------------------------------------------------------|
-| 3 | 2026-07-16 | jrr5x jrr-user2, jrr-service enabled, no OS-hardened |
+** Add firmare info to rpi image (as jrr5_user)
+:PROPERTIES:
+:header-args+: :dir  /ssh:jrr5_user:
+:END:
 
-** Create ~firmware/JRR-FIRMWARE_RELEASE.img.gz~
+Show firmware release number
 
-Document firmware release  context
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
+echo "FIRMWARE_RELEASE=$FIRMWARE_RELEASE"
+#+END_SRC
+
+#+RESULTS:
+: Running in /home2/jrr for user 'jrr' on host 'jrr5x' on Fri Jul 17 21:19:19 EEST 2026
+: FIRMWARE_RELEASE=5
+
+Create ~firmware_release.txt~ 
+#+BEGIN_SRC bash :eval no-export :results output :var FILE="firmware_release.txt"
+echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
+echo FILE=$FILE
+echo "FIRMWARE_RELEASE=$FIRMWARE_RELEASE"
+echo "$FIRMWARE_RELEASE" | tee $FILE
+ls -ltr $FILE
+cat $FILE
+#+END_SRC
+
+#+RESULTS:
+: Running in /home2/jrr for user 'jrr' on host 'jrr5x' on Fri Jul 17 21:21:51 EEST 2026
+: FILE=firmware_release.txt
+: FIRMWARE_RELEASE=5
+: 5
+: -rw-rw-r-- 1 jrr jrr 2 Jul 17 21:21 firmware_release.txt
+: 5
+
+** Create ~firmware/JRR-FIRMWARE_RELEASE.img.gz~ (on Linux)
+:PROPERTIES:
+:header-args+: :var  FIRMWARE_RELEASE_FILE="/media/jj/home2/jrr/firmware_release.txt"
+:END:
+
+
+*** Document firmware release  context
 
 #+BEGIN_SRC bash :eval no-export :results output
 echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
@@ -9363,16 +9358,29 @@ echo SD_DEV=$SD_DEV
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/jj/work/jrr for user 'jj' on host 'Leo' on to 16.7.2026 19.25.18 +0300
+: Running in /home/jj/work/jrr for user 'jj' on host 'Leo' on pe 17.7.2026 21.47.55 +0300
 : FIRMWARE_DIR=/home/jj/work/jrr/firmware
-: FIRMWARE_RELEASE=4
+: FIRMWARE_RELEASE=5
 : SD_DEV=/dev/sda
 
-Show partitions on SD_DEV
+Show partitions on SD_DEV. Expect to see
+- rootfs 10G
+- home2 2G
+
 
 #+call: lsblk-conf()
 
 #+RESULTS:
+: Running in /home/jj/work/jrr host 'Leo' on pe 17.7.2026 21.48.22 +0300
+: SD_DEV=/dev/sda
+: NAME    SIZE TRAN RM MOUNTPOINT
+: sda      30G usb   1 
+: ├─sda1  512M       1 /media/jj/bootfs
+: ├─sda2  9,8G       1 /media/jj/rootfs
+: └─sda3    2G       1 /media/jj/home2
+
+
+
 : Running in /home/jj/work/jrr host 'Leo' on to 16.7.2026 15.11.07 +0300
 : SD_DEV=/dev/sda
 : NAME    SIZE TRAN RM MOUNTPOINT
@@ -9385,40 +9393,92 @@ Unmount file systems for fs-check
 #+call: umount-sd-dev()
 
 #+RESULTS:
-: Running in /root host 'Leo' on Thu Jul 16 03:12:24 PM EEST 2026
+: Running in /root host 'Leo' on Fri Jul 17 09:48:28 PM EEST 2026
 
 Check file systems 
 #+call: fs-check(PARTITION=3)
 
 #+RESULTS:
-: CHeck /dev/sda3 in /root host 'Leo' on Thu Jul 16 03:12:29 PM EEST 2026
+: CHeck /dev/sda3 in /root host 'Leo' on Fri Jul 17 09:49:38 PM EEST 2026
 : e2fsck 1.47.0 (5-Feb-2023)
 : Pass 1: Checking inodes, blocks, and sizes
 : Pass 2: Checking directory structure
 : Pass 3: Checking directory connectivity
 : Pass 4: Checking reference counts
 : Pass 5: Checking group summary information
-: home2: 4874/131072 files (0.1% non-contiguous), 67878/524288 blocks
+: home2: 4877/128000 files (0.1% non-contiguous), 58730/512000 blocks
+
+
 
 #+call: fs-check(PARTITION=2)
 
 #+RESULTS:
-: CHeck /dev/sda2 in /root host 'Leo' on Thu Jul 16 03:12:33 PM EEST 2026
+: CHeck /dev/sda2 in /root host 'Leo' on Fri Jul 17 09:49:46 PM EEST 2026
 : e2fsck 1.47.0 (5-Feb-2023)
 : Pass 1: Checking inodes, blocks, and sizes
 : Pass 2: Checking directory structure
 : Pass 3: Checking directory connectivity
 : Pass 4: Checking reference counts
 : Pass 5: Checking group summary information
-: rootfs: 81477/1408320 files (0.2% non-contiguous), 1039019/5896192 blocks
+: rootfs: 81458/618096 files (0.2% non-contiguous), 989206/2560000 blocks
+
 
 
 #+call: vfat-chk(PARTITION=1)
 
 #+RESULTS:
-: CHeck VFAT file system on /dev/sda1 in /root host 'Leo' on Thu Jul 16 03:16:23 PM EEST 2026
+: CHeck VFAT file system on /dev/sda1 in /root host 'Leo' on Fri Jul 17 09:49:54 PM EEST 2026
 : fsck.fat 4.2 (2021-01-31)
 : /dev/sda1: 421 files, 135079/1032408 clusters
+
+
+: CHeck VFAT file system on /dev/sda1 in /root host 'Leo' on Fri Jul 17 12:46:14 PM EEST 2026
+: fsck.fat 4.2 (2021-01-31)
+: There are differences between boot sector and its backup.
+: This is mostly harmless. Differences: (offset:original/backup)
+:   65:01/00
+: 1) Copy original to backup
+: 2) Copy backup to original
+: 3) No action
+: [123?q]?
+
+*** Validate FIRMWARE_RELEASE_FILE
+
+Expect to find FIRMWARE_RELEASE_FILE
+
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
+echo "FIRMWARE_RELEASE_FILE=$FIRMWARE_RELEASE_FILE"
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/jj/work/jrr for user 'jj' on host 'Leo' on pe 17.7.2026 22.43.00 +0300
+: FIRMWARE_RELEASE_FILE=/media/jj/home2/jrr/firmware_release.txt
+
+Media release file in directory
+
+#+BEGIN_SRC bash :eval no-export :results output  :dir /sudo::
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+ls $(dirname $FIRMWARE_RELEASE_FILE)
+#+END_SRC
+
+#+RESULTS:
+: Running in /root host 'Leo' on Fri Jul 17 10:43:47 PM EEST 2026
+: bin  cnf  firmware_release.txt	jrr  resources	tmp
+
+
+#+BEGIN_SRC bash :eval no-export :results output  :dir /sudo::
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+echo "Ensure that $FIRMWARE_RELEASE == value in $FIRMWARE_RELEASE_FILE (= $(cat $FIRMWARE_RELEASE_FILE))"
+[[ "$FIRMWARE_RELEASE" != "$(cat $FIRMWARE_RELEASE_FILE)" ]] && echo "Error in FIRMWARE_RELEASE and FIRMWARE_RELEASE_FILE content" && exit 1
+true
+#+END_SRC
+
+#+RESULTS:
+: Running in /root host 'Leo' on Fri Jul 17 10:47:52 PM EEST 2026
+: Ensure that 5 == value in /media/jj/home2/jrr/firmware_release.txt (= 5 in)
+
+*** Create ISO_IMG_GZ -file
 
 Pull image from SD_DEV to FILE=
 
@@ -9428,13 +9488,42 @@ echo "Running in $(pwd) host '$(hostname)' on $(date)"
 # [[ ! -d "$SD_DEV" ]] && echo "No such device SD_DEV=$SD_DEV" && exit 1
 echo SD_DEV=$SD_DEV
 FILE=$FIRMWARE_DIR/JRR-$FIRMWARE_RELEASE.img.gz
-echo "sudo dd if=$SD_DEV bs=4M status=none | gzip > $FILE"
+echo "sudo dd if=$SD_DEV bs=4M status=progress | gzip > $FILE"
 #+END_SRC
 
 #+RESULTS:
-: Running in /root host 'Leo' on Thu Jul 16 03:24:51 PM EEST 2026
+: Running in /root host 'Leo' on Fri Jul 17 09:50:04 PM EEST 2026
 : SD_DEV=/dev/sda
-: sudo dd if=/dev/sda bs=4M status=none | gzip > firmware/JRR-3.img.gz
+: sudo dd if=/dev/sda bs=4M status=progress | gzip > /home/jj/work/jrr/firmware/JRR-5.img.gz
+
+Create ~SHA_CHECK~ for check sum
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+ISO_IMG_GZ=$FIRMWARE_DIR/JRR-$FIRMWARE_RELEASE.img.gz
+[[ ! -f $ISO_IMG_GZ ]] && echo "No such file ISO_IMG_GZ=$ISO_IMG_GZ" && exit 1
+SHA_CHECK=$ISO_IMG_GZ.sha256
+([[ -f  $SHA_CHECK ]] && echo SHA_CHECK=$SHA_CHECK exists - quit ; exit)  || sha256sum $ISO_IMG_GZ  | tee $SHA_CHECK
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/jj/work/jrr host 'Leo' on pe 17.7.2026 22.40.50 +0300
+: 0463c8c90bf1c4b7d9f47c582fb836109ffdc579b4ff8694a86db326869b8b1e  /home/jj/work/jrr/firmware/JRR-5.img.gz
+
+Validate ~SHA_CHECK~
+#+BEGIN_SRC bash :eval no-export :results output
+ISO_IMG_GZ=$FIRMWARE_DIR/JRR-$FIRMWARE_RELEASE.img.gz
+[[ ! -f $ISO_IMG_GZ ]] && echo "No such file ISO_IMG_GZ=$ISO_IMG_GZ" && exit 1
+SHA_CHECK=$ISO_IMG_GZ.sha256
+[[ ! -f $SHA_CHECK ]] && echo "No such file SHA_CHECK=$SHA_CHECK" && exit 1
+echo "Checking sha256sum in SHA_CHECK=$SHA_CHECK in $(pwd) host '$(hostname)' on $(date)"
+sha256sum --check $SHA_CHECK 2>&1; true
+#+END_SRC
+
+#+RESULTS:
+: Checking sha256sum in SHA_CHECK=/home/jj/work/jrr/firmware/JRR-5.img.gz.sha256 in /home/jj/work/jrr host 'Leo' on pe 17.7.2026 22.40.55 +0300
+: /home/jj/work/jrr/firmware/JRR-5.img.gz: OK
+
+
 
 * Admin
 :PROPERTIES:
@@ -12132,7 +12221,16 @@ echo FILE=$FILE
 $SUDO cat $FILE
 #+END_SRC
 
-*** ~diff-FILE~: diff FILE FILE.orig
+*** ~diff-FILE~: diff FILE FILE.orig maybe SUDO
+
+#+name: diff-FILE
+#+BEGIN_SRC bash :eval no-export :results output :var SUDO="sudo" ORIG="back"
+echo "Running in $(pwd) host '$(hostname)' on $(date)"
+FILE_ORIG=$FILE.$ORIG
+echo "FILE_ORIG=$FILE_ORIG, FILE=$FILE"
+(diff $FILE $FILE_ORIG 2>&1 && echo "Files are equal $FILE == $FILE_ORIG") || echo "Files  $FILE and  $FILE_ORIG NOT equal"
+#+END_SRC
+
 
 *** ~lsblk-conf~: lsblk for SD_DEV (showing RM TRAN properties)
 
@@ -12142,6 +12240,17 @@ $SUDO cat $FILE
   [[ -z "$SD_DEV" ]] && echo "Missing parameter SD_DEV" && exit 1
   echo SD_DEV=$SD_DEV
   lsblk  -o NAME,SIZE,TRAN,RM,MOUNTPOINT $SD_DEV 2>&1; true
+#+END_SRC
+
+*** ~journald-cnf~: Show relevant journald configuaration
+
+#+name: journald-cnf
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Show relevant journald configs in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
+grep Storage $FILE
+grep RuntimeMaxUse $FILE
+grep RuntimeMaxFileSize $FILE
+grep MaxRetentionSec $FILE
 #+END_SRC
 
 
@@ -13662,8 +13771,21 @@ echo PATH=$PATH
 : Running in /home2/jrr for user 'jrr' on host 'jrr5x' on Thu Jul 16 09:15:30 EEST 2026
 : PATH=/home2/jrr/jrr/bin:/home2/jrr/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 
-
 * Issues
+
+** DONE JRR-RPI-007: Add FIRMWARE_RELEASE_FILE="/media/jj/home2/jrr/firmware_release.txt"
+
+Ref: [[*Add firmare info to rpi image (as jrr5_user)][Add firmare info to rpi image (as jrr5_user)]]
+Ref: [[*Validate FIRMWARE_RELEASE_FILE][Validate FIRMWARE_RELEASE_FILE]]
+
+
+** DONE JRR-RPI-006: Implement OS hardening
+
+Ref: [[*OS-hardening][OS-hardening]]
+
+** DONE JRR-RPI-005: Add firmare info to rpi image
+
+Ref: [[*Add firmare info to rpi image][Add firmare info to rpi image]]
 
 ** TODO JRR-RPI-004: Add record command
 
@@ -13695,7 +13817,6 @@ ffmpeg \
   - [ ] Recording sprite
   - [ ] Recording indicator messages
   - [ ] Stop recording action 
-
 
 ** DONE JRR-RPI-003: Mapping ALSA cards and PCM device names
 :PROPERTIES:
@@ -14165,4 +14286,4 @@ hdmi_drive=2
 # reftex-default-bibliography: ("./raspberry.bib")
 
 
-Modified:2026-07-17.12:08; # time-stamp
+Modified:2026-07-17.22:52; # time-stamp

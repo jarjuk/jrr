@@ -308,12 +308,14 @@ Done OK
    | JRR-9  | D            | E         |         | Silkscreen text              | Using macros                 |
    | JRR-10 | D            | E         | SW{1,2} | Push buttons to left 15 mm   |                              |
    | JRR-11 | E            |           | D1, D2  | pads too small               | +0.5 mm w, +.0.5 extend out  |
-   | JRR-12 | E            |           | H{1-6}  | Hole diameter 2.5mm          | --> 3.5mm                    |
+   | JRR-12 | E            |           | H{1-6}  | Hole diameter 2.5mm          | --> 4mm                      |
    | JRR-13 | 23.3./2026/E |           |         | Mounting holes too small     | M3.5mm                       |
    | JRR-14 | E            | F         | R1,R2   | 100k                         | 10k                          |
    | JRR-15 | E            |           | D1, D2  | Small pads                   | Increase pad size            |
    | JRR-16 | E            |           | D1, D2  | MPN missing                  | Add MNP                      |
    | JRR-17 | E            |           | F1      | 1.1A                         | 0.75A/PTS181213V075          |
+   | JRR-18 | E            |           | J24     | Amp-power                    | on PCB edge                  |
+   | JRR-19 | E            |           | C??     | 100uF Cap                    | on 5V-RPI                    |
    |--------+--------------+-----------+---------+------------------------------+------------------------------|
 
 *** Deploy ~DATA_SHEET_DIR/DOC-RELEASE.pdf~                        :noexport:
@@ -588,4 +590,4 @@ echo Done OK
 # reftex-default-bibliography: ("./jrr5-pcb.bib")
 
 
-Modified:2026-07-14.12:16; # time-stamp
+Modified:2026-07-17.20:18; # time-stamp

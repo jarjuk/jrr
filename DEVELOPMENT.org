@@ -1,5 +1,5 @@
 #PROPERTY: header-args+ :var  RELEASE="2"
-#+PROPERTY: header-args+ :var  FIRMWARE_RELEASE="3"
+#+PROPERTY: header-args+ :var  FIRMWARE_RELEASE="4"
 #+PROPERTY: header-args+ :var  CONDA_ENV="pyyton3"
 
 * Setup development environment
@@ -519,7 +519,7 @@ rsync -a --update --verbose --checksum jrr5:tmp/jrr-*png pics-keep/screenshots/
 [[file:pics-keep/screenshots]]
 
 
-* Firmware image
+* Burn firmware on SD_DEV 
 :PROPERTIES:
 :header-args+: :var  SD_DEV="/dev/sda"
 :header-args+: :var  FIRMWARE_DIR="/home/jj/work/jrr/firmware"
@@ -584,7 +584,7 @@ Create ~SHA_CHECK~ for check sum
 : Checking sha256sum in SHA_CHECK=firmware/pi@jrr5.local-2.img.gz.sha256 in /home/jj/work/jrr host 'Leo' on su 17.5.2026 20.12.10 +0300
 : firmware/pi@jrr5.local-2.img.gz: OK
 
-** Install ~firmware/JRR-$FIRMAWARE_RELEASE.img.gz~ on ~SD_DEV~
+** Burn ~firmware/JRR-$FIRMAWARE_RELEASE.img.gz~ on ~SD_DEV~
 
 Ensure correct SD_DEV. Check:
 - RM=1 → removable device
@@ -600,11 +600,13 @@ Ensure correct SD_DEV. Check:
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/jj/work/jrr host 'Leo' on to 16.7.2026 17.20.51 +0300
+: Running in /home/jj/work/jrr host 'Leo' on pe 17.7.2026 13.46.43 +0300
 : SD_DEV=/dev/sda
 : NAME    SIZE TRAN RM MOUNTPOINT
-: sda    29,7G usb   1 
-: └─sda1 29,7G       1 /media/jj/3165-3434
+: sda      30G usb   1 
+: ├─sda1  512M       1 /media/jj/bootfs
+: ├─sda2 22,5G       1 /media/jj/rootfs
+: └─sda3    2G       1 /media/jj/home2
 
 
 
@@ -652,8 +654,10 @@ Check if mounted
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/jj/work/jrr host 'Leo' on to 16.7.2026 17.20.59 +0300
-: /dev/sda1 on /media/jj/3165-3434 type vfat (rw,nosuid,nodev,relatime,uid=1000,gid=1000,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,showexec,utf8,flush,errors=remount-ro,uhelper=udisks2)
+: Running in /home/jj/work/jrr host 'Leo' on pe 17.7.2026 13.46.50 +0300
+: /dev/sda3 on /media/jj/home2 type ext4 (rw,nosuid,nodev,relatime,errors=remount-ro,uhelper=udisks2)
+: /dev/sda1 on /media/jj/bootfs type vfat (rw,nosuid,nodev,relatime,uid=1000,gid=1000,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,showexec,utf8,flush,errors=remount-ro,uhelper=udisks2)
+: /dev/sda2 on /media/jj/rootfs type ext4 (rw,nosuid,nodev,relatime,errors=remount-ro,uhelper=udisks2)
 
 
 : Running in /home/jj/work/jrr host 'Leo' on su 17.5.2026 20.20.31 +0300
@@ -667,17 +671,19 @@ sudo umount ${SD_DEV}1
 #+END_SRC
 
 #+RESULTS:
-: Running in /root host 'Leo' on Thu Jul 16 05:21:06 PM EEST 2026
+: Running in /root host 'Leo' on Fri Jul 17 01:46:57 PM EEST 2026
 
 Check that SD_DEV points to usb device with RM=1 mount 
 #+call: lsblk-conf()
 
 #+RESULTS:
-: Running in /home/jj/work/jrr host 'Leo' on to 16.7.2026 17.21.10 +0300
+: Running in /home/jj/work/jrr host 'Leo' on pe 17.7.2026 13.47.04 +0300
 : SD_DEV=/dev/sda
 : NAME    SIZE TRAN RM MOUNTPOINT
-: sda    29,7G usb   1 
-: └─sda1 29,7G       1 
+: sda      30G usb   1 
+: ├─sda1  512M       1 
+: ├─sda2 22,5G       1 /media/jj/rootfs
+: └─sda3    2G       1 /media/jj/home2
 
 Ensure that ISO_FILE is there
 #+BEGIN_SRC bash :eval no-export :results output
@@ -685,12 +691,28 @@ echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
 ISO_FILE_GZ=$FIRMWARE_DIR/JRR-$FIRMWARE_RELEASE.img.gz
 echo ISO_FILE_GZ=$ISO_FILE_GZ
 ls -ltr $ISO_FILE_GZ
+[[ ! -f $ISO_FILE_GZ ]] && echo "No such file ISO_FILE_GZ=$ISO_FILE_GZ - quit" && exit 1
+true
 #+END_SRC
 
 #+RESULTS:
-: Running in /home/jj/work/jrr for user 'jj' on host 'Leo' on to 16.7.2026 17.21.15 +0300
-: ISO_FILE_GZ=/home/jj/work/jrr/firmware/JRR-3.img.gz
-: -rw-rw-r-- 1 jj jj 1559679005 heinä  16 16:00 /home/jj/work/jrr/firmware/JRR-3.img.gz
+: Running in /home/jj/work/jrr for user 'jj' on host 'Leo' on pe 17.7.2026 13.49.17 +0300
+: ISO_FILE_GZ=/home/jj/work/jrr/firmware/JRR-4.img.gz
+: -rw-rw-r-- 1 jj jj 1648507765 heinä  17 13:20 /home/jj/work/jrr/firmware/JRR-4.img.gz
+
+Validate ~SHA_CHECK~
+#+BEGIN_SRC bash :eval no-export :results output
+ISO_IMG_GZ=$FIRMWARE_DIR/JRR-$FIRMWARE_RELEASE.img.gz
+[[ ! -f $ISO_IMG_GZ ]] && echo "No such file ISO_IMG_GZ=$ISO_IMG_GZ" && exit 1
+SHA_CHECK=$ISO_IMG_GZ.sha256
+[[ ! -f $SHA_CHECK ]] && echo "No such file SHA_CHECK=$SHA_CHECK" && exit 1
+echo "Checking sha256sum in SHA_CHECK=$SHA_CHECK in $(pwd) host '$(hostname)' on $(date)"
+sha256sum --check $SHA_CHECK 2>&1
+#+END_SRC
+
+#+RESULTS:
+: Checking sha256sum in SHA_CHECK=/home/jj/work/jrr/firmware/JRR-4.img.gz.sha256 in /home/jj/work/jrr host 'Leo' on pe 17.7.2026 13.49.54 +0300
+: /home/jj/work/jrr/firmware/JRR-4.img.gz: OK
 
 
 *Warning SD_DISK MUST point to USB disk*
@@ -707,11 +729,11 @@ echo "gzip -dc $ISO_FILE_GZ | sudo dd of=$SD_DEV bs=4M status=progress oflag=syn
 #+END_SRC
 
 #+RESULTS:
-: Running in /root host 'Leo' on Thu Jul 16 04:14:09 PM EEST 2026
-: ISO_FILE_GZ=/home/jj/work/jrr/firmware/JRR-3.img.gz
-: -rw-rw-r-- 1 jj jj 1559679005 Jul 16 16:00 /home/jj/work/jrr/firmware/JRR-3.img.gz
+: Running in /root host 'Leo' on Fri Jul 17 01:49:59 PM EEST 2026
+: ISO_FILE_GZ=/home/jj/work/jrr/firmware/JRR-4.img.gz
+: -rw-rw-r-- 1 jj jj 1648507765 Jul 17 13:20 /home/jj/work/jrr/firmware/JRR-4.img.gz
 : SD_DEV=/dev/sda
-: gzip -dc /home/jj/work/jrr/firmware/JRR-3.img.gz | sudo dd of=/dev/sda bs=4M status=progress oflag=sync
+: gzip -dc /home/jj/work/jrr/firmware/JRR-4.img.gz | sudo dd of=/dev/sda bs=4M status=progress oflag=sync
 
 
 
@@ -2669,4 +2691,4 @@ end
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2026-07-16.21:46; # time-stamp
+Modified:2026-07-17.13:50; # time-stamp

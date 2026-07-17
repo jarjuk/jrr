@@ -4,6 +4,10 @@
 	(pi@jrr5)): fixed keybord does not work: added jjr to group
 	'input', fixed console messages not shown: added jjr to group
 	'adm'
+	(Create ~firmware/JRR-FIRMWARE_RELEASE.img.gz~): Added SHA_CHECK
+	(JRR-RPI-005: Add firmare info to rpi image): DONE
+	(JRR-RPI-007: Add FIRMWARE_RELEASE_FILE="/media/jj/home2/jrr/firmware_release.txt"): DONE
+	(JRR-RPI-006: Implement OS hardening): DONE
 
 	* src/jrr_radio.py (ControllerState.restore_state): fixed check
 	for empty yaml_str, yaml-parse error
