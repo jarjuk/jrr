@@ -33,10 +33,10 @@ terminator() {
 # ------------------------------------------------------------------
 # Default confits
 VERSION=0.2
-DEBUG=1                     # default log verbosity
+DEBUG=1                     # default log verbosity, hint: use --debug option
 # DEBUG=4                   # debug log verbosity
 # JRR_LOG=                  # default daemon output not save to log file
-JRR_DEBUG=""                # default WARNING, more -v's --> more output
+JRR_DEBUG=""                # default WARNING, more -v's --> more output, hint: use --jrr-debug
 # JRR_DEBUG="-v -v"  
 ALL_LINES=""                # default - only one console line per time tick
 # ALL_LINES="--all-lines"
@@ -124,7 +124,7 @@ do_stop() {
         log 1 "do_stop: send SIGTERM to MAINPID=$MAINPID"                
         kill -SIGTERM $MAINPID
     else
-        JRR_PID=$(pgrep -f jrr.py)
+        JRR_PID=$(pgrep -f jrr.py || true)
         if [ ! -z "$JRR_PID" ]; then
             log 1 "do_stop - send SIGTERM to JRR_PID=$JRR_PID"
             kill -SIGTERM $JRR_PID
@@ -317,15 +317,15 @@ do
 
             P=$(ps -ef | grep 'jrr.sh daemon'  | grep -v grep || true)
             ISTAT2=$([ -n "$P" ] && echo "OK" || echo "NOK")
-            echo "jrr.sh: status=$ISTAT2/$P"            
+            echo "jrr.sh: daemon =$ISTAT2/$P"            
             
             P=$(ps -ef | grep jrr.py  | grep -v grep || true)
             ISTAT3=$([ -n "$P" ] && echo "OK" || echo "NOK")            
-            echo "jrr.py: status=$ISTAT3/$P"
+            echo "jrr.py: running=$ISTAT3/$P"
 
 	        P=$(ps -ef | grep ffmpeg | grep -v grep || true)
             ISTAT1=$([ -n "$P" ] && echo "OK" || echo "NOK")            
-            echo "ffmpeg: status=$ISTAT1/$P"
+            echo "ffmpeg: running=$ISTAT1/$P"
             
             if [ $ISTAT3 != "OK"  ]; then
                 exit 3
@@ -389,6 +389,10 @@ do
             do_stop
             ;;
         
+        do-stop)
+            do_stop
+            ;;
+        
         start)
             sudo systemctl start jrr
             ;;
@@ -396,6 +400,8 @@ do
         daemon-stop)
             kill_streamer
             do_stop
+            sleep 1
+            do_kill
             ;;
         
         
@@ -413,6 +419,7 @@ do
             do_stop
             sleep 1
             do_kill
+            kill_streamer
             ;;
         
         activate-pending)

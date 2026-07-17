@@ -209,7 +209,7 @@ jrr.sh kill
 
 From terminal 
 #+begin_example
-killall ffmpeg ; .venv/bin/python ./jrr.py -v -v  radio |   tee tmp/apu.log
+killall ffmpeg ; .venv/bin/python jrr/jrr.py -v -v  radio 2>&1 |   tee tmp/apu.log | grep -E 'gpio_coro|ERROR'
 #+end_example
 
 #+BEGIN_SRC elisp :noweb yes :results output :eval no-export :exports none :var TERM_HEADER="jrr5 dmesg"
@@ -2669,4 +2669,4 @@ end
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2026-07-16.17:21; # time-stamp
+Modified:2026-07-16.21:46; # time-stamp

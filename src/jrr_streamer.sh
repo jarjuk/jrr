@@ -600,6 +600,7 @@ do
         dmesg)
             MSG=$1; shift
             sudo bash -c "echo $MSG >/dev/kmsg"
+            logger -p kern.notice "$MSG"
             ;;
         
         wifi-setup)

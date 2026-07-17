@@ -218,17 +218,36 @@ def _init_GPIO_shutdown_old(button: int, hub: Hub, topic: str, loop):
     return True
 
 
-def _init_GPIO_shutdown_new(button: int, hub: Hub, topic: str, loop):
-    button_callback = partial(
-        _shutdown_input_handler, hub=hub, topic=topic, loop=loop)
-    btn = Button(
-        button,
-        bounce_time=0.05
-    )
-    btn.when_pressed = lambda b=btn: \
-        button_callback(b)
+# Global init only once
+_shutdown_button: Button = None
 
-    return True
+
+def _init_GPIO_shutdown_new(button: int, hub: Hub, topic: str, loop):
+
+    global _shutdown_button
+
+    if _shutdown_button is None:
+        # Init only once
+        _shutdown_button = Button(
+            button,
+            pull_up=None,
+            active_state=False,
+            bounce_time=0.05
+        )
+        logger.info("_init_GPIO_shutdown_new: _shutdown_button='%s' initialized",
+                    _shutdown_button)
+
+        button_callback = partial(
+            _shutdown_input_handler, hub=hub, topic=topic, loop=loop)
+
+        _shutdown_button.when_released = lambda: button_callback(
+            _shutdown_button)
+
+    btn_state = _shutdown_button.is_pressed
+
+    logger.info("_init_GPIO_shutdown_new: btn_state='%s', _shutdown_button:%s",
+                btn_state, _shutdown_button)
+    return btn_state
 
 
 def init_GPIO_shutdown(button: int, hub: Hub, topic: str, loop):

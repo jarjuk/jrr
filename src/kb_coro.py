@@ -26,10 +26,12 @@ keyboard: evdev.InputDevice | None = None
 
 
 def _kb_action(key: str, hub: Hub, topic_out: str) -> bool:
-    """Publish MsgKey(key) on 'topic_out'. """
+    """Publish MsgKey(key) on 'topic_out'.
+
+    :return: True when continue, False when exit reader
+    """
 
     logger.debug("_kb_action: key='%s'", key)
-
     hub.publish(topic=topic_out, message=message_key(key=key))
 
     return True
@@ -60,24 +62,25 @@ async def _kb_reader_coro(name: str,
     global keyboard
     keyboard = None
 
+    logger.info("_kb_reader_coro: %s starting", name)
     goon = True
     while goon:
 
         if keyboard is None:
             keyboard = find_keyboard(keyboard_name=RPI.KEYBOARD_NAME)
             if keyboard is None:
-                logger.info("No keyboard: keyboard='%s'", keyboard)
+                logger.debug("_kb_reader_coro: No keyboard='%s'", keyboard)
                 await asyncio.sleep(random.random() * 5)
         else:
-            logger.debug("start reading keyboard: keyboard='%s'", keyboard)
+            logger.info("_kb_reader_coro: start reading keyboard='%s'", keyboard)
             async for key in read_keyboard_gen(keyboard=keyboard):
-                logger.debug("reiviced key: key='%s'", key)
+                logger.info("_kb_reader_coro: received key='%s'", key)
                 goon = _kb_action(key=key, hub=hub, topic_out=topic_out)
                 if not goon:
                     logger.debug("break output from loop : key='%s'", key)
                     break
 
-    exit_msg = f"kb_coro '{name}' is shutting down on '{key=}'"
+    exit_msg = f"_kb_reader_coro '{name}' is shutting down on '{key=}'"
     logger.info("%s msg: %s", name, exit_msg)
     return exit_msg
 
@@ -115,8 +118,14 @@ def is_keyboard_connected() -> bool:
 
     """
     ret = keyboard_task is not None and not keyboard_task.done() and keyboard is not None
-    logger.debug("is_keyboard_connected: '%s', keyboard_task='%s', keyboard='%s'",
-                 ret, keyboard_task, keyboard)
+    logger.debug(("is_keyboard_connected: '%s', "
+                  "keyboard_task='%s', "
+                  "keyboard_task.done: %s, "
+                  "keyboard='%s'"),
+                 ret,
+                 keyboard_task,
+                 keyboard_task.done() if keyboard_task else False,
+                 keyboard)
     return ret
 
 
@@ -157,6 +166,8 @@ async def kb_coro(
                 elif is_message_type(msg, TOPICS.KEYBOARD_MESSAGES.START):
                     # msg_start = cast(MsgKeyboardStart, msg)
                     if keyboard_task is None:
+                        logger.info("kb_coro: create keyboard_task on message %s",
+                                    msg)
                         keyboard_task = asyncio.create_task(
                             _kb_reader_coro(name=name, hub=hub, topic_out=topic_out))
 
@@ -172,7 +183,6 @@ async def kb_coro(
                                 keyboard_task,  keyboard_task.done())
                     keyboard_task = asyncio.create_task(
                         _kb_reader_coro(name=name, hub=hub, topic_out=topic_out))
-
 
     exit_msg = f"kb_coro '{name}' is shutting down"
     logger.info("%s msg: %s", name, exit_msg)

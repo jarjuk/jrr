@@ -1,3 +1,17 @@
+2026-07-17  jj  <jj@Leo>
+
+	* raspberry.org (Create user ~jrr~ with right group permissions
+	(pi@jrr5)): fixed keybord does not work: added jjr to group
+	'input', fixed console messages not shown: added jjr to group
+	'adm'
+
+	* src/jrr_radio.py (ControllerState.restore_state): fixed check
+	for empty yaml_str, yaml-parse error
+
+	* bin/jrr.sh (daemon-kill):  added `do_kill`, `kill_streamer`
+
+	* raspberry.org (Add ~jrr~ to sudo): Added
+
 2026-07-16  jj  <jj@Leo>
 
 	* DEVELOPMENT.org (Install

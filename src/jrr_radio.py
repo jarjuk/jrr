@@ -200,15 +200,21 @@ class ControllerState:
 
     def restore_state(self):
         """Restrore some fields from file from 'state_config' and version info."""
+        logger.info("restore_state: app_config.state_config",
+                    app_config.state_config)
         yaml_str, stat = read_file(app_config.state_config)
         logger.debug("restore_state: yaml_str='%s', stat=%s", yaml_str, stat)
-        if stat:
-            state_dict = yaml.safe_load(yaml_str)
-            logger.info("restore_state: state_dict='%s', apply with field:%s",
-                        state_dict, dir(self))
-            for k, v in state_dict.items():
-                if k in dir(self):
-                    setattr(self, k, v)
+        if stat and yaml_str:
+            try:
+                state_dict = yaml.safe_load(yaml_str)
+                logger.info("restore_state: state_dict='%s', apply with field:%s",
+                            state_dict, dir(self))
+                for k, v in state_dict.items():
+                    if k in dir(self):
+                        setattr(self, k, v)
+            except Exception as ex:
+                logger.exception("restore_state: parsing %s results error '%s'",
+                                 app_config.state_config, ex, )
 
         # Radio menu step in lock step with stream number
         self.menu_step = self.current_stream
@@ -2731,14 +2737,17 @@ def f_init_enter(hub: Hub):
     ]
 
     def f_init_done(msg: str | MsgRoot, hub: Hub) -> bool:
-        """Any message changes (particularly COMMON_MESSAGES.PING fron
-        screen) to f_radio_enter."""
+        """Any message changes (particularly COMMON_MESSAGES.PING from
+        screen_coro) to f_radio_enter.
+
+        """
         logger.info("f_init_done: msg: %s", msg)
 
         # Try to init shutdown knob
         loop = asyncio.get_event_loop()
         shutdown_rdy = init_GPIO_shutdown(button=RPI.BUTTON_SHUTDOWN, hub=hub,
                                           topic=TOPICS.CONTROL, loop=loop)
+        logger.info("f_init_done: shutdown_rdy='%s'", shutdown_rdy)
         if not shutdown_rdy:
             # Volume knob not on - resend PING
             ctrl_act_error(hub=hub,
