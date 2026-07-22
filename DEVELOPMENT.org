@@ -737,6 +737,64 @@ echo "gzip -dc $ISO_FILE_GZ | sudo dd of=$SD_DEV bs=4M status=progress oflag=syn
 
 
 
+** Assigning  HOSTNAME to ~jrr5x~
+:PROPERTIES:
+:header-args+: :var HOSTNAME="jrr5x1"
+:END:
+
+Assigning  HOSTNAME to jrr5x
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
+echo "HOSTNAME=$HOSTNAME"
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/jj/work/jrr for user 'jj' on host 'Leo' on ke 22.7.2026 10.10.44 +0300
+: HOSTNAME=jrr5x1
+
+
+
+Hostname intially
+
+#+BEGIN_SRC bash :eval no-export :results output :dir /ssh:pi@jrr5x.local:
+echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
+hostname
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi for user 'pi' on host 'jrr5x' on Wed Jul 22 09:51:47 EEST 2026
+: jrr5x
+
+#+BEGIN_SRC bash :eval no-export :results output :dir /ssh:pi@jrr5x.local: 
+echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
+echo HOSTNAME=$HOSTNAME
+sudo raspi-config nonint do_hostname $HOSTNAME
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi for user 'pi' on host 'jrr5x' on Wed Jul 22 09:58:44 EEST 2026
+: HOSTNAME=jrr5x1
+
+Reboot
+#+call: reboot[:dir /ssh:jrr5x:]()
+
+#+RESULTS:
+: Reboot for user 'jj' in /home/jj/work/jrr host 'Leo' on ke 22.7.2026 10.00.57 +0300
+
+Hostname after change
+#+BEGIN_SRC bash :eval no-export :results output :dir /ssh:pi@jrr5x.local:
+echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
+hostname
+#+END_SRC
+
+#+RESULTS:
+: Running in /home/pi for user 'pi' on host 'jrr5x1' on Wed Jul 22 09:59:08 EEST 2026
+: jrr5x1
+
+#+call: hosti[:dir /ssh:pi@jrr5x1.local: ]()
+
+#+RESULTS:
+: jrr5x1 on Wed Jul 22 10:09:49 EEST 2026
 
 * Issues
 
@@ -937,6 +995,18 @@ amixer -c Audio scontents
 
 * Admin                                                            :noexport:
 ** Os admin
+*** ~reboot~: Reboot now
+
+#+name: reboot
+#+BEGIN_SRC bash :eval no-export :results output
+echo "Reboot for user '$(whoami)' in $(pwd) host '$(hostname)' on $(date)"
+sudo reboot
+#+END_SRC
+
+#+RESULTS: reboot
+: Reboot for user 'pi' in /home/pi host 'jrr5x' on Thu Jul 16 15:06:30 EEST 2026
+: sudo reboot
+
 *** ~hosti~: Hostname
 Installation hostname
 
@@ -2691,4 +2761,4 @@ end
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2026-07-17.13:50; # time-stamp
+Modified:2026-07-22.10:11; # time-stamp
