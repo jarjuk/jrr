@@ -110,6 +110,7 @@ class ControllerState:
     config_screens: DApp = screen_ovrlays
 
     jrr_version: str = "jrr-1.2.3"
+    firmware_version: str = "?"                  # file identifying firmaware
 
     # None/0=default, 1=rotated, persistent field
     screen_orientation: int = 0
@@ -224,6 +225,24 @@ class ControllerState:
             __file__), APP_CONTEXT.VERSION_FILE)
         with open(version_file, 'r') as f:
             self.jrr_version = f.read()
+
+        # file FIRMWARE_VERSION_FILE identifies sd card version
+        self.restore_firware_version()
+
+    def restore_firware_version(self):
+        """Read firmware version from SD disk file to
+        self.firmware_version (?? if file not found)
+
+        This file is initilized when SD disk image is created.
+
+        """
+        self.firmware_version = "??"
+        firmware_file = os.path.join(
+            os.path.expanduser("~"),
+            APP_CONTEXT.FIRMWARE_VERSION_FILE)
+        if os.path.exists(firmware_file):
+            with open(firmware_file, 'r') as f:
+                self.firmware_version = f.read()
 
     # ------------------------------------------------------------------
     # Stream management
@@ -537,6 +556,7 @@ def ctrl_act_update_status(hub: Hub, network_status: bool | None = None):
             streaming_status=controller_state.streamer_status,
             keyboard_status=controller_state.keyboard_status,
             jrr_version=controller_state.jrr_version,
+            firmware_version=controller_state.firmware_version,
         )
     )
 

@@ -401,7 +401,9 @@ async def _screen_action(msg: Any, hub: Hub, screen_orientation: int):
         logger.debug("clock: hh_mi= %s", hh_mi)
 
         # Allow clock message - but update only screen state if not awake
-        update_mode = MsgScreenUpdate.MODE_PARTIAL if screen_driver.awake else MsgScreenUpdate.MODE_NONE
+        update_mode = (MsgScreenUpdate.MODE_PARTIAL
+                       if screen_driver.awake
+                       else MsgScreenUpdate.MODE_NONE)
 
         # Time updated
         updated = False
@@ -411,9 +413,13 @@ async def _screen_action(msg: Any, hub: Hub, screen_orientation: int):
             mode=update_mode,
         )
 
+        # Mangle jrr_version && firmware_version on screen 
         await screen_driver.add_or_update(
             name=COROS.Screen.ENTRY_VERSION,
-            entry_props={"text": msg_clock.jrr_version},
+            entry_props={
+                "text": (f"{msg_clock.jrr_version}"
+                         "@"
+                         f"{msg_clock.firmware_version}")},
             mode=update_mode,
         )
 

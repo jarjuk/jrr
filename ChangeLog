@@ -1,3 +1,17 @@
+2026-08-24  jj  <jj@Leo>
+
+	* jrr-rpi.org (Add firmare info to rpi image (as jrr5_user)): 'firmware_release.txt' not overriden
+
+	* src/jrr_radio.py (ctrl_act_update_status): pass firmware version screen update
+
+	* src/screen_coro.py (_screen_action): Mangle jrr_version && firmware_version on screen
+
+	* src/jrr_radio.py (ControllerState.restore_firware_version): added
+
+	* src/messages.py (MsgClockUpdate): added firmware_version
+
+	* jrr-pcb.org (Release Issues): Added JRR-20
+
 2026-07-22  jj  <jj@Leo>
 
 	* DEVELOPMENT.org (Assigning  HOSTNAME to ~jrr5x~): DONE

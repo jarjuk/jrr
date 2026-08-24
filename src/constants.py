@@ -224,7 +224,7 @@ class APP_CONTEXT:
         Path.home(), "tmp")
     APP_SNAPSHOT = APP_TEMP
 
-    USE_LGPIO = True   # = new (default), =not using direct GPIO 
+    USE_LGPIO = True   # = new (default), =not using direct GPIO
 
     # STREAMER_SCRIPT = Path.home() / "src/jrr_streamer.sh"
     STREAMER_SCRIPT = os.path.join(
@@ -233,6 +233,8 @@ class APP_CONTEXT:
     FIRMWARE_CURRENT_LINK = "src"
     FIRMWARE_PENDING_LINK = "src.pending"
     VERSION_FILE = "VERSION"
+    # Identify firmware (sd-card versio number)
+    FIRMWARE_VERSION_FILE = "firmware_release.txt"
 
     # Url to download firmware versions
     # DEFAULT_FIRMWARE_REPO_URL = f"file://{Path.home()}/jrr"

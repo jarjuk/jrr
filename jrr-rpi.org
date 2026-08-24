@@ -78,6 +78,11 @@ Mitattu USB virrankultus jrr1
 - n. 0.37A max volyymi
 - n. 0.57A max virta
 
+Mitattu USB virrankulutus jrr5
+- n. 0.37A max volyymi
+- n. 0.70A max virta (hekllinen)
+
+
 --> 1.1A sulake ok
 
 --> USB-C current resistores
@@ -6932,9 +6937,9 @@ Create factory reset target ~jrr/src.init~
 
 #+RESULTS:
 #+begin_example
-Rsync SDIR=src/ from host=Leo to REMOTE=jrr5_user:jrr/src.init/ on to 16.7.2026 20.08.35 +0300
+Rsync SDIR=src/ from host=Leo to REMOTE=jrr5_user:jrr/src.init/ on ma 24.8.2026 12.01.42 +0300
 rsync -a --delete --update --verbose --checksum --recursive src/ jrr5_user:jrr/src.init/
-total 632
+total 656
 -rw-rw-r-- 1 jj jj   6032 joulu   9  2024 epd2in13b_V3.py
 -rw-rw-r-- 1 jj jj   5904 joulu   9  2024 epd2in13bc.py
 drwxrwxr-x 3 jj jj   4096 joulu   9  2024 lib
@@ -6974,30 +6979,37 @@ drwxrwxr-x 3 jj jj   4096 kesä    9  2025 cnf
 drwxrwxr-x 2 jj jj   4096 huhti  24 12:55 __pycache__
 -rw-rw-r-- 1 jj jj  11478 huhti  24 20:04 channel_manager.py
 -rw-rw-r-- 1 jj jj   9503 huhti  24 20:26 streamer_coro.py
--rw-rw-r-- 1 jj jj   5417 huhti  24 20:27 kb_coro.py
 -rw-rw-r-- 1 jj jj    838 huhti  24 20:27 helpers.py
 drwxrwxr-x 4 jj jj   4096 huhti  26 16:56 Python_ILI9486
 -rw-rw-r-- 1 jj jj   9060 huhti  27 10:55 utils.py
 -rw-rw-r-- 1 jj jj   2149 huhti  27 12:25 jrr_dapp.py
--rw-rw-r-- 1 jj jj  46323 huhti  27 12:34 screen.py
 -rw-rw-r-- 1 jj jj   5065 huhti  27 17:30 jrr.py
 -rw-rw-r-- 1 jj jj   5141 huhti  27 17:36 config.py
--rw-rw-r-- 1 jj jj  23432 huhti  28 08:33 screen_coro.py
--rw-rw-r-- 1 jj jj    555 huhti  28 18:44 RELEASES
 -rw-rw-r-- 1 jj jj  17826 touko  19 14:02 dscreen.py
 -rw-rw-r-- 1 jj jj    190 touko  19 15:17 gpio-test.py
 -rw-rw-r-- 1 jj jj   1076 touko  19 15:25 gpio-test-2.py
--rw-rw-r-- 1 jj jj  18754 touko  19 15:53 constants.py
--rwxr-xr-x 1 jj jj  18983 touko  19 19:52 jrr_streamer.sh
--rw-rw-r-- 1 jj jj  22371 touko  19 20:12 messages.py
--rw-rw-r-- 1 jj jj      5 heinä  16 18:01 VERSION
--rw-rw-r-- 1 jj jj 114897 heinä  16 19:52 jrr_radio.py
--rw-rw-r-- 1 jj jj   7492 heinä  16 20:07 gpio_coro.py
+-rw-rw-r-- 1 jj jj   7924 heinä  16 22:35 gpio_coro.py
+-rwxr-xr-x 1 jj jj  19024 heinä  16 22:58 jrr_streamer.sh
+-rw-rw-r-- 1 jj jj   5877 heinä  17 10:54 kb_coro.py
+-rw-rw-r-- 1 jj jj  22495 elo    24 11:17 messages.py
+-rw-rw-r-- 1 jj jj 116022 elo    24 11:20 jrr_radio.py
+-rw-rw-r-- 1 jj jj  46322 elo    24 11:24 screen.py
+-rw-rw-r-- 1 jj jj  18852 elo    24 11:24 constants.py
+-rw-rw-r-- 1 jj jj  23642 elo    24 11:28 screen_coro.py
+-rw-rw-r-- 1 jj jj     10 elo    24 11:58 VERSION
+-rw-rw-r-- 1 jj jj    608 elo    24 11:59 RELEASES
+-rw-rw-r-- 1 jj jj  23650 elo    24 12:00 #screen_coro.py#
 sending incremental file list
 ./
-gpio_coro.py
+#screen_coro.py#
+.#screen_coro.py -> jj@Leo.2903651:1785167702
+RELEASES
+VERSION
+constants.py
 jrr_radio.py
-deleting Python_ILI9486/__pycache__/config.cpython-313.pyc
+messages.py
+screen.py
+screen_coro.py
 deleting Python_ILI9486/__pycache__/ILI9486.cpython-313.pyc
 deleting __pycache__/wifi.cpython-313.pyc
 deleting __pycache__/utils.cpython-313.pyc
@@ -7033,8 +7045,8 @@ Python_ILI9486/__pycache__/
 __pycache__/
 debug/__pycache__/
 
-sent 17.356 bytes  received 2.480 bytes  13.224,00 bytes/sec
-total size is 14.122.857  speedup is 711,98
+sent 48.616 bytes  received 3.450 bytes  14.876,00 bytes/sec
+total size is 14.149.079  speedup is 271,75
 #+end_example
 
 
@@ -9321,7 +9333,7 @@ echo "FIRMWARE_RELEASE=$FIRMWARE_RELEASE"
 #+END_SRC
 
 #+RESULTS:
-: Running in /home2/jrr for user 'jrr' on host 'jrr5x' on Fri Jul 17 21:19:19 EEST 2026
+: Running in /home2/jrr for user 'jrr' on host 'jrr5x' on Mon Aug 24 12:04:48 EEST 2026
 : FIRMWARE_RELEASE=5
 
 Create ~firmware_release.txt~ 
@@ -9329,18 +9341,17 @@ Create ~firmware_release.txt~
 echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
 echo FILE=$FILE
 echo "FIRMWARE_RELEASE=$FIRMWARE_RELEASE"
+[[ -f $FILE ]] && echo "$FILE already exists - not overridden" && exit 1
 echo "$FIRMWARE_RELEASE" | tee $FILE
 ls -ltr $FILE
 cat $FILE
 #+END_SRC
 
 #+RESULTS:
-: Running in /home2/jrr for user 'jrr' on host 'jrr5x' on Fri Jul 17 21:21:51 EEST 2026
+: Running in /home2/jrr for user 'jrr' on host 'jrr5x' on Mon Aug 24 12:04:59 EEST 2026
 : FILE=firmware_release.txt
 : FIRMWARE_RELEASE=5
-: 5
-: -rw-rw-r-- 1 jrr jrr 2 Jul 17 21:21 firmware_release.txt
-: 5
+: firmware_release.txt already exists - not overridden
 
 ** Create ~firmware/JRR-FIRMWARE_RELEASE.img.gz~ (on Linux)
 :PROPERTIES:
@@ -14286,4 +14297,4 @@ hdmi_drive=2
 # reftex-default-bibliography: ("./raspberry.bib")
 
 
-Modified:2026-07-17.22:52; # time-stamp
+Modified:2026-08-24.12:05; # time-stamp

@@ -46,7 +46,7 @@ echo "CONDA_ENV=$CONDA_ENV"
 #+END_SRC
 
 #+RESULTS:
-: Running in host 'eero' on ti 24.6.2025 12.58.52 +0300
+: Running in host 'Leo' on ma 24.8.2026 10.48.53 +0300
 : CONDA_ENV=pyyton3
 
 
@@ -797,6 +797,15 @@ hostname
 : jrr5x1 on Wed Jul 22 10:09:49 EEST 2026
 
 * Issues
+
+** DONE JRR-DEV-007: Firmware version on screen
+
+	- jrr-rpi.org (Add firmare info to rpi image (as jrr5_user)): 'firmware_release.txt' not overriden
+	- src/jrr_radio.py (ctrl_act_update_status): pass firmware version screen update
+	- src/screen_coro.py (_screen_action): Mangle jrr_version && firmware_version on screen
+	- src/jrr_radio.py (ControllerState.restore_firware_version): added
+	- src/messages.py (MsgClockUpdate): added firmware_version
+
 
 ** DONE JRR-DEV-006: Factory reset
 
@@ -2761,4 +2770,4 @@ end
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2026-07-22.10:11; # time-stamp
+Modified:2026-08-24.12:06; # time-stamp

@@ -189,6 +189,7 @@ class MsgClockUpdate(MsgScreen):
     streaming_status: bool
     keyboard_status: bool
     jrr_version: str
+    firmware_version: str
 
 
 @dataclass
@@ -589,6 +590,7 @@ def message_clock_update(
         streaming_status: bool,
         keyboard_status: bool,
         jrr_version: str,
+        firmware_version: str,
 ) -> MsgClockUpdate:
     """Message to update clock on screen, and possibly
     'refresh_display'.
@@ -607,6 +609,7 @@ def message_clock_update(
             "streaming_status": streaming_status,
             "keyboard_status": keyboard_status,
             "jrr_version": jrr_version,
+            "firmware_version": firmware_version,
         })
     msg_clock = cast(MsgClockUpdate, msg)
     return msg_clock
@@ -636,7 +639,8 @@ def message_button(button: int, long_press: bool):
     :return: MsgButton
     """
     # return f"{button}={short_or_long}"
-    logger.debug("message_button: button='%s', long_press='%s'", button, long_press)
+    logger.debug("message_button: button='%s', long_press='%s'",
+                 button, long_press)
     msg = message_create(message_type=TOPICS.GPIO_MESSAGES.GPIO,
                          d={
                              "button": button,

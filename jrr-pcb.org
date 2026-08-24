@@ -315,7 +315,8 @@ Done OK
    | JRR-16 | E            |           | D1, D2  | MPN missing                  | Add MNP                      |
    | JRR-17 | E            |           | F1      | 1.1A                         | 0.75A/PTS181213V075          |
    | JRR-18 | E            |           | J24     | Amp-power                    | on PCB edge                  |
-   | JRR-19 | E            |           | C??     | 100uF Cap                    | on 5V-RPI                    |
+   | JRR-19 | E            |           | C??     | 100uF Cap                    | on 5V-RPI/GND                |
+   | JRR-20 | E            |           | Rxx     | <1R Resistro                 | on 5V-RPI                    |
    |--------+--------------+-----------+---------+------------------------------+------------------------------|
 
 *** Deploy ~DATA_SHEET_DIR/DOC-RELEASE.pdf~                        :noexport:
@@ -590,4 +591,4 @@ echo Done OK
 # reftex-default-bibliography: ("./jrr5-pcb.bib")
 
 
-Modified:2026-07-17.20:18; # time-stamp
+Modified:2026-08-24.10:47; # time-stamp
