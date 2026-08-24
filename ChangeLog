@@ -1,5 +1,11 @@
 2026-08-24  jj  <jj@Leo>
 
+	* src/jrr_radio.py (ctrl_menu_firmware_setup): use current_version_index (if found)
+
+	* src/firmware.py (firmware_available_versions): return all versions && current_version_index
+
+	* bin/jrr.sh (activate-pending): Fixed typo
+
 	* src/jrr_streamer.sh (GAIN): 1.5 -> 0.75
 
 	* jrr-rpi.org (Add firmare info to rpi image (as jrr5_user)): 'firmware_release.txt' not overriden

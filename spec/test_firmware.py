@@ -432,7 +432,7 @@ def test_firmware_available_versions_for_empty_repo(mock_repo_url1, mock_create_
     assert len(repo_index) == 1
 
     # There is also one version to choose
-    avalaible_fws = firmware.firmware_available_versions()
+    avalaible_fws, current_version_index = firmware.firmware_available_versions()
     assert len(avalaible_fws) == 1
 
     # we can choose the version found in repo
@@ -452,7 +452,7 @@ def test_firmware_available_versions_for_empty_repo2(mock_repo_url2, mock_create
     assert len(repo_index) == 2
 
     # There is also one version to choose
-    avalaible_fws = firmware.firmware_available_versions()
+    avalaible_fws, current_version_index = firmware.firmware_available_versions()
     assert len(avalaible_fws) == 2
 
     # we can choose the version found in repo
@@ -480,7 +480,7 @@ def test_firmware_available_versions_newer(mock_repo_url2, mock_create_empty_loc
     shutil.copytree(src, dest)
 
     # There is just one version to choose ()
-    avalaible_fws = firmware.firmware_available_versions()
+    avalaible_fws, current_version_index = firmware.firmware_available_versions()
     assert len(avalaible_fws) == 1
 
     assert avalaible_fws[0].version == "jrr-0.1.2.zip"
@@ -509,7 +509,7 @@ def test_firmware_available_versions_w_symlink(mock_repo_url2, mock_create_empty
     os.symlink(dir_path, symlink_path)
 
     # There is just one version to choose ()
-    avalaible_fws = firmware.firmware_available_versions()
+    avalaible_fws, current_version_index = firmware.firmware_available_versions()
     print(f"{avalaible_fws=}")
 
     assert len(avalaible_fws) == 0
@@ -538,7 +538,7 @@ def test_firmware_available_versions_wo_symlink(mock_repo_url2, mock_create_empt
     # os.symlink(dir_path, symlink_path)
 
     # There is just one version to choose from
-    avalaible_fws = firmware.firmware_available_versions()
+    avalaible_fws, current_version_index = firmware.firmware_available_versions()
     print(f"{avalaible_fws=}")
 
     assert len(avalaible_fws) == 1
@@ -555,7 +555,7 @@ def test_firmware_choose_ok(mock_create_empty_local_root, mock_repo_url1):
 
     # Assert one version to download
     assert config.app_config.firmware_repo_url == REPO_URL1
-    fws = firmware.firmware_available_versions()
+    fws, current_version_index = firmware.firmware_available_versions()
     assert len(fws) == 1
 
     # Chose the existing entry in remote repo
@@ -582,7 +582,7 @@ def test_firmware_choose_twice(mock_create_empty_local_root, mock_repo_url2):
 
     # Assert one version to download
     assert config.app_config.firmware_repo_url == REPO_URL2
-    fws = firmware.firmware_available_versions()
+    fws, current_version_index = firmware.firmware_available_versions()
     assert len(fws) == 2
     print(f"{fws=}")
 
@@ -621,7 +621,7 @@ def test_firmware_pending_version_tag_exists(
 
     # Assert one version to download
     assert config.app_config.firmware_repo_url == REPO_URL1
-    fws = firmware.firmware_available_versions()
+    fws, current_version_index = firmware.firmware_available_versions()
     assert len(fws) == 1
 
     # Chose the existing entry in remote repo

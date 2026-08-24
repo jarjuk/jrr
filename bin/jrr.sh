@@ -423,7 +423,7 @@ do
             ;;
         
         activate-pending)
-            activate_pendig
+            activate_pending
             ;;
 
         true)

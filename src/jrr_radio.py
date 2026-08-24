@@ -1317,9 +1317,10 @@ def ctrl_menu_firmware_setup(
     logger.debug("ctrl_menu_firmware_setup: step_resume='%s', menu_step=%s",
                  step_resume, controller_state.menu_step)
 
-    # List of availabe WIFI networks
+    # List of availabe firmware versions
+    current_version_index = None
     if firmware_versions is None:
-        firmware_versions = firmware_available_versions()
+        firmware_versions, current_version_index = firmware_available_versions()
     logger.info("ctrl_menu_firmware_setup: firmware_versions='%s'",
                 firmware_versions)
 
@@ -1336,9 +1337,9 @@ def ctrl_menu_firmware_setup(
         )
         return
 
-    # Default step starts from first wifi selection
-    if step_resume is None:
-        step_resume = 0
+    # Start current_firmware version (if found)
+    if step_resume is None and current_version_index is not None:
+        step_resume = current_version_index
 
     def _enter_version_setup(hub: Hub, menu_name: str):
         """Publish SCREEN -message to display firmware overlay."""

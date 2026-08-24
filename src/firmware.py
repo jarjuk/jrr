@@ -234,7 +234,8 @@ def _repo_url_2_owner_repo(repo_url: str) -> Tuple[str, str]:
     if parsed.scheme == "https" and parsed.netloc.startswith("github"):
         _, owner, repo = parsed.path.split("/")
     else:
-        raise ValueError(f"Unsupported scheme='{parsed.scheme}'/netloc='{parsed.netloc}' in {repo_url=}")
+        raise ValueError(
+            f"Unsupported scheme='{parsed.scheme}'/netloc='{parsed.netloc}' in {repo_url=}")
     return (owner, repo)
 
 
@@ -337,17 +338,15 @@ def _loadable(
 # Module services
 
 
-def firmware_available_versions() -> List[FirmwareVersion]:
-    """Return sorted list of available firmware versions.
+def firmware_available_versions() -> Tuple[List[FirmwareVersion], int | None]:
+    """Return sorted list of available firmware versions, and position
+    in for current version (None if none found)
 
     Available firmaware versions:
 
     - are found in remote repo
 
     - which do not exist in local repo
-
-    - newer than current firmware (=version_tag greater in current
-      firmware)
 
     """
     repo_index = firmware_repo_index()
@@ -368,10 +367,12 @@ def firmware_available_versions() -> List[FirmwareVersion]:
                           current: FirmwareVersion | None,
                           ) -> List[FirmwareVersion]:
         """Rule for including remote repo firmware version."""
+
+        #
+        # NB: check for version index add
+        # and ( current is None or current < fw )
         return [fw for fw in remotes
-                if fw not in downloaded and (
-                    current is None or current < fw
-                )]
+                if fw not in downloaded]
 
     available = choose_applicable(
         remotes=repo_index,
@@ -379,7 +380,16 @@ def firmware_available_versions() -> List[FirmwareVersion]:
         current=current_firmware)
     logger.info("firmware_available_versions: available='%s'", available)
 
-    return sorted(available)
+    # Index in returned list for current release
+    current_version_index = next(
+        (i for i, firmware in enumerate(available)
+         if firmware.version == current_firmware),
+        None,
+    )
+    logger.info("firmware_available_versions: current_version_index='%s'",
+                current_version_index)
+
+    return sorted(available), current_version_index
 
 
 def firmware_cleanup():
