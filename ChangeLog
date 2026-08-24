@@ -1,5 +1,7 @@
 2026-08-24  jj  <jj@Leo>
 
+	* src/jrr_streamer.sh (GAIN): 1.5 -> 0.75
+
 	* jrr-rpi.org (Add firmare info to rpi image (as jrr5_user)): 'firmware_release.txt' not overriden
 
 	* src/jrr_radio.py (ctrl_act_update_status): pass firmware version screen update

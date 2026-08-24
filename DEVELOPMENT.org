@@ -798,6 +798,11 @@ hostname
 
 * Issues
 
+** DONE JRR_DEV-008: Volume gain limit
+
+   File ~/home/jj/work/jrr/src/jrr_streamer.sh~  had GAIN=1.5  is now GAIN=0.75.
+
+   
 ** DONE JRR-DEV-007: Firmware version on screen
 
 	- jrr-rpi.org (Add firmare info to rpi image (as jrr5_user)): 'firmware_release.txt' not overriden
@@ -805,7 +810,6 @@ hostname
 	- src/screen_coro.py (_screen_action): Mangle jrr_version && firmware_version on screen
 	- src/jrr_radio.py (ControllerState.restore_firware_version): added
 	- src/messages.py (MsgClockUpdate): added firmware_version
-
 
 ** DONE JRR-DEV-006: Factory reset
 
@@ -2770,4 +2774,4 @@ end
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2026-08-24.12:06; # time-stamp
+Modified:2026-08-24.12:14; # time-stamp

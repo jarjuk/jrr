@@ -53,7 +53,7 @@ MONO_OR_STEREO_CMD=""
 # Left and Right channel gains
 RGAIN=1.0
 LGAIN=1.0
-GAIN=1.5
+GAIN=0.75
 # GAIN=5.0
 
 # Firmware update configs
