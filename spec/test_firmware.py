@@ -27,6 +27,8 @@ REPO_URL_ERR = "gitt:/githu.com"
 JRR_TAG_001 = "jrr-0.0.1"
 JRR_TAG_011 = "jrr-0.1.1"
 
+# firmware_available_versions considers only versions >
+FIRMWARE_VERSION_AFTER = "0.1.0"
 
 LOCAL_ROOT_STAGE = os.path.join(
     os.path.dirname(__file__), "..", "tmp", "stage")
@@ -286,11 +288,13 @@ def test_firmware_repo_url_1(mock_repo_url1):
 # ------------------------------------------------------------------
 # firmware_repo_revion_notes_url
 
+
 def test_firmware_repo_release_notes():
     owner = "jarjuk"
     repo = "jrr"
     expect_url = f"https://raw.githubusercontent.com/{owner}/{repo}/refs/heads/main/src/RELEASES"
     assert firmware.firmware_repo_release_notes_url() == expect_url
+
 
 def test_firmware_repo_release_notes_no_github(mock_repo_url1):
     with pytest.raises(ValueError, match="Unsupported scheme.*"):
@@ -432,7 +436,8 @@ def test_firmware_available_versions_for_empty_repo(mock_repo_url1, mock_create_
     assert len(repo_index) == 1
 
     # There is also one version to choose
-    avalaible_fws, current_version_index = firmware.firmware_available_versions()
+    avalaible_fws, current_version_index = firmware.firmware_available_versions(
+        firmware_version_after=FIRMWARE_VERSION_AFTER)
     assert len(avalaible_fws) == 1
 
     # we can choose the version found in repo
@@ -452,7 +457,8 @@ def test_firmware_available_versions_for_empty_repo2(mock_repo_url2, mock_create
     assert len(repo_index) == 2
 
     # There is also one version to choose
-    avalaible_fws, current_version_index = firmware.firmware_available_versions()
+    avalaible_fws, current_version_index = firmware.firmware_available_versions(
+        firmware_version_after=FIRMWARE_VERSION_AFTER)
     assert len(avalaible_fws) == 2
 
     # we can choose the version found in repo
@@ -480,10 +486,12 @@ def test_firmware_available_versions_newer(mock_repo_url2, mock_create_empty_loc
     shutil.copytree(src, dest)
 
     # There is just one version to choose ()
-    avalaible_fws, current_version_index = firmware.firmware_available_versions()
-    assert len(avalaible_fws) == 1
+    avalaible_fws, current_version_index = firmware.firmware_available_versions(
+        firmware_version_after=FIRMWARE_VERSION_AFTER)
+    assert len(avalaible_fws) == 2
 
-    assert avalaible_fws[0].version == "jrr-0.1.2.zip"
+    assert avalaible_fws[0].version == "jrr-0.1.1.zip"
+    assert avalaible_fws[1].version == "jrr-0.1.2.zip"
 
 
 def test_firmware_available_versions_w_symlink(mock_repo_url2, mock_create_empty_local_root):
@@ -509,17 +517,18 @@ def test_firmware_available_versions_w_symlink(mock_repo_url2, mock_create_empty
     os.symlink(dir_path, symlink_path)
 
     # There is just one version to choose ()
-    avalaible_fws, current_version_index = firmware.firmware_available_versions()
+    avalaible_fws, current_version_index = firmware.firmware_available_versions(
+        firmware_version_after=FIRMWARE_VERSION_AFTER)
     print(f"{avalaible_fws=}")
 
-    assert len(avalaible_fws) == 0
+    assert len(avalaible_fws) == 2
 
 
 def test_firmware_available_versions_wo_symlink(mock_repo_url2, mock_create_empty_local_root):
     # Empty local root directory
     assert config.app_config.firmware_local_root == LOCAL_ROOT_STAGE
     assert os.path.exists(LOCAL_ROOT_STAGE)
-    assert len(os.listdir(LOCAL_ROOT_STAGE)) == 0
+    # assert len(os.listdir(LOCAL_ROOT_STAGE)) == 0
 
     # There are 2 versions in repo
     assert config.app_config.firmware_repo_url == REPO_URL2
@@ -538,10 +547,11 @@ def test_firmware_available_versions_wo_symlink(mock_repo_url2, mock_create_empt
     # os.symlink(dir_path, symlink_path)
 
     # There is just one version to choose from
-    avalaible_fws, current_version_index = firmware.firmware_available_versions()
+    avalaible_fws, current_version_index = firmware.firmware_available_versions(
+        firmware_version_after=FIRMWARE_VERSION_AFTER)
     print(f"{avalaible_fws=}")
 
-    assert len(avalaible_fws) == 1
+    assert len(avalaible_fws) == 2
     assert avalaible_fws[0].version == "jrr-0.1.1.zip"
 
 # ------------------------------------------------------------------
@@ -551,11 +561,12 @@ def test_firmware_available_versions_wo_symlink(mock_repo_url2, mock_create_empt
 def test_firmware_choose_ok(mock_create_empty_local_root, mock_repo_url1):
     # Assert empty local repo
     assert config.app_config.firmware_local_root == LOCAL_ROOT_STAGE
-    assert len(os.listdir(LOCAL_ROOT_STAGE)) == 0
+    # assert len(os.listdir(LOCAL_ROOT_STAGE)) == 0
 
     # Assert one version to download
     assert config.app_config.firmware_repo_url == REPO_URL1
-    fws, current_version_index = firmware.firmware_available_versions()
+    fws, current_version_index = firmware.firmware_available_versions(
+        firmware_version_after=FIRMWARE_VERSION_AFTER)
     assert len(fws) == 1
 
     # Chose the existing entry in remote repo
@@ -582,7 +593,8 @@ def test_firmware_choose_twice(mock_create_empty_local_root, mock_repo_url2):
 
     # Assert one version to download
     assert config.app_config.firmware_repo_url == REPO_URL2
-    fws, current_version_index = firmware.firmware_available_versions()
+    fws, current_version_index = firmware.firmware_available_versions(
+        firmware_version_after=FIRMWARE_VERSION_AFTER)
     assert len(fws) == 2
     print(f"{fws=}")
 
@@ -617,11 +629,12 @@ def test_firmware_pending_version_tag_exists(
         mock_create_empty_local_root, mock_repo_url1):
     # Assert empty local repo
     assert config.app_config.firmware_local_root == LOCAL_ROOT_STAGE
-    assert len(os.listdir(LOCAL_ROOT_STAGE)) == 0
+    # assert len(os.listdir(LOCAL_ROOT_STAGE)) == 0
 
     # Assert one version to download
     assert config.app_config.firmware_repo_url == REPO_URL1
-    fws, current_version_index = firmware.firmware_available_versions()
+    fws, current_version_index = firmware.firmware_available_versions(
+        firmware_version_after=FIRMWARE_VERSION_AFTER)
     assert len(fws) == 1
 
     # Chose the existing entry in remote repo

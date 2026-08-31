@@ -1,4 +1,7 @@
+
 - 0.1.1
+  - JRR_DEV-010: Fix factory reset
+  - JRR_DEV-009: Browse app-versions
   - JRR-DEV-007: Firmware version on screen
   - JRR_DEV-008: Volume gain limit
   

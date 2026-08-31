@@ -227,6 +227,11 @@ unpack() {
     
 }
 
+# - used tmp directory for release content (cleaned afterwards)
+# - creates firware directory for src -directory
+# - added bin sub-directory in this firware directory
+# - point src.next to firware directory
+
 pending() {
     local url=$1; shift
     local ddir=$1; shift
@@ -248,6 +253,7 @@ pending() {
 
     local un_packed_directory_tmp=${un_packed_directory}.tmp
     local un_packed_directory_src=$un_packed_directory_tmp/src
+    local un_packed_directory_bin=$un_packed_directory_tmp/src/bin    
 
     mv $un_packed_directory ${un_packed_directory}.tmp
     
@@ -260,6 +266,8 @@ pending() {
 
     # replace un_packed_directory with src -subdirecory
     mv ${un_packed_directory_src} ${un_packed_directory}
+    # create bin -subdirectory under src -subdirecory
+    mv ${un_packed_directory_bin} ${un_packed_directory}/bin    
     rm -rf $un_packed_directory_tmp
 
     # PENDING_LINK points to 'un_packed_directory' (with content of

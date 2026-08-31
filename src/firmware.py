@@ -61,26 +61,41 @@ class FirmwareVersion:
 
     def __eq__(self, other) -> bool:
         triple1 = self.semantic_version
-        triple2 = other.semantic_version
+        o_version = other if isinstance(other, str) else other.version
+        triple2 = FirmwareVersion.semantic_version_number(o_version)
+        if triple1 is None or triple2 is None:
+            return False
         return triple1 == triple2
 
     def __gt__(self, other) -> bool:
         triple1 = self.semantic_version
-        triple2 = other.semantic_version
+        o_version = other if isinstance(other, str) else other.version
+        triple2 = FirmwareVersion.semantic_version_number(o_version)
+        if triple1 is None or triple2 is None:
+            return False
         return triple1 > triple2
 
     def __ge__(self, other) -> bool:
         triple1 = self.semantic_version
-        triple2 = other.semantic_version
+        o_version = other if isinstance(other, str) else other.version
+        triple2 = FirmwareVersion.semantic_version_number(
+            o_version)
+        if triple1 is None or triple2 is None:
+            return False
         return triple1 >= triple2
 
     # Utilities
 
     @property
-    def semantic_version(self) -> Tuple[int, int, int]:
+    def semantic_version(self) -> Tuple[int, int, int] | None:
         """Semantic versioning policy triple for 'self.version' """
+        return FirmwareVersion.semantic_version_number(self.version)
+
+    @staticmethod
+    def semantic_version_number(version) -> Tuple[int, int, int] | None:
+        """Semantic versioning policy triple for 'version' """
         pattern = r"[^0-9]*(?P<major>[0-9]+)\.(?P<minor>[0-9]+)\.(?P<patch>[\w-]+)"
-        matchi = re.search(pattern, self.version)
+        matchi = re.search(pattern, version)
         if not matchi:
             return None
         return [int(matchi['major']), int(matchi['minor']), matchi['patch']]
@@ -168,7 +183,7 @@ def firmware_current_link(realpath: bool = False) -> str | None:
     """Symbolic link path pointing to version sub-directory containing
     current firmware.
 
-    :realpath: convert symbolic link to realpath
+    :realpath: convert symbolic link to realpath, else return symlink path
 
     :return: None if no path exists
     """
@@ -338,7 +353,9 @@ def _loadable(
 # Module services
 
 
-def firmware_available_versions() -> Tuple[List[FirmwareVersion], int | None]:
+def firmware_available_versions(
+        firmware_version_after: str = APP_CONTEXT.FIRMWARE_VERSION_AFTER
+) -> Tuple[List[FirmwareVersion], int | None]:
     """Return sorted list of available firmware versions, and position
     in for current version (None if none found)
 
@@ -346,7 +363,9 @@ def firmware_available_versions() -> Tuple[List[FirmwareVersion], int | None]:
 
     - are found in remote repo
 
-    - which do not exist in local repo
+    - (which do not exist in local repo)
+
+    - with semantic version number < firmware_version_after
 
     """
     repo_index = firmware_repo_index()
@@ -371,19 +390,21 @@ def firmware_available_versions() -> Tuple[List[FirmwareVersion], int | None]:
         #
         # NB: check for version index add
         # and ( current is None or current < fw )
+        # fw not in downloaded and
         return [fw for fw in remotes
-                if fw not in downloaded]
+                if fw > firmware_version_after]
 
     available = choose_applicable(
         remotes=repo_index,
         downloaded=local_index,
         current=current_firmware)
-    logger.info("firmware_available_versions: available='%s'", available)
+    logger.info("firmware_available_versions: available='%s', current_firmware='%s'",
+                available, current_firmware)
 
     # Index in returned list for current release
     current_version_index = next(
         (i for i, firmware in enumerate(available)
-         if firmware.version == current_firmware),
+         if current_firmware is None or firmware == current_firmware),
         None,
     )
     logger.info("firmware_available_versions: current_version_index='%s'",

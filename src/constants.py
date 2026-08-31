@@ -232,6 +232,8 @@ class APP_CONTEXT:
     # Symbolic link name
     FIRMWARE_CURRENT_LINK = "src"
     FIRMWARE_PENDING_LINK = "src.pending"
+    # consider only versions >= FIRMWARE_VERSION_AFTER for firware upgrade
+    FIRMWARE_VERSION_AFTER = "0.1.2"         
     VERSION_FILE = "VERSION"
     # Identify firmware (sd-card versio number)
     FIRMWARE_VERSION_FILE = "firmware_release.txt"

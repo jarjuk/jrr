@@ -1,3 +1,19 @@
+2026-08-31  jj  <jj@Leo>
+
+	* jrr-rpi.org (src-init): symlink bin -> src.bin
+
+	* src/jrr_streamer.sh (pending): src.next includes also bin directory
+
+	* bin/jrr.sh (read-gpio): debug action added
+	(do_stop/stop): use do_kill in every case
+	(pull_up_gpio): added
+	(is_factory_reset): added
+	(daemon action):  fixed factory reset
+
+	* src/firmware.py (firmware_available_versions.choose_applicable):
+	Using FIRMWARE_VERSION_AFTER
+	* src/constants.py (FIRMWARE_VERSION_AFTER): Added
+
 2026-08-24  jj  <jj@Leo>
 
 	* src/jrr_radio.py (ctrl_menu_firmware_setup): use current_version_index (if found)

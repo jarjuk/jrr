@@ -46,7 +46,7 @@ echo "CONDA_ENV=$CONDA_ENV"
 #+END_SRC
 
 #+RESULTS:
-: Running in host 'Leo' on ma 24.8.2026 10.48.53 +0300
+: Running in host 'Leo' on ma 31.8.2026 10.22.21 +0300
 : CONDA_ENV=pyyton3
 
 
@@ -119,6 +119,11 @@ markers =
 
 #+RESULTS:
 
+Run tests manually in terminal
+#+begin_example
+ptw . --now  --ignore-patterns='#*,.#*,flycheck*' -m 'not slow and not feature'
+#+end_example
+
 ** rsync source code to target ~jrr5~
 #+BEGIN_SRC bash :eval no-export :results output
 echo "Running in $(pwd) host '$(hostname)' on $(date)"
@@ -188,8 +193,10 @@ jrr.sh status
 
 After ~systemctl stop jrr; jrr.sh stop~
 
+
 #+begin_example
-.venv/bin/python ./jrr.py -v -v  radio |   tee tmp/apu.log
+
+.venv/bin/python jrr/jrr.py -v -v  radio |   tee tmp/apu.log
 #+end_example
 
 
@@ -798,11 +805,24 @@ hostname
 
 * Issues
 
+** DONE JRR_DEV-010: Fix factory reset
+
+- bin/jrr.sh (read-gpio): debug action added
+   - (do_stop/stop): use do_kill in every case
+   - (pull_up_gpio): added
+   - (is_factory_reset): added
+   - (daemon action):  fixed factory reset
+
+
+** TODO JRR_DEV-009: Browse app-versions
+
+- firmware_available_versions.choose_applicable: Using FIRMWARE_VERSION_AFTER
+- FIRMWARE_VERSION_AFTER: added
+
 ** DONE JRR_DEV-008: Volume gain limit
 
    File ~/home/jj/work/jrr/src/jrr_streamer.sh~  had GAIN=1.5  is now GAIN=0.75.
 
-   
 ** DONE JRR-DEV-007: Firmware version on screen
 
 	- jrr-rpi.org (Add firmare info to rpi image (as jrr5_user)): 'firmware_release.txt' not overriden
@@ -2774,4 +2794,4 @@ end
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2026-08-24.12:14; # time-stamp
+Modified:2026-08-31.12:54; # time-stamp
