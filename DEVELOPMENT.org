@@ -814,7 +814,7 @@ hostname
    - (daemon action):  fixed factory reset
 
 
-** TODO JRR_DEV-009: Browse app-versions
+** DONE JRR_DEV-009: Browse app-versions
 
 - firmware_available_versions.choose_applicable: Using FIRMWARE_VERSION_AFTER
 - FIRMWARE_VERSION_AFTER: added
@@ -2796,4 +2796,4 @@ end
 # reftex-default-bibliography: ("./DEVELOPMENT.bib")
 
 
-Modified:2026-08-31.14:35; # time-stamp
+Modified:2026-08-31.14:52; # time-stamp
