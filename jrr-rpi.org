@@ -6923,7 +6923,7 @@ Create factory reset target ~jrr/src.init~
 
 #+RESULTS:
 #+begin_example
-Rsync SDIR=src/ from host=Leo to REMOTE=jrr5_user:jrr/src.init/ on ma 31.8.2026 14.25.51 +0300
+Rsync SDIR=src/ from host=Leo to REMOTE=jrr5_user:jrr/src.init/ on ma 31.8.2026 14.46.43 +0300
 rsync -a --delete --update --verbose --checksum --recursive src/ jrr5_user:jrr/src.init/
 total 632
 -rw-rw-r-- 1 jj jj   6032 joulu   9  2024 epd2in13b_V3.py
@@ -6977,19 +6977,21 @@ drwxrwxr-x 4 jj jj   4096 huhti  26 16:56 Python_ILI9486
 -rw-rw-r-- 1 jj jj  22495 elo    24 11:17 messages.py
 -rw-rw-r-- 1 jj jj  23650 elo    24 12:06 screen_coro.py
 -rw-rw-r-- 1 jj jj 116506 elo    31 12:07 jrr_radio.py
--rw-rw-r-- 1 jj jj     10 elo    31 12:12 VERSION
 -rw-rw-r-- 1 jj jj  46322 elo    31 12:25 screen.py
 -rw-rw-r-- 1 jj jj  15803 elo    31 12:34 firmware.py
--rw-rw-r-- 1 jj jj  18948 elo    31 12:47 constants.py
-drwxrwxr-x 2 jj jj   4096 elo    31 12:47 __pycache__
--rw-rw-r-- 1 jj jj    718 elo    31 12:54 RELEASES
--rwxr-xr-x 1 jj jj  19423 elo    31 14:24 jrr_streamer.sh
+-rw-rw-r-- 1 jj jj      5 elo    31 14:31 VERSION
+-rw-rw-r-- 1 jj jj  18973 elo    31 14:33 constants.py
+drwxrwxr-x 2 jj jj   4096 elo    31 14:33 __pycache__
+-rw-rw-r-- 1 jj jj    726 elo    31 14:35 RELEASES
+-rwxr-xr-x 1 jj jj  19419 elo    31 14:45 jrr_streamer.sh
 sending incremental file list
-deleting flycheck_screen.py
+deleting bin/jrr.sh
+deleting bin/bin
+deleting bin/
 ./
 RELEASES
+VERSION
 constants.py
-firmware.py
 jrr_streamer.sh
 deleting Python_ILI9486/__pycache__/ILI9486.cpython-313.pyc
 deleting __pycache__/wifi.cpython-313.pyc
@@ -7025,11 +7027,10 @@ deleting debug/__pycache__/debugger.cpython-313.pyc
 Python_ILI9486/__pycache__/
 __pycache__/
 __pycache__/constants.cpython-311.pyc
-__pycache__/firmware.cpython-311.pyc
 debug/__pycache__/
 
-sent 30.417 bytes  received 2.337 bytes  21.836,00 bytes/sec
-total size is 14.140.036  speedup is 431,70
+sent 29.830 bytes  received 2.011 bytes  21.227,33 bytes/sec
+total size is 14.140.060  speedup is 444,08
 #+end_example
 
 Copy ~jrr.sh~ into src.init/bin
@@ -7037,7 +7038,7 @@ Copy ~jrr.sh~ into src.init/bin
 
 #+RESULTS:
 #+begin_example
-Rsync SDIR=bin/ from host=Leo to REMOTE=jrr5_user:jrr/src.init/bin/ on ma 31.8.2026 14.25.55 +0300
+Rsync SDIR=bin/ from host=Leo to REMOTE=jrr5_user:jrr/src.init/bin/ on ma 31.8.2026 14.47.09 +0300
 rsync -a --delete --update --verbose --checksum --recursive bin/ jrr5_user:jrr/src.init/bin/
 total 12
 -rwxr-xr-x 1 jj jj 11699 elo    31 14:09 jrr.sh
@@ -7066,7 +7067,8 @@ cat src/VERSION
 #+END_SRC
 
 #+RESULTS: src-init
-: Running in /home2/jrr for user 'jrr' on host 'jrr5x' on Mon Aug 31 14:30:41 EEST 2026
+: Running in /home2/jrr for user 'jrr' on host 'jrr5x' on Mon Aug 31 14:37:39 EEST 2026
+: mv bin to bin.old
 : symlink bin
 : 0.1.1-rc03
 
@@ -14301,4 +14303,4 @@ hdmi_drive=2
 # reftex-default-bibliography: ("./raspberry.bib")
 
 
-Modified:2026-08-31.14:31; # time-stamp
+Modified:2026-08-31.14:48; # time-stamp

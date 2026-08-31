@@ -253,7 +253,7 @@ pending() {
 
     local un_packed_directory_tmp=${un_packed_directory}.tmp
     local un_packed_directory_src=$un_packed_directory_tmp/src
-    local un_packed_directory_bin=$un_packed_directory_tmp/src/bin    
+    local un_packed_directory_bin=$un_packed_directory_tmp/bin    
 
     mv $un_packed_directory ${un_packed_directory}.tmp
     
