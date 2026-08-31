@@ -1357,13 +1357,22 @@ def ctrl_menu_firmware_setup(
         # ctrl_menu_setup_with_keyboard(hub, step_resume=caller_menu_step)
         ctrl_menu_resume(hub, step_resume=caller_menu_step)
 
+    # Helpers to build btn_labels in menu
+    def _next_stream_label(i):
+        streams = controller_state.streams
+        return firmware_versions[i + 1 if i < len(firmware_versions) - 1 else 0].version
+
+    def _prev_stream_label(i):
+        streams = controller_state.streams
+        return firmware_versions[i - 1 if i > 0 else len(firmware_versions) - 1].version
+
     # See f_config_enter for documentation
     menu = {
         firmware_versions[i].version: {
             APP_CONTEXT.MENU.ACTS.BTN_LABELS: [
-                APP_CONTEXT.MENU.NEXT,           # bt1-short
+                _next_stream_label(i),           # bt1-short
                 APP_CONTEXT.MENU.CHOOSE,         # bt1-long
-                APP_CONTEXT.MENU.PREV,           # bt2-short
+                _prev_stream_label(i),           # bt2-short
                 APP_CONTEXT.MENU.CONFIG_RETURN,  # bt2-long
             ],
             APP_CONTEXT.MENU.ACTS.ENTRY_ACTION: _enter_version_setup,

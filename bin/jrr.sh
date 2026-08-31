@@ -85,6 +85,7 @@ usage() {
     echo "status                : Show process ids for jrr.py and ffmpeg streamer process"
     echo "kill-ffmpeg           : Kill ffmpeg streamer process"
     echo "activate-pending      : Activate  PENDING_LINK if it valid"
+    echo "read-gpio             : Pull-up SW1=$SW1, SW2=$SW2 and read"
     echo "debug                 : Run jrr.py from command line"
     echo ""
     echo "Examples:"
@@ -119,21 +120,6 @@ shutdown() {
     exit 0
 }
 
-do_stop() {
-    if [ ! -z "$MAINPID" ]; then
-        log 1 "do_stop: send SIGTERM to MAINPID=$MAINPID"                
-        kill -SIGTERM $MAINPID
-    else
-        JRR_PID=$(pgrep -f jrr.py || true)
-        if [ ! -z "$JRR_PID" ]; then
-            log 1 "do_stop - send SIGTERM to JRR_PID=$JRR_PID"
-            kill -SIGTERM $JRR_PID
-        else
-            log 1 "do_stop: no jrr.py process found"
-        fi
-    fi
-}
-
 do_kill() {
     JRR_PID=$(pgrep -f jrr.py || true)
     if [ ! -z "$JRR_PID" ]; then
@@ -143,6 +129,17 @@ do_kill() {
         log 1 "do_kill: no jrr.py process found"
     fi
 }
+
+do_stop() {
+    if [ ! -z "$MAINPID" ]; then
+        log 1 "do_stop: send SIGTERM to MAINPID=$MAINPID"                
+        kill -SIGTERM $MAINPID
+    fi
+
+    do_kill
+
+}
+
 
 # Activate PENDING_LINK (if it exists)
 # - cleanup PREV_LINK (and directory it points to unless src.init)
@@ -196,6 +193,42 @@ factory_reset() {
        log 1 "Factory reset not possible no INIT_SRC=$INIT_SRC directory!!"      
    fi
     
+}
+
+# config pullups for SW1 and SW2
+pull_up_gpio() {
+    log 1 "pull_up_gpio for SW1=$SW1, SW2=$SW2"
+    # configure pull-ups
+    if command -v raspi-gpio >/dev/null 2>&1; then
+        raspi-gpio set $SW1 ip pu
+        raspi-gpio set $SW2 ip pu
+    else
+        # fallback to libgpiod tools
+        pinctrl set $SW1 ip pu
+        pinctrl set $SW2 ip pu
+    fi            
+}
+
+# check factory reset (after pull_up_gpio)
+is_factory_reset() {
+    log 1 "is_factory_reset for SW1=$SW1, SW2=$SW2"
+
+    local val_sw1
+    local val_sw2
+
+    val_sw1=$(gpioget --chip gpiochip0 "$SW1")
+    val_sw2=$(gpioget --chip gpiochip0 "$SW2")
+
+    log 1 "read SW1[GPIO$SW1]=$val_sw1, SW2[GPIO$SW2]=$val_sw2"
+
+    if [[ "$val_sw1" == "\"$SW1\"=inactive" &&
+          "$val_sw2" == "\"$SW2\"=inactive" ]]; then
+        log 1 "is_factory_reset: return true"
+        return 0
+    fi
+
+    log 1 "is_factory_reset: return false"
+    return 1
 }
 
 
@@ -348,22 +381,11 @@ do
             do_kill
 
             # configure pull-ups
-            if command -v raspi-gpio >/dev/null 2>&1; then
-                raspi-gpio set $SW1 ip pu
-                raspi-gpio set $SW2 ip pu
-            else
-                # fallback to libgpiod tools
-                pinctrl set $SW1 ip pu
-                pinctrl set $SW2 ip pu
-            fi            
+            pull_up_gpio
             
-            # Luetaan GPIO:t (chip yleensä gpiochip0)
-            val_sw1=$(gpioget --chip gpiochip0 $SW1)
-            val_sw2=$(gpioget --chip gpiochip0 $SW2)
 
-            log 1 "SW1[GPIO$SW1]=: $val_sw1, SW2[GPIO$SW2]=: $val_sw2"
-
-            if [[ "val_sw1"="$SW1=active" && "$val_sw2"="$SW2=active" ]]; then
+            if is_factory_reset; then
+                # do factory reset
                 factory_reset
             else
                 # Activate pending - if any
@@ -427,6 +449,30 @@ do
             ;;
 
         true)
+            ;;
+
+        read-gpio)
+            log 2 "read-gpio - starting"
+            pull_up_gpio
+            
+            # Luetaan GPIO:t (chip yleensä gpiochip0)
+            val_sw1=$(gpioget --chip gpiochip0 $SW1)
+            val_sw2=$(gpioget --chip gpiochip0 $SW2)
+
+            echo "SW1[GPIO$SW1]=: $val_sw1, SW2[GPIO$SW2]=: $val_sw2"
+            log 2 "read-gpio - done"
+            
+            ;;
+
+        is-factory-reset)
+            log 2 "is-factory-reset - starting"
+            pull_up_gpio
+            if is_factory_reset; then
+                echo "DO factory reset"
+            else
+                echo "NO do factory reset"
+            fi
+            log 2 "is-factory-reset - done"
             ;;
 
 	    

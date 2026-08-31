@@ -6903,21 +6903,7 @@ Running in /home/pi host 'jrr5' on Mon Jan 13 14:35:36 EET 2025
 
 ** Deploy app source
 
-#+call: src-rsync[:dir .](SDIR="bin/", DDIR="jrr/bin/"")
 
-#+RESULTS:
-#+begin_example
-Rsync SDIR=bin/ from host=Leo to REMOTE=jrr5_user:jrr/bin/ on to 16.7.2026 19.14.40 +0300
-rsync -a --delete --update --verbose --checksum --recursive bin/ jrr5_user:jrr/bin/
-total 12
--rwxr-xr-x 1 jj jj 10589 heinä  16 09:55 jrr.sh
-sending incremental file list
-./
-jrr.sh
-
-sent 10.727 bytes  received 38 bytes  7.176,67 bytes/sec
-total size is 10.589  speedup is 0,98
-#+end_example
 
 #+call: src-rsync[:dir .](SDIR="jrr.py", DDIR="jrr/")
 
@@ -6937,9 +6923,9 @@ Create factory reset target ~jrr/src.init~
 
 #+RESULTS:
 #+begin_example
-Rsync SDIR=src/ from host=Leo to REMOTE=jrr5_user:jrr/src.init/ on ma 24.8.2026 12.01.42 +0300
+Rsync SDIR=src/ from host=Leo to REMOTE=jrr5_user:jrr/src.init/ on ma 31.8.2026 14.25.51 +0300
 rsync -a --delete --update --verbose --checksum --recursive src/ jrr5_user:jrr/src.init/
-total 656
+total 632
 -rw-rw-r-- 1 jj jj   6032 joulu   9  2024 epd2in13b_V3.py
 -rw-rw-r-- 1 jj jj   5904 joulu   9  2024 epd2in13bc.py
 drwxrwxr-x 3 jj jj   4096 joulu   9  2024 lib
@@ -6974,9 +6960,7 @@ drwxrwxr-x 2 jj jj   4096 kesä    2  2025 resources
 drwxrwxr-x 3 jj jj   4096 kesä    9  2025 cnf
 -rw-rw-r-- 1 jj jj   4142 kesä   10  2025 jrr_converter.py
 -rw-rw-r-- 1 jj jj   1393 heinä   2  2025 github.py
--rw-rw-r-- 1 jj jj  14390 heinä   7  2025 firmware.py
 -rw-rw-r-- 1 jj jj   3398 huhti  18 18:09 tft_ili9486.py
-drwxrwxr-x 2 jj jj   4096 huhti  24 12:55 __pycache__
 -rw-rw-r-- 1 jj jj  11478 huhti  24 20:04 channel_manager.py
 -rw-rw-r-- 1 jj jj   9503 huhti  24 20:26 streamer_coro.py
 -rw-rw-r-- 1 jj jj    838 huhti  24 20:27 helpers.py
@@ -6989,27 +6973,24 @@ drwxrwxr-x 4 jj jj   4096 huhti  26 16:56 Python_ILI9486
 -rw-rw-r-- 1 jj jj    190 touko  19 15:17 gpio-test.py
 -rw-rw-r-- 1 jj jj   1076 touko  19 15:25 gpio-test-2.py
 -rw-rw-r-- 1 jj jj   7924 heinä  16 22:35 gpio_coro.py
--rwxr-xr-x 1 jj jj  19024 heinä  16 22:58 jrr_streamer.sh
 -rw-rw-r-- 1 jj jj   5877 heinä  17 10:54 kb_coro.py
 -rw-rw-r-- 1 jj jj  22495 elo    24 11:17 messages.py
--rw-rw-r-- 1 jj jj 116022 elo    24 11:20 jrr_radio.py
--rw-rw-r-- 1 jj jj  46322 elo    24 11:24 screen.py
--rw-rw-r-- 1 jj jj  18852 elo    24 11:24 constants.py
--rw-rw-r-- 1 jj jj  23642 elo    24 11:28 screen_coro.py
--rw-rw-r-- 1 jj jj     10 elo    24 11:58 VERSION
--rw-rw-r-- 1 jj jj    608 elo    24 11:59 RELEASES
--rw-rw-r-- 1 jj jj  23650 elo    24 12:00 #screen_coro.py#
+-rw-rw-r-- 1 jj jj  23650 elo    24 12:06 screen_coro.py
+-rw-rw-r-- 1 jj jj 116506 elo    31 12:07 jrr_radio.py
+-rw-rw-r-- 1 jj jj     10 elo    31 12:12 VERSION
+-rw-rw-r-- 1 jj jj  46322 elo    31 12:25 screen.py
+-rw-rw-r-- 1 jj jj  15803 elo    31 12:34 firmware.py
+-rw-rw-r-- 1 jj jj  18948 elo    31 12:47 constants.py
+drwxrwxr-x 2 jj jj   4096 elo    31 12:47 __pycache__
+-rw-rw-r-- 1 jj jj    718 elo    31 12:54 RELEASES
+-rwxr-xr-x 1 jj jj  19423 elo    31 14:24 jrr_streamer.sh
 sending incremental file list
+deleting flycheck_screen.py
 ./
-#screen_coro.py#
-.#screen_coro.py -> jj@Leo.2903651:1785167702
 RELEASES
-VERSION
 constants.py
-jrr_radio.py
-messages.py
-screen.py
-screen_coro.py
+firmware.py
+jrr_streamer.sh
 deleting Python_ILI9486/__pycache__/ILI9486.cpython-313.pyc
 deleting __pycache__/wifi.cpython-313.pyc
 deleting __pycache__/utils.cpython-313.pyc
@@ -7043,28 +7024,51 @@ deleting __pycache__/__init__.cpython-313.pyc
 deleting debug/__pycache__/debugger.cpython-313.pyc
 Python_ILI9486/__pycache__/
 __pycache__/
+__pycache__/constants.cpython-311.pyc
+__pycache__/firmware.cpython-311.pyc
 debug/__pycache__/
 
-sent 48.616 bytes  received 3.450 bytes  14.876,00 bytes/sec
-total size is 14.149.079  speedup is 271,75
+sent 30.417 bytes  received 2.337 bytes  21.836,00 bytes/sec
+total size is 14.140.036  speedup is 431,70
 #+end_example
 
+Copy ~jrr.sh~ into src.init/bin
+#+call: src-rsync[:dir .](SDIR="bin/", DDIR="jrr/src.init/bin/"")
 
-Create symlink ~src~ pointing to factory init ~src.init~ show ~src/VERSION~
+#+RESULTS:
+#+begin_example
+Rsync SDIR=bin/ from host=Leo to REMOTE=jrr5_user:jrr/src.init/bin/ on ma 31.8.2026 14.25.55 +0300
+rsync -a --delete --update --verbose --checksum --recursive bin/ jrr5_user:jrr/src.init/bin/
+total 12
+-rwxr-xr-x 1 jj jj 11699 elo    31 14:09 jrr.sh
+sending incremental file list
+created directory jrr/src.init/bin
+./
+jrr.sh
+
+sent 11.839 bytes  received 77 bytes  7.944,00 bytes/sec
+total size is 11.699  speedup is 0,98
+#+end_example
+
+Create symlink ~src~ pointing to factory init ~src.init~, and ~bin~
+pointing to ~src/bin~ show ~src/VERSION~
 #+name: src-init
 #+BEGIN_SRC bash :eval no-export :results output
 echo "Running in $(pwd) for user '$(whoami)' on host '$(hostname)' on $(date)"
 cd jrr
 rm -f src
 ln -s src.init src
+[[ -d bin ]] && echo "mv bin to bin.old" && mv bin bin.old
+echo symlink bin
+ln -s  src/bin bin
 # ls -latr
-
 cat src/VERSION
 #+END_SRC
 
 #+RESULTS: src-init
-: Running in /home2/jrr for user 'jrr' on host 'jrr5x' on Thu Jul 16 19:14:56 EEST 2026
-: 0.0.9
+: Running in /home2/jrr for user 'jrr' on host 'jrr5x' on Mon Aug 31 14:30:41 EEST 2026
+: symlink bin
+: 0.1.1-rc03
 
 Edit [[file:src/VERSION]]
 
@@ -14297,4 +14301,4 @@ hdmi_drive=2
 # reftex-default-bibliography: ("./raspberry.bib")
 
 
-Modified:2026-08-24.12:05; # time-stamp
+Modified:2026-08-31.14:31; # time-stamp
